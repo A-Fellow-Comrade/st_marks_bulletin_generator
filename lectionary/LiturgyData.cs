@@ -31,6 +31,74 @@ public sealed class Readings
     };
 }
 
+/// <summary>Represents an Introit proper (incipit name, scripture reference, and text).</summary>
+[JsonConverter(typeof(IntroitConverter))]
+public sealed class Introit
+{
+    [JsonPropertyName("name")] public string? Name { get; init; }
+    [JsonPropertyName("ref")] public string? Ref { get; init; }
+    [JsonPropertyName("text")] public string? Text { get; init; }
+
+    public override string ToString() => Text ?? Name ?? "";
+}
+
+/// <summary>
+/// Custom converter supporting Introit as either a JSON string, a JSON object, or null.
+/// </summary>
+public sealed class IntroitConverter : JsonConverter<Introit>
+{
+    public override Introit? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+            return null;
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            return new Introit { Text = reader.GetString() };
+        }
+
+        if (reader.TokenType == JsonTokenType.StartObject)
+        {
+            string? name = null;
+            string? reference = null;
+            string? text = null;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                    break;
+
+                if (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    string propName = reader.GetString()!;
+                    reader.Read();
+                    if (string.Equals(propName, "name", StringComparison.OrdinalIgnoreCase))
+                        name = reader.GetString();
+                    else if (string.Equals(propName, "ref", StringComparison.OrdinalIgnoreCase))
+                        reference = reader.GetString();
+                    else if (string.Equals(propName, "text", StringComparison.OrdinalIgnoreCase))
+                        text = reader.GetString();
+                    else
+                        reader.Skip();
+                }
+            }
+
+            return new Introit { Name = name, Ref = reference, Text = text };
+        }
+
+        throw new JsonException($"Unexpected token {reader.TokenType} when parsing Introit.");
+    }
+
+    public override void Write(Utf8JsonWriter writer, Introit value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        if (value.Name is not null) writer.WriteString("name", value.Name);
+        if (value.Ref is not null) writer.WriteString("ref", value.Ref);
+        if (value.Text is not null) writer.WriteString("text", value.Text);
+        writer.WriteEndObject();
+    }
+}
+
 /// <summary>
 /// One entry from the sanctoral / three-year / one-year slot tables.
 /// Property names map 1:1 to the keys used in the Python dicts, so the JSON
@@ -50,7 +118,7 @@ public class SlotInfo
     [JsonPropertyName("readings")] public Readings? Readings { get; set; }
 
     [JsonPropertyName("collect")] public string? Collect { get; set; }
-    [JsonPropertyName("introit")] public string? Introit { get; set; }
+    [JsonPropertyName("introit")] public Introit? Introit { get; set; }
     [JsonPropertyName("introit_text")] public string? IntroitText { get; set; }
     [JsonPropertyName("gradual")] public string? Gradual { get; set; }
     [JsonPropertyName("source")] public string? Source { get; set; }
@@ -61,7 +129,7 @@ public class SlotInfo
     [JsonPropertyName("C")] public Readings? C { get; set; }
     [JsonPropertyName("all")] public Readings? All { get; set; }
 
-    /// <summary>Readings for series "A", "B" or "C", falling back to "all".</summary>
+    /// <summary>Readings for series "A", "B" or "C", falling back to "all" then Readings.</summary>
     public Readings? ForSeries(string series)
     {
         var bySeries = series switch
@@ -71,7 +139,7 @@ public class SlotInfo
             "C" => C,
             _ => null,
         };
-        return bySeries ?? All;
+        return bySeries ?? All ?? Readings;
     }
 
     public SlotInfo Clone() => (SlotInfo)MemberwiseClone();
@@ -81,22 +149,36 @@ public class SlotInfo
 public sealed class Propers
 {
     [JsonPropertyName("collect")] public string? Collect { get; init; }
-    [JsonPropertyName("introit")] public string? Introit { get; init; }
+    [JsonPropertyName("introit")] public Introit? Introit { get; init; }
     [JsonPropertyName("gradual")] public string? Gradual { get; init; }
     [JsonPropertyName("source")] public string? Source { get; init; }
 }
 
 /// <summary>
-/// Daily lectionary data. "fixed" is keyed by "MM-dd"; "movable" is indexed by
+/// Daily lectionary data. "DAILY_FIXED" is keyed by "MM-dd"; "DAILY_MOVABLE" is indexed by
 /// days since Ash Wednesday.
 /// </summary>
 public sealed class DailyLectionary
 {
+    [JsonPropertyName("DAILY_FIXED")]
+    public Dictionary<string, Dictionary<string, string?>> DailyFixed { get; init; } = new();
+
+    [JsonPropertyName("DAILY_MOVABLE")]
+    public List<Dictionary<string, string?>> DailyMovable { get; init; } = new();
+
     [JsonPropertyName("fixed")]
-    public Dictionary<string, Dictionary<string, string?>> Fixed { get; init; } = new();
+    public Dictionary<string, Dictionary<string, string?>>? FixedAlias { get; init; }
 
     [JsonPropertyName("movable")]
-    public List<Dictionary<string, string?>> Movable { get; init; } = new();
+    public List<Dictionary<string, string?>>? MovableAlias { get; init; }
+
+    [JsonIgnore]
+    public Dictionary<string, Dictionary<string, string?>> Fixed =>
+        DailyFixed.Count > 0 ? DailyFixed : (FixedAlias ?? DailyFixed);
+
+    [JsonIgnore]
+    public List<Dictionary<string, string?>> Movable =>
+        DailyMovable.Count > 0 ? DailyMovable : (MovableAlias ?? DailyMovable);
 }
 
 /// <summary>A sanctoral observance found by calendar date.</summary>
@@ -151,12 +233,67 @@ public sealed class LiturgicalData
     }
 
     /// <summary>
+    /// Find the lectionary Data directory by checking common locations.
+    /// </summary>
+    public static string FindDataDirectory(string? preferredDirectory = null)
+    {
+        if (!string.IsNullOrWhiteSpace(preferredDirectory) && Directory.Exists(preferredDirectory))
+            return preferredDirectory;
+
+        string[] candidates =
+        {
+            Path.Combine(AppContext.BaseDirectory, "lectionary", "Data"),
+            Path.Combine(AppContext.BaseDirectory, "Data", "lectionary"),
+            Path.Combine(AppContext.BaseDirectory, "Data"),
+            Path.Combine(Directory.GetCurrentDirectory(), "lectionary", "Data"),
+            Path.Combine(Directory.GetCurrentDirectory(), "Data", "lectionary"),
+            Path.Combine(Directory.GetCurrentDirectory(), "Data"),
+        };
+
+        foreach (var candidate in candidates)
+        {
+            if (Directory.Exists(candidate) && File.Exists(Path.Combine(candidate, "three_year.json")))
+                return candidate;
+        }
+
+        for (var dir = new DirectoryInfo(Directory.GetCurrentDirectory()); dir is not null; dir = dir.Parent)
+        {
+            string check1 = Path.Combine(dir.FullName, "lectionary", "Data");
+            if (Directory.Exists(check1) && File.Exists(Path.Combine(check1, "three_year.json")))
+                return check1;
+            string check2 = Path.Combine(dir.FullName, "Data");
+            if (Directory.Exists(check2) && File.Exists(Path.Combine(check2, "three_year.json")))
+                return check2;
+        }
+
+        for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
+        {
+            string check1 = Path.Combine(dir.FullName, "lectionary", "Data");
+            if (Directory.Exists(check1) && File.Exists(Path.Combine(check1, "three_year.json")))
+                return check1;
+            string check2 = Path.Combine(dir.FullName, "Data");
+            if (Directory.Exists(check2) && File.Exists(Path.Combine(check2, "three_year.json")))
+                return check2;
+        }
+
+        if (!string.IsNullOrWhiteSpace(preferredDirectory))
+            return preferredDirectory;
+
+        throw new DirectoryNotFoundException("Could not locate lectionary Data directory containing JSON files.");
+    }
+
+    /// <summary>Load lectionary data using automatic data directory discovery.</summary>
+    public static LiturgicalData Load(string? directory = null) =>
+        LoadFromDirectory(FindDataDirectory(directory));
+
+    /// <summary>
     /// Load from a directory containing sanctoral.json, three_year.json,
     /// one_year.json, one_year_propers.json and (optionally) daily_lectionary.json.
     /// Each slot file is an object keyed by slot name.
     /// </summary>
     public static LiturgicalData LoadFromDirectory(string directory)
     {
+        directory = FindDataDirectory(directory);
         var sanctoral = Read<Dictionary<string, SlotInfo>>(Path.Combine(directory, "sanctoral.json"));
         var threeYear = Read<Dictionary<string, SlotInfo>>(Path.Combine(directory, "three_year.json"));
         var oneYear = Read<Dictionary<string, SlotInfo>>(Path.Combine(directory, "one_year.json"));
@@ -196,7 +333,9 @@ public sealed class LiturgicalData
         if (ashWed <= d && d <= trinity)
         {
             int idx = d.DayNumber - ashWed.DayNumber;
-            return new Dictionary<string, string?>(Daily.Movable[idx]);
+            if (idx >= 0 && idx < Daily.Movable.Count)
+                return new Dictionary<string, string?>(Daily.Movable[idx]);
+            return null;
         }
 
         string key = $"{d.Month:D2}-{d.Day:D2}";
@@ -241,11 +380,22 @@ public sealed class LiturgicalData
     /// Resolve a slot key to its info (readings picked for the given series).
     /// Always returns a copy that callers may modify. Null if the slot is unknown.
     /// </summary>
-    public SlotInfo? GetSlotInfo(string slot, string series)
+    public SlotInfo? GetSlotInfo(string slot, string series, Lectionary lectionary = Lectionary.ThreeYear)
     {
         // Sanctoral feasts take priority for specific date-tied keys
         if (Sanctoral.TryGetValue(slot, out var sanctoral))
             return sanctoral.Clone();
+
+        if (lectionary == Lectionary.OneYear && OneYear.TryGetValue(slot, out var oneYearSlot))
+        {
+            var result = oneYearSlot.Clone();
+            OneYearPropers.TryGetValue(slot, out var propers);
+            result.Collect = propers?.Collect;
+            result.Introit = propers?.Introit;
+            result.Gradual = propers?.Gradual;
+            result.Source = propers?.Source;
+            return result;
+        }
 
         if (ThreeYear.TryGetValue(slot, out var threeYear))
         {
@@ -273,6 +423,7 @@ public sealed class LiturgicalData
             string name = n < TrinityOrdinalCount
                 ? $"{Utils.Ordinal(n)} Sunday after Trinity"
                 : $"Sunday {n} after Trinity";
+            OneYearPropers.TryGetValue(slot, out var propers);
             return new SlotInfo
             {
                 Name = name,
@@ -280,6 +431,10 @@ public sealed class LiturgicalData
                 Color = "Green",
                 Feast = false,
                 Readings = null,
+                Collect = propers?.Collect,
+                Introit = propers?.Introit,
+                Gradual = propers?.Gradual,
+                Source = propers?.Source,
             };
         }
 

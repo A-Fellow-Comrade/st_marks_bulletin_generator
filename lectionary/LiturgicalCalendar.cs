@@ -100,7 +100,8 @@ public sealed class LiturgicalEvent
     public int? Ordinal { get; set; }
     public bool Minor { get; set; }
     public string? Collect { get; set; }
-    public string? Introit { get; set; }
+    public Introit? Introit { get; set; }
+    public string? IntroitText { get; set; }
     public string? Gradual { get; set; }
     public string? Source { get; set; }
 
@@ -122,6 +123,16 @@ public sealed class LookupResult
 
     /// <summary>Name, season, color, readings, propers, etc. for the slot.</summary>
     public SlotInfo Info { get; init; } = new();
+
+    public string Name => Info.Name;
+    public string Season => Info.Season;
+    public string Color => Info.Color;
+    public Readings? Readings => Info.Readings;
+    public string? Collect => Info.Collect;
+    public Introit? Introit => Info.Introit;
+    public string? IntroitText => Info.IntroitText ?? Info.Introit?.Text;
+    public string? Gradual => Info.Gradual;
+    public string? Source => Info.Source;
 }
 
 /// <summary>
@@ -321,6 +332,7 @@ public sealed class LiturgicalCalendar
         if (d == MaundyThursday) return "maundy_thursday";
         if (d == GoodFriday) return "good_friday";
         if (d == Ascension) return "ascension";
+        if (d == Thanksgiving) return "thanksgiving";
 
         // Sundays
         if (CalendarMath.IsoWeekday(d) != 7)
@@ -378,8 +390,6 @@ public sealed class LiturgicalCalendar
         if (d == CalendarMath.NearestSunday(new DateOnly(CivilYear, 9, 29)))
             return "st_michael";
 
-        // Thanksgiving is a Thursday with no Sunday slot; handled in AllEvents.
-
         // Season after Pentecost
         if (_pentecostSundays.Contains(d))
         {
@@ -402,13 +412,14 @@ public sealed class LiturgicalCalendar
 
         void Add(DateOnly d, string slot)
         {
-            var info = _data.GetSlotInfo(slot, Series);
+            var info = _data.GetSlotInfo(slot, Series, lectionary);
             if (info is null) return;
             if (!includeMinor && info.Minor) return;
 
             // Merge one-year propers (collect + introit + gradual) for shared slots
             string? collect = info.Collect;
-            string? introit = info.Introit;
+            Introit? introit = info.Introit;
+            string? introitText = info.IntroitText ?? info.Introit?.Text;
             string? gradual = info.Gradual;
             string? source = info.Source;
             if (lectionary == Lectionary.OneYear && string.IsNullOrEmpty(collect))
@@ -416,6 +427,7 @@ public sealed class LiturgicalCalendar
                 _data.OneYearPropers.TryGetValue(slot, out var propers);
                 collect = propers?.Collect;
                 introit = propers?.Introit;
+                introitText = propers?.Introit?.Text;
                 gradual = propers?.Gradual;
                 source = propers?.Source;
             }
@@ -436,6 +448,7 @@ public sealed class LiturgicalCalendar
                 Minor = info.Minor,
                 Collect = collect,
                 Introit = introit,
+                IntroitText = introitText,
                 Gradual = gradual,
                 Source = source,
             });
@@ -504,11 +517,12 @@ public sealed class LiturgicalCalendar
             if (lectionary == Lectionary.OneYear)
             {
                 string slot = $"trinity_{nAfter}";
-                var info = _data.GetSlotInfo(slot, Series);
+                var info = _data.GetSlotInfo(slot, Series, lectionary);
                 if (info is null) continue;
                 if (!includeMinor && info.Minor) continue;
 
                 _data.OneYearPropers.TryGetValue(slot, out var propers);
+                var propersIntroit = propers?.Introit ?? info.Introit;
                 events.Add(new LiturgicalEvent
                 {
                     Date = s,
@@ -522,17 +536,18 @@ public sealed class LiturgicalCalendar
                     Readings = info.Readings,
                     Ordinal = nAfter,
                     Minor = false,
-                    Collect = propers?.Collect,
-                    Introit = propers?.Introit,
-                    Gradual = propers?.Gradual,
-                    Source = propers?.Source,
+                    Collect = propers?.Collect ?? info.Collect,
+                    Introit = propersIntroit,
+                    IntroitText = propersIntroit?.Text ?? info.IntroitText,
+                    Gradual = propers?.Gradual ?? info.Gradual,
+                    Source = propers?.Source ?? info.Source,
                 });
             }
             else
             {
                 int p = CalendarMath.GetProper(s);
                 string slot = $"proper_{p}";
-                var info = _data.GetSlotInfo(slot, Series);
+                var info = _data.GetSlotInfo(slot, Series, lectionary);
                 if (info is null) continue;
                 if (!includeMinor && info.Minor) continue;
 
@@ -558,7 +573,7 @@ public sealed class LiturgicalCalendar
             {
                 if (s == ReformationObserved)
                 {
-                    var rInfo = _data.GetSlotInfo("reformation", Series);
+                    var rInfo = _data.GetSlotInfo("reformation", Series, lectionary);
                     if (rInfo is not null)
                     {
                         events[^1].AltName = rInfo.Name;
@@ -567,7 +582,7 @@ public sealed class LiturgicalCalendar
                 }
                 if (s == AllSaintsObserved)
                 {
-                    var aInfo = _data.GetSlotInfo("all_saints", Series);
+                    var aInfo = _data.GetSlotInfo("all_saints", Series, lectionary);
                     if (aInfo is not null)
                     {
                         events[^1].AltName = aInfo.Name;
@@ -606,7 +621,7 @@ public sealed class LiturgicalCalendar
 
         if (slot is not null)
         {
-            var info = _data.GetSlotInfo(slot, cal.Series);
+            var info = _data.GetSlotInfo(slot, cal.Series, lectionary);
             if (info is null) return null;
 
             // Human-readable ordinal name for season-after-Pentecost Sundays
@@ -659,7 +674,7 @@ public sealed class LiturgicalCalendar
             string? prevSlot = cal.DateToSlot(prev, lectionary);
             if (prevSlot is not null)
             {
-                govInfo = _data.GetSlotInfo(prevSlot, cal.Series);
+                govInfo = _data.GetSlotInfo(prevSlot, cal.Series, lectionary);
                 if (govInfo is not null)
                 {
                     governingDate = prev;
@@ -681,6 +696,17 @@ public sealed class LiturgicalCalendar
         {
             govInfo.Name = cal.TrinityOrdinalName(govDate);
             govInfo.Season = "Trinity";
+        }
+
+        if (lectionary == Lectionary.OneYear && string.IsNullOrEmpty(govInfo.Collect))
+        {
+            if (_data.OneYearPropers.TryGetValue(govSlot, out var propers))
+            {
+                govInfo.Collect = propers.Collect;
+                govInfo.Introit = propers.Introit;
+                govInfo.Gradual = propers.Gradual;
+                govInfo.Source = propers.Source;
+            }
         }
 
         return new LookupResult
@@ -734,7 +760,7 @@ public sealed class LiturgicalCalendar
         }
         else
         {
-            var info = _data.GetSlotInfo(slot, Series);
+            var info = _data.GetSlotInfo(slot, Series, lectionary);
             name = info?.Name ?? slot;
         }
         return Utils.SafeFilename($"{dateText} {name}");

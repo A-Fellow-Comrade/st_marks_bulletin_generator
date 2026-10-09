@@ -119,6 +119,12 @@ public static class Utils
     }
 
     /// <summary>
+    /// Convert scripture readings into a list of Reading records.
+    /// </summary>
+    public static List<Reading> ParseReadings(Readings? readings) =>
+        ParseReadings(readings?.ToDictionary());
+
+    /// <summary>
     /// Convert a readings dict {ot, ps, ep, go} into a list of Reading records,
     /// handling ' | ' alternatives.
     /// </summary>
