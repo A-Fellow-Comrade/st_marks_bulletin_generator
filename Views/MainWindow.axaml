@@ -48,7 +48,8 @@
         <TextBlock Grid.Row="4" Text="Opening hymn #"/>
         <TextBox   Grid.Row="4" Grid.Column="1" x:Name="OpeningHymnBox"
                    Tag="OpeningTitle" TextChanged="HymnBox_TextChanged"/>
-        <TextBlock Grid.Row="4" Grid.Column="2" x:Name="OpeningTitle" Margin="10,4"/>
+        <TextBox Grid.Row="4" Grid.Column="2" x:Name="OpeningTitle" Margin="10,4,0,4"
+         Tag="OpeningHymnBox" LostFocus="Title_LostFocus"/>
 
         <TextBlock Grid.Row="5" Text="Creed"/>
         <ComboBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="CreedBox"
@@ -62,12 +63,14 @@
         <TextBlock Grid.Row="6" Text="Hymn of the Day #"/>
         <TextBox   Grid.Row="6" Grid.Column="1" x:Name="DayHymnBox"
                    Tag="DayTitle" TextChanged="HymnBox_TextChanged"/>
-        <TextBlock Grid.Row="6" Grid.Column="2" x:Name="DayTitle" Margin="10,4"/>
+        <TextBox Grid.Row="6" Grid.Column="2" x:Name="DayTitle" Margin="10,4,0,4"
+         Tag="DayHymnBox" LostFocus="Title_LostFocus"/>
 
         <TextBlock Grid.Row="7" Text="Closing hymn #"/>
         <TextBox   Grid.Row="7" Grid.Column="1" x:Name="ClosingHymnBox"
                    Tag="ClosingTitle" TextChanged="HymnBox_TextChanged"/>
-        <TextBlock Grid.Row="7" Grid.Column="2" x:Name="ClosingTitle" Margin="10,4"/>
+        <TextBox Grid.Row="7" Grid.Column="2" x:Name="ClosingTitle" Margin="10,4,0,4"
+         Tag="ClosingHymnBox" LostFocus="Title_LostFocus"/>
 
         <TextBlock Grid.Row="8" Text="Organ postlude"/>
         <TextBox   Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
