@@ -231,7 +231,7 @@ Console.WriteLine($"Created {OutputFile}");
 //psalm proof of concept
 LiturgicalData myData = LiturgicalData.Load();
 var calendar = new LiturgicalCalendar(2025, myData);
-var date = new DateOnly(2026, 10, 23);
+var date = new DateOnly(2026, 10, 25);
 var result = calendar.Lookup(date, Lectionary.ThreeYear);
 if (result != null && result.Readings != null)
 {
