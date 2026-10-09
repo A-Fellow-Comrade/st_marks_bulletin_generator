@@ -3,6 +3,9 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Companion;
 
+//lectionary import
+using LiturgyTools;
+
 // importing hymns / test
 using st_mark_bulletin_generator.Data;
 var repo = new HymnRepository(Path.Combine(AppContext.BaseDirectory, "hymns.db"));
@@ -221,6 +224,24 @@ var document = Document.Create(container =>
     });
 });
 
-document.ShowInCompanion();
+//document.ShowInCompanion();
 
 Console.WriteLine($"Created {OutputFile}");
+
+//psalm proof of concept
+LiturgicalData myData = LiturgicalData.Load();
+var calendar = new LiturgicalCalendar(2025, myData);
+var date = new DateOnly(2026, 10, 23);
+var result = calendar.Lookup(date, Lectionary.ThreeYear);
+if (result != null && result.Readings != null)
+{
+    Console.WriteLine($"Readings for {result.Name}:");
+    Console.WriteLine($"Old Testament: {result.Readings.Ot}");
+    Console.WriteLine($"Psalm:         {result.Readings.Ps}");
+    Console.WriteLine($"Epistle:       {result.Readings.Ep}");
+    Console.WriteLine($"Gospel:        {result.Readings.Go}");
+}
+else
+{
+    Console.WriteLine("No readings found for this date.");
+}
