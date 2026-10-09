@@ -6,6 +6,19 @@ following the Lutheran Service Book (LSB) lectionary.
 from datetime import date, timedelta
 import re as _re
 
+try:
+    from .utils import safe_filename
+    from .sanctoral import SANCTORAL_SLOTS
+    from .three_year import THREE_YEAR_SLOTS
+    from .one_year import ONE_YEAR_SLOTS
+    from .one_year_propers import ONE_YEAR_PROPERS
+except (ImportError, ValueError):
+    from utils import safe_filename
+    from sanctoral import SANCTORAL_SLOTS
+    from three_year import THREE_YEAR_SLOTS
+    from one_year import ONE_YEAR_SLOTS
+    from one_year_propers import ONE_YEAR_PROPERS
+
 
 # ---------------------------------------------------------------------------
 # Easter algorithm (Anonymous Gregorian)
@@ -49,7 +62,15 @@ def daily_readings(d: date) -> dict | None:
     Ash Wednesday through Holy Trinity is keyed to the movable Easter cycle
     and takes precedence over fixed dates (per LSB rubric).
     """
-    from liturgical_calendar.data.daily_lectionary import DAILY_FIXED, DAILY_MOVABLE
+    try:
+        from .daily_lectionary import DAILY_FIXED, DAILY_MOVABLE
+    except (ImportError, ValueError):
+        try:
+            from daily_lectionary import DAILY_FIXED, DAILY_MOVABLE
+        except ImportError:
+            raise NotImplementedError(
+                "Daily lectionary data is not available (daily_lectionary module not found)"
+            )
     easter = calc_easter(d.year)
     ash_wed = easter - timedelta(46)
     trinity = easter + timedelta(56)
@@ -308,7 +329,6 @@ class LiturgicalCalendar:
             gradual = info.get("gradual")
             source  = info.get("source")
             if lectionary == 'one_year' and not collect:
-                from liturgical_calendar.data.one_year_propers import ONE_YEAR_PROPERS
                 propers = ONE_YEAR_PROPERS.get(slot, {})
                 collect = propers.get("collect")
                 introit = propers.get("introit")
@@ -395,7 +415,6 @@ class LiturgicalCalendar:
                 if not include_minor and info.get("minor"):
                     continue
                 computed_name = self._trinity_ordinal_name(s)
-                from liturgical_calendar.data.one_year_propers import ONE_YEAR_PROPERS
                 _propers = ONE_YEAR_PROPERS.get(slot, {})
                 events.append({
                     "date":      s,
@@ -493,7 +512,6 @@ class LiturgicalCalendar:
                 info["season"] = "Trinity"
             # Merge one-year propers (collect + introit) for any slot when using one-year
             if lectionary == 'one_year' and not info.get("collect"):
-                from liturgical_calendar.data.one_year_propers import ONE_YEAR_PROPERS
                 propers = ONE_YEAR_PROPERS.get(slot, {})
                 if propers:
                     info = dict(info)
@@ -586,7 +604,6 @@ class LiturgicalCalendar:
         else:
             info = slot_info(slot, self.series, d)
             name = info["name"] if info else slot
-        from liturgical_calendar.utils import safe_filename
         return safe_filename(f"{d.strftime('%Y-%m-%d')} {name}")
 
 
@@ -638,7 +655,6 @@ _MONTH_ABBR = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,
 
 def _sanctoral_date_map():
     """Build {(month, day): slot_key} from SANCTORAL_SLOTS date_str fields."""
-    from liturgical_calendar.data.sanctoral import SANCTORAL_SLOTS
     result = {}
     for key, info in SANCTORAL_SLOTS.items():
         ds = info.get("date_str", "")
@@ -663,7 +679,6 @@ def _sanctoral_feast_for_date(month: int, day: int) -> dict | None:
     slot_key = _SANCTORAL_MAP_CACHE.get((month, day))
     if slot_key is None:
         return None
-    from liturgical_calendar.data.sanctoral import SANCTORAL_SLOTS
     info = SANCTORAL_SLOTS.get(slot_key)
     if info:
         return {"slot": slot_key, **info}
@@ -671,14 +686,10 @@ def _sanctoral_feast_for_date(month: int, day: int) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
-# Slot info dispatcher — imported lazily to avoid circular imports
+# Slot info dispatcher
 # ---------------------------------------------------------------------------
 
 def slot_info(slot: str, series: str, d: date) -> dict | None:
-    from liturgical_calendar.data.three_year import THREE_YEAR_SLOTS
-    from liturgical_calendar.data.one_year   import ONE_YEAR_SLOTS
-    from liturgical_calendar.data.sanctoral  import SANCTORAL_SLOTS
-
     # Sanctoral feasts take priority for specific date-tied keys
     if slot in SANCTORAL_SLOTS:
         return SANCTORAL_SLOTS[slot]
@@ -691,7 +702,6 @@ def slot_info(slot: str, series: str, d: date) -> dict | None:
         return result
 
     if slot in ONE_YEAR_SLOTS:
-        from liturgical_calendar.data.one_year_propers import ONE_YEAR_PROPERS
         entry = ONE_YEAR_SLOTS[slot]
         result = {k: v for k, v in entry.items() if k != "readings"}
         result["readings"] = entry.get("readings")
