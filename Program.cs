@@ -3,6 +3,12 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Companion;
 
+// importing hymns / test
+using st_mark_bulletin_generator.Data;
+var repo = new HymnRepository(Path.Combine(AppContext.BaseDirectory, "hymns.db"));
+var added = repo.ImportTsv(Path.Combine(AppContext.BaseDirectory, "Data", "hymns.tsv"));
+
+
 QuestPDF.Settings.License = LicenseType.Community;
 
 const string FontName = "Lato"; 
