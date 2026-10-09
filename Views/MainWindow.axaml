@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="st_mark_bulletin_generator.Views.MainWindow"
+        Title="St. Mark Bulletin Generator"
+        Width="680" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+        <Style Selector="ComboBox">
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+        <!-- Only the form labels (direct children of the Grid), so text
+             inside the dropdowns isn't affected -->
+        <Style Selector="Grid > TextBlock">
+            <Setter Property="Margin" Value="0,4,10,4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid Margin="16"
+          ColumnDefinitions="Auto,140,*"
+          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+        <TextBlock Grid.Row="0" Text="Presiding minister"/>
+        <TextBox   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="MinisterBox"/>
+
+        <TextBlock Grid.Row="1" Text="Organist"/>
+        <TextBox   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="OrganistBox"/>
+
+        <TextBlock Grid.Row="2" Text="Service setting"/>
+        <ComboBox  Grid.Row="2" Grid.Column="1" x:Name="SettingBox"
+                   HorizontalAlignment="Stretch"
+                   SelectionChanged="SettingBox_SelectionChanged">
+            <ComboBoxItem>Setting One</ComboBoxItem>
+            <ComboBoxItem>Setting Two</ComboBoxItem>
+            <ComboBoxItem>Setting Three</ComboBoxItem>
+            <ComboBoxItem>Setting Four</ComboBoxItem>
+            <ComboBoxItem>Setting Five</ComboBoxItem>
+        </ComboBox>
+        <TextBlock Grid.Row="2" Grid.Column="2" x:Name="SettingPageLabel" Margin="10,4"/>
+
+        <TextBlock Grid.Row="3" Text="Organ prelude"/>
+        <TextBox   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PreludeBox"/>
+
+        <TextBlock Grid.Row="4" Text="Opening hymn #"/>
+        <TextBox   Grid.Row="4" Grid.Column="1" x:Name="OpeningHymnBox"
+                   Tag="OpeningTitle" TextChanged="HymnBox_TextChanged"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" x:Name="OpeningTitle" Margin="10,4"/>
+
+        <TextBlock Grid.Row="5" Text="Creed"/>
+        <ComboBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="CreedBox"
+                   SelectedIndex="0" HorizontalAlignment="Stretch">
+            <ComboBoxItem>Choose a Creed</ComboBoxItem>
+            <ComboBoxItem>Nicene Creed</ComboBoxItem>
+            <ComboBoxItem>Apostles' Creed</ComboBoxItem>
+            <ComboBoxItem>Athanasian Creed</ComboBoxItem>
+        </ComboBox>
+
+        <TextBlock Grid.Row="6" Text="Hymn of the Day #"/>
+        <TextBox   Grid.Row="6" Grid.Column="1" x:Name="DayHymnBox"
+                   Tag="DayTitle" TextChanged="HymnBox_TextChanged"/>
+        <TextBlock Grid.Row="6" Grid.Column="2" x:Name="DayTitle" Margin="10,4"/>
+
+        <TextBlock Grid.Row="7" Text="Closing hymn #"/>
+        <TextBox   Grid.Row="7" Grid.Column="1" x:Name="ClosingHymnBox"
+                   Tag="ClosingTitle" TextChanged="HymnBox_TextChanged"/>
+        <TextBlock Grid.Row="7" Grid.Column="2" x:Name="ClosingTitle" Margin="10,4"/>
+
+        <TextBlock Grid.Row="8" Text="Organ postlude"/>
+        <TextBox   Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
+
+        <TextBlock Grid.Row="9" Text="Announcements" VerticalAlignment="Top" Margin="0,12,10,4"/>
+        <TextBox   Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AnnouncementsBox"
+                   AcceptsReturn="True" TextWrapping="Wrap" Height="110"/>
+
+        <Button Grid.Row="10" Grid.ColumnSpan="3" Content="Generate PDF"
+                Margin="0,20,0,0" Padding="12,6" HorizontalAlignment="Left"
+                Click="Generate_Click"/>
+
+        <TextBlock Grid.Row="11" Grid.ColumnSpan="3" x:Name="StatusText"
+                   Margin="0,12,0,0" TextWrapping="Wrap"/>
+    </Grid>
+</Window>

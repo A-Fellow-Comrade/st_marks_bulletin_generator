@@ -5,8 +5,13 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AvaloniaNameGeneratorBehavior>Disabled</AvaloniaNameGeneratorBehavior>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="PdfPrototype.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="QuestPDF" Version="2026.9.1" />
@@ -21,4 +26,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.*" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.*" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.*" />
+  </ItemGroup>
 </Project>
