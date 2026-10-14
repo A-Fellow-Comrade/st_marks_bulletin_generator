@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using QuestPDF.Fluent;
 using st_mark_bulletin_generator.Data;
+using st_mark_bulletin_generator.Liturgical;
 using st_mark_bulletin_generator.Models;
 using st_mark_bulletin_generator.Pdf;
 
@@ -32,6 +34,9 @@ public partial class MainWindow : Window
 
     private readonly HymnRepository _repo;
 
+    //true while the code is changing the date, so the date picker changed event doesn't react to it
+    private bool _updatingDate;
+
     public MainWindow()
     {
         // Permanent per-user folder, so rebuilding or cleaning the project
@@ -49,6 +54,43 @@ public partial class MainWindow : Window
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
+        ServiceTimeBox.Text = "10 a.m.";
+        SetSunday(ChurchCalendar.NextSunday(DateOnly.FromDateTime(DateTime.Today)));
+
+    }
+    private static string Formatted(DateOnly date, string format) => date.ToString(format, CultureInfo.InvariantCulture);
+
+    //puts a sunday in the date box and fills in its church year name
+    private void SetSunday(DateOnly sunday)
+    {
+        _updatingDate = true;
+        try{
+            SundayPicker.SelectedDate = sunday.ToDateTime(TimeOnly.MinValue);
+        }
+        finally{
+            _updatingDate = false;
+        }
+        SundayNameBox.Text = ChurchCalendar.SundayName(sunday);
+    }
+
+    //bulletins set for sundays, any other day will be forced to the closest one
+    private void SundayPicker_SelectedDateChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if(_updatingDate) return;
+        if( SundayPicker.SelectedDate is not DateTime picked) return;
+
+        var date = DateOnly.FromDateTime(picked);
+        if (date.DayOfWeek != DayOfWeek.Sunday)
+        {
+            var sunday = ChurchCalendar.NearestSunday(date);
+            StatusText.Text= $"Bulletins are for Sundays, so {Formatted(date, "MMMM d")} was moved to " + 
+                                $"Sunday, {Formatted(sunday, "MMMM d, YYYY")}.";
+            SetSunday(sunday);
+            return;
+        }
+
+        StatusText.Text="";
+        SundayNameBox.Text = ChurchCalendar.SundayName(date);
     }
 
     private string? SelectedSetting =>
@@ -133,6 +175,12 @@ public partial class MainWindow : Window
 
     private void Generate_Click(object? sender, RoutedEventArgs e)
     {
+        if (SundayPicker.SelectedDate is not DateTime picked)
+        {
+            StatusText.Text = "Pick a Sunday first.";
+            return;
+        }
+
         SaveTitle(OpeningHymnBox, OpeningTitle);
         SaveTitle(DayHymnBox, DayTitle);
         SaveTitle(ClosingHymnBox, ClosingTitle);
@@ -146,6 +194,9 @@ public partial class MainWindow : Window
 
         var bulletin = new Bulletin
         {
+            Date = DateOnly.FromDateTime(picked),
+            ServiceTime = ServiceTimeBox.Text?.Trim() ?? "",
+            SundayName = SundayNameBox.Text?.Trim() ?? "",
             Minister = MinisterBox.Text?.Trim() ?? "",
             Organist = OrganistBox.Text?.Trim() ?? "",
             SettingName = setting,
