@@ -23,6 +23,15 @@ public class BulletinDocument : IDocument
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
+    //front cover line, e.g. "December 25, 2027 at 10 a.m."
+    private string DateLine()
+    {
+        if (_b.Date is not DateOnly date) return "";
+        var text = date.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        var time = _b.ServiceTime.Trim();
+        return time.Length > 0 ? $"{text} at {time}" : text;
+    }
+
     // Each PDF page is a landscape Letter sheet holding two 5.5" x 8.5" panels.
     private static IContainer Panel(IContainer c) => c.Padding(0.5f, Unit.Inch);
 
@@ -43,6 +52,11 @@ public class BulletinDocument : IDocument
         var announcements = _b.Announcements.Split('\n',
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
+        //"e.g. today is the ___ Sunday after Pentecost"
+        var sundayName = _b.SundayName.Trim().TrimEnd('.');
+        var todayIs = sundayName.Length > 0 ? $"Today is {sundayName}." : "";
+
+        
         // ───────────────────────── PAGE 1 : INSIDE SPREAD ─────────────────────────
         container.Page(page =>
         {
