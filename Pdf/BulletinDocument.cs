@@ -193,7 +193,7 @@ public class BulletinDocument : IDocument
 
                     col.Item().AlignCenter().Text("Welcome to St. Mark's").Italic();
                     col.Item().Text(
-                        "Today is the nineteenth Sunday after Pentecost. Please use the Record of " +
+                        todayIs + "Please use the Record of " +
                         "Fellowship books located at the center end of your pew. Sign in then pass it " +
                         "on. If this is your first time at St. Mark, also sign our guest book in the " +
                         "narthex so we have a record of your visit.");
@@ -244,7 +244,7 @@ public class BulletinDocument : IDocument
                        .Image(CoverImage).FitArea();
 
                     col.Item().PaddingTop(30).AlignCenter().Text("DIVINE SERVICE").FontSize(16);
-                    col.Item().AlignCenter().Text("October 4, T 2026 at 10 a.m.").FontSize(11);
+                    col.Item().AlignCenter().Text(DateLine()).FontSize(11);
 
                     col.Item().PaddingTop(14).AlignCenter().Text("Lutheran Church-Missouri Synod").FontSize(11);
                     col.Item().AlignCenter().Text("saintmarkslutheran.org").FontSize(11);
