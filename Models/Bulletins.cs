@@ -2,6 +2,11 @@ namespace st_mark_bulletin_generator.Models;
 
 public class Bulletin
 {
+    public DateOnly? Date{get; set; } //the Sunday
+    public string ServiceTime { get; set; } = "";    //The time to set "10 a.m"
+    public string SundayName { get; set; } = "";     // e.g "the second Sunday after Pentecost"
+
+    
     public string Minister { get; set; } = "";
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = "";    // "Setting Three"
