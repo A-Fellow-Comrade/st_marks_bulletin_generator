@@ -1,0 +1,64 @@
+Sun Oct 11, 2026    the twentieth Sunday after Pentecost
+Sun Oct 18, 2026    the twenty-first Sunday after Pentecost
+Sun Oct 25, 2026    the twenty-second Sunday after Pentecost
+Sun Nov 1, 2026     All Saints' Day
+Sun Nov 8, 2026     the third-to-last Sunday of the Church Year
+Sun Nov 15, 2026    the second-to-last Sunday of the Church Year
+Sun Nov 22, 2026    the last Sunday of the Church Year
+Sun Nov 29, 2026    the first Sunday in Advent
+Sun Dec 6, 2026     the second Sunday in Advent
+Sun Dec 13, 2026    the third Sunday in Advent
+Sun Dec 20, 2026    the fourth Sunday in Advent
+Sun Dec 27, 2026    the first Sunday after Christmas
+Sun Jan 3, 2027     the second Sunday after Christmas
+Sun Jan 10, 2027    the Baptism of Our Lord
+Sun Jan 17, 2027    the second Sunday after the Epiphany
+Sun Jan 24, 2027    the third Sunday after the Epiphany
+Sun Jan 31, 2027    the fourth Sunday after the Epiphany
+Sun Feb 7, 2027     the Transfiguration of Our Lord
+Sun Feb 14, 2027    the first Sunday in Lent
+Sun Feb 21, 2027    the second Sunday in Lent
+Sun Feb 28, 2027    the third Sunday in Lent
+Sun Mar 7, 2027     the fourth Sunday in Lent
+Sun Mar 14, 2027    the fifth Sunday in Lent
+Sun Mar 21, 2027    Palm Sunday
+Sun Mar 28, 2027    the Resurrection of Our Lord
+Sun Apr 4, 2027     the second Sunday of Easter
+Sun Apr 11, 2027    the third Sunday of Easter
+Sun Apr 18, 2027    the fourth Sunday of Easter
+Sun Apr 25, 2027    the fifth Sunday of Easter
+Sun May 2, 2027     the sixth Sunday of Easter
+Sun May 9, 2027     the seventh Sunday of Easter
+Sun May 16, 2027    the Day of Pentecost
+Sun May 23, 2027    Holy Trinity Sunday
+Sun May 30, 2027    the second Sunday after Pentecost
+Sun Jun 6, 2027     the third Sunday after Pentecost
+Sun Jun 13, 2027    the fourth Sunday after Pentecost
+Sun Jun 20, 2027    the fifth Sunday after Pentecost
+Sun Jun 27, 2027    the sixth Sunday after Pentecost
+Sun Jul 4, 2027     the seventh Sunday after Pentecost
+Sun Jul 11, 2027    the eighth Sunday after Pentecost
+Sun Jul 18, 2027    the ninth Sunday after Pentecost
+Sun Jul 25, 2027    the tenth Sunday after Pentecost
+Sun Aug 1, 2027     the eleventh Sunday after Pentecost
+Sun Aug 8, 2027     the twelfth Sunday after Pentecost
+Sun Aug 15, 2027    the thirteenth Sunday after Pentecost
+Sun Aug 22, 2027    the fourteenth Sunday after Pentecost
+Sun Aug 29, 2027    the fifteenth Sunday after Pentecost
+Sun Sep 5, 2027     the sixteenth Sunday after Pentecost
+Sun Sep 12, 2027    the seventeenth Sunday after Pentecost
+Sun Sep 19, 2027    the eighteenth Sunday after Pentecost
+Sun Sep 26, 2027    the nineteenth Sunday after Pentecost
+Sun Oct 3, 2027     the twentieth Sunday after Pentecost
+Sun Oct 10, 2027    the twenty-first Sunday after Pentecost
+Sun Oct 17, 2027    the twenty-second Sunday after Pentecost
+Sun Oct 24, 2027    the twenty-third Sunday after Pentecost
+Sun Oct 31, 2027    Reformation Day
+Sun Nov 7, 2027     the third-to-last Sunday of the Church Year
+Sun Nov 14, 2027    the second-to-last Sunday of the Church Year
+Sun Nov 21, 2027    the last Sunday of the Church Year
+Sun Nov 28, 2027    the first Sunday in Advent
+Sun Dec 5, 2027     the second Sunday in Advent
+Sun Dec 12, 2027    the third Sunday in Advent
+Sun Dec 19, 2027    the fourth Sunday in Advent
+Sun Dec 26, 2027    the first Sunday after Christmas
