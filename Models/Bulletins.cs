@@ -1,7 +1,11 @@
 namespace st_mark_bulletin_generator.Models;
 
+
 public class Bulletin
 {
+    public DateOnly? Date { get; set; }                // the Sunday
+    public string ServiceTime { get; set; } = "";      // "10 a.m."
+    public string SundayName { get; set; } = "";       // "the nineteenth Sunday after Pentecost"
     public string Minister { get; set; } = "";
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = "";    // "Setting Three"

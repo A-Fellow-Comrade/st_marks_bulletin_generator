@@ -1,12 +1,17 @@
 using System.Diagnostics;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using QuestPDF.Fluent;
+using LiturgyTools;
 using st_mark_bulletin_generator.Data;
+using st_mark_bulletin_generator.Liturgical;
 using st_mark_bulletin_generator.Models;
 using st_mark_bulletin_generator.Pdf;
 
+
 namespace st_mark_bulletin_generator.Views;
+
 
 public partial class MainWindow : Window
 {
@@ -21,6 +26,7 @@ public partial class MainWindow : Window
         ["Setting Five"]  = 213,
     };
 
+
     // LSB pages printed after each creed choice. Check these against the book.
     private static readonly Dictionary<string, string> CreedPages = new()
     {
@@ -30,7 +36,14 @@ public partial class MainWindow : Window
         ["Athanasian Creed"]          = "319",
     };
 
+
     private readonly HymnRepository _repo;
+
+
+    // True while the code itself is changing the date, so the picker's
+    // changed-event doesn't react to it.
+    private bool _updatingDate;
+
 
     public MainWindow()
     {
@@ -42,17 +55,73 @@ public partial class MainWindow : Window
             "StMarkBulletin");
         Directory.CreateDirectory(folder);
 
+
         _repo = new HymnRepository(Path.Combine(folder, "hymns.db"));
         _repo.ImportTsv(Path.Combine(AppContext.BaseDirectory, "Data", "hymns.tsv"));
 
+
         InitializeComponent();
+
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
+
+
+        ServiceTimeBox.Text = "10 a.m.";
+        SetSunday(CalendarMath.FirstSundayOnOrAfter(DateOnly.FromDateTime(DateTime.Today)));
     }
+
+
+    private static string Pretty(DateOnly d, string format) =>
+        d.ToString(format, CultureInfo.InvariantCulture);
+
+
+    // Asks the lectionary data for the church-year name of a Sunday.
+    private string LookUpSundayName(DateOnly date)
+    {
+        var name = SundayNames.Get(date, out var problem);
+        if (problem != null)
+            StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
+        return name;
+    }
+
+
+    // Puts a Sunday in the date box and fills in its church-year name.
+    private void SetSunday(DateOnly sunday)
+    {
+        _updatingDate = true;
+        try { SundayPicker.SelectedDate = sunday.ToDateTime(TimeOnly.MinValue); }
+        finally { _updatingDate = false; }
+
+        SundayNameBox.Text = LookUpSundayName(sunday);
+    }
+
+
+    // Bulletins are only for Sundays: any other date snaps to the nearest one.
+    private void SundayPicker_SelectedDateChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_updatingDate) return;
+        if (SundayPicker.SelectedDate is not DateTime picked) return;
+
+        var date = DateOnly.FromDateTime(picked);
+        if (date.DayOfWeek != DayOfWeek.Sunday)
+        {
+            var sunday = CalendarMath.NearestSunday(date);
+            StatusText.Text =
+                $"Bulletins are for Sundays, so {Pretty(date, "MMMM d")} was moved to " +
+                $"Sunday, {Pretty(sunday, "MMMM d, yyyy")}.";
+            SetSunday(sunday);
+            return;
+        }
+
+        StatusText.Text = "";
+        SundayNameBox.Text = LookUpSundayName(date);
+    }
+
 
     private string? SelectedSetting =>
         (SettingBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
 
     private void SettingBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
@@ -63,12 +132,14 @@ public partial class MainWindow : Window
                 : "";
     }
 
+
     // Shared by all three hymn boxes. Each box's Tag names its title label.
     private void HymnBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
         var box = (TextBox)sender!;
         var title = this.FindControl<TextBox>((string)box.Tag!)!;
         var text = box.Text?.Trim() ?? "";
+
 
         if (text.Length == 0)
         {
@@ -86,6 +157,7 @@ public partial class MainWindow : Window
         }
     }
 
+
     /**
     If the user clicks out the title box
     */
@@ -96,16 +168,21 @@ public partial class MainWindow : Window
         SaveTitle(numberBox, titleBox);
     }
 
+
     private void SaveTitle(TextBox numberBox, TextBox titleBox)
     {
         if (!int.TryParse(numberBox.Text?.Trim(), out var number)) return;
+
 
         var title = titleBox.Text?.Trim() ?? "";
         if(title.Length == 0) return;
         if(_repo.GetByNumber(number)?.Title==title) return;
 
+
         _repo.Upsert(number, title);
     }
+
+
 
 
     // Blank is allowed (the hymn is left empty on the bulletin). A non-number
@@ -115,6 +192,7 @@ public partial class MainWindow : Window
         number = null;
         text = text?.Trim() ?? "";
         if (text.Length == 0) return true;
+
 
         if (!int.TryParse(text, out var n))
         {
@@ -131,21 +209,36 @@ public partial class MainWindow : Window
     }
 
 
+
+
     private void Generate_Click(object? sender, RoutedEventArgs e)
     {
+        if (SundayPicker.SelectedDate is not DateTime picked)
+        {
+            StatusText.Text = "Pick a Sunday first.";
+            return;
+        }
+
+
         SaveTitle(OpeningHymnBox, OpeningTitle);
         SaveTitle(DayHymnBox, DayTitle);
         SaveTitle(ClosingHymnBox, ClosingTitle);
+
 
         if (!TryReadHymn(OpeningHymnBox.Text, "Opening hymn", out var opening)) return;
         if (!TryReadHymn(DayHymnBox.Text, "Hymn of the Day", out var hymnOfDay)) return;
         if (!TryReadHymn(ClosingHymnBox.Text, "Closing hymn", out var closing)) return;
 
+
         var setting = SelectedSetting ?? "";
         var creed = (CreedBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
 
+
         var bulletin = new Bulletin
         {
+            Date = DateOnly.FromDateTime(picked),
+            ServiceTime = ServiceTimeBox.Text?.Trim() ?? "",
+            SundayName = SundayNameBox.Text?.Trim() ?? "",
             Minister = MinisterBox.Text?.Trim() ?? "",
             Organist = OrganistBox.Text?.Trim() ?? "",
             SettingName = setting,
@@ -160,6 +253,7 @@ public partial class MainWindow : Window
             Announcements = AnnouncementsBox.Text ?? ""
         };
 
+
         try
         {
             var folder = Path.Combine(
@@ -168,7 +262,9 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(folder);
             var path = Path.Combine(folder, $"bulletin_{DateTime.Now:yyyy-MM-dd_HHmm}.pdf");
 
+
             new BulletinDocument(bulletin, _repo).GeneratePdf(path);
+
 
             StatusText.Text = $"Saved: {path}";
             OpenFile(path);
@@ -179,6 +275,7 @@ public partial class MainWindow : Window
         }
     }
 
+
     // Opens the PDF in the computer's default viewer.
     private static void OpenFile(string path)
     {
@@ -187,6 +284,7 @@ public partial class MainWindow : Window
             Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             return;
         }
+
 
         var psi = new ProcessStartInfo(OperatingSystem.IsMacOS() ? "open" : "xdg-open");
         psi.ArgumentList.Add(path);
