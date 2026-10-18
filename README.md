@@ -3,7 +3,6 @@ An automatic church bulletin generator with minimal user input.
 
 
 
-
 WORK IN PROGRESS. UNDER DEVELOPMENT. DO NOT USE.
 
 # Description of Hymn part of the project
