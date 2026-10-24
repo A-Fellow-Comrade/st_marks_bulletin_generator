@@ -131,6 +131,7 @@ public class BulletinDocument : IDocument
 
                     //NOTE: TONY TODO: UI ADD OPTION TO GET 
                     //OPTIONAL VERSES: resultParsed.OptionalVerses
+                    //Also add option to change which verses are fetched in UI
                     var psalm = PsalmParser.GetPsalm(
                         resultParsed.Book,
                         int.Parse(resultParsed.Chapter),
