@@ -9,9 +9,9 @@ namespace LiturgyTools;
 
 public class PsalmParser
 {
-    public static (string V, string[] Lines)[] GetPsalm(string book, int chapter, string verseRange, string translation, string directory = "Data")
+    public static (string V, string[] Lines)[] GetPsalm(string book, int chapter, string verseRange, string translation)
     {
-        string fileName = Path.Combine(directory, $"{book}_{translation}.csv");
+        string fileName = Path.Combine("lectionary","Data", $"{book}_{translation}.csv");
         if (!File.Exists(fileName))
         {
             throw new FileNotFoundException($"File '{fileName}' not found.");
