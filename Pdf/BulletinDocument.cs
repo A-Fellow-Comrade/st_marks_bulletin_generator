@@ -140,7 +140,12 @@ public class BulletinDocument : IDocument
                     {
                         col.Item().Row(r =>
                         {
-                            r.ConstantItem(20).Text(v);
+                            if(verseIndex%2 == 0){
+                                r.ConstantItem(20).Text(v);
+                            } else
+                            {
+                                r.ConstantItem(20).Text(v).Bold();
+                            }
                             r.RelativeItem().Column(c =>
                             {
                                 for (int i = 0; i < lines.Length; i++)
