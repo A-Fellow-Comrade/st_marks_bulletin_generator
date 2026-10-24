@@ -43,14 +43,17 @@ public class BulletinDocument : IDocument
     private static IContainer Panel(IContainer c) => c.Padding(0.5f, Unit.Inch);
 
 
-    // One hymn line: bold label + number, then the title from the database.
-    private void HymnRow(ColumnDescriptor col, string label, int? number)
+    // One hymn line: bold label + number, then the title shown in the form, or
+    //if blank, then the database
+    private void HymnRow(ColumnDescriptor col, string label, int? number, string title)
     {
         col.Item().Text(t =>
         {
             t.Span(number is int n ? $"{label} #{n} " : $"{label} ").Bold();
             t.Span(number is int m
-                ? _hymns.GetByNumber(m)?.Title ?? "(title not found)"
+                ? (!string.IsNullOrWhiteSpace(title)
+                ? title:
+                _hymns.GetByNumber(m)?.Title ?? "(title not found)")
                 : "");
         });
     }
@@ -110,7 +113,7 @@ public class BulletinDocument : IDocument
                     });
 
 
-                    HymnRow(col, "HYMN", _b.OpeningHymn);
+                    HymnRow(col, "HYMN", _b.OpeningHymn, _b.OpeningTitle);
 
 
                     col.Item().Text(t =>
@@ -120,8 +123,8 @@ public class BulletinDocument : IDocument
                     });
 
 
-                    HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay);
-                    HymnRow(col, "CLOSING HYMN", _b.ClosingHymn);
+                    HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay, _b.DayTitle);
+                    HymnRow(col, "CLOSING HYMN", _b.ClosingHymn, _b.ClosingTitle);
 
 
                     col.Item().Text(t =>
