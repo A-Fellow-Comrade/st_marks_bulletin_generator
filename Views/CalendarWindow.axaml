@@ -7,6 +7,16 @@
 
     <StackPanel Margin="16" Spacing="10">
 
+        <Border x:Name="FolderBorder" Padding="10,8" CornerRadius="4" Background="#20808080">
+            <StackPanel Spacing="6">
+                <TextBlock x:Name="FolderText" FontSize="12" TextWrapping="Wrap"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="Choose folder..." Click="ChooseFolder_Click"/>
+                    <Button x:Name="RetryButton" Content="Try again" Isvisible"False" Click="Retry_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
         <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Content="Previous" Padding="12,6" Click="PrevMonth_Click"/>
             <TextBlock Grid.Column="1" x:Name="MonthTitle" FontSize="18" FontWeight="SemiBold"
@@ -24,21 +34,16 @@
             <TextBlock Grid.Column="6" Text="Sat" Opacity="0.4" HorizontalAlignment="Center"/>
         </Grid>
 
-        <!-- The days are added by CalendarWindow.axaml.cs -->
         <Grid x:Name="WeekGrid"
-              ColumnDefinitions="*,*,*,*,*,*,*"
-              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"/>
-
-        <Border Padding="10,8" CornerRadius="4" Background="#20808080">
+              ColumnDefinitions="*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"/>
+        <Border Padding="10,8" CornerRadius="4" Background="#20808080"/>
             <StackPanel Spacing="2">
                 <TextBlock x:Name="SelectedTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 <TextBlock x:Name="SelectedInfo" Opacity="0.85" TextWrapping="Wrap"/>
             </StackPanel>
         </Border>
 
-        <Button Content="Go to the next Sunday" Padding="12,6" Click="NextSunday_Click"/>
-
-        <TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap"
-                   Text="Click a Sunday to open its bulletin. Gold Sundays already have a saved bulletin."/>
+        <Button x:Name="NextSundayButton" Contents="Go to the Next Sunday" Padding="12,6" Click="NextSunday_Click"/>
+        <TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap" Text="Click a Sunday to open its bulletin. Gold Sundays will already have a saved Bulletin."/>
     </StackPanel>
 </Window>

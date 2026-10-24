@@ -25,10 +25,16 @@
           RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
         <Border Grid.Row="0" Grid.ColumnSpan="3" x:Name="BannerBorder" IsVisible="False"
-                Background="#40FFB300" CornerRadius="4" Padding="10,6" Margin="0,0,0,10">
-            <TextBlock x:Name="BannerText" TextWrapping="Wrap"/>
+                Background="#40FFB300" CornerRadius-"4" Padding="10,6" Margin-"0,0,0,10">
+            <StackPanel Spacing="6">
+                <TextBlock x:Name="BannerText" TextWrapping="Wrap"/>
+                <StackPanel x:Name="ConflictButtons" Orientation="Horizontal" Spacing="8" IsVisible="False">
+                    <Button Content="Keep mine" Click="KeepMine_Click"/>
+                    <Button Content="User their version" Click="UseTheirs_Click"/>
+                </StackPanel>
+            </StackPanel>
         </Border>
-
+        
         <TextBlock Grid.Row="1" Text="Sunday"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SundayLabel"
                     FontWeight="SemiBold" Margin="0,4"/>
