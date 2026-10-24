@@ -114,7 +114,7 @@ public class BulletinDocument : IDocument
                 });
 
                 // ---- RIGHT: Psalm
-                row.RelativeItem().Element(Panel).Column(col =>
+                row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                 {
                     //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
                     int dayOfWeek = (int)DateTime.Today.DayOfWeek;
