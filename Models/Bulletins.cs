@@ -12,10 +12,13 @@ public class Bulletin
     public int? SettingPage { get; set; }            // 184
     public string Prelude { get; set; } = "";
     public int? OpeningHymn { get; set; }
+    public string OpeningTitle { get; set; } = ""; //as shown in the form
     public string Creed { get; set; } = "";          // "Nicene Creed"
     public string CreedPages { get; set; } = "";     // "158"
     public int? HymnOfTheDay { get; set; }
+    public string DayTitle { get; set; } = "";     
     public int? ClosingHymn { get; set; }
+    public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
     public string Announcements { get; set; } = "";  // one per line
 }
