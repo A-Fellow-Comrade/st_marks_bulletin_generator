@@ -3,6 +3,8 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Models;
+using LiturgyTools;
+using System;
 
 namespace st_mark_bulletin_generator.Pdf;
 
@@ -117,22 +119,27 @@ public class BulletinDocument : IDocument
                     col.Spacing(1.5f);
                     col.Item().PaddingBottom(4).Text("Psalm 80: 7-19").FontSize(12).Bold();
 
-                    var psalm = new (string V, string[] Lines)[]
-                    {
-                        ("7",  new[] { "Restore us, O God of hosts;", "let your face shine, that we may be saved!" }),
-                        ("8",  new[] { "You brought a vine out of Egypt;", "you drove out the nations and planted it." }),
-                        ("9",  new[] { "You cleared the ground for it;", "it took deep root and filled the land." }),
-                        ("10", new[] { "The mountains were covered with its shade,", "the mighty cedars with its branches." }),
-                        ("11", new[] { "It sent out its branches to the sea", "and its shoots to the River." }),
-                        ("12", new[] { "Why then have you broken down its walls,", "so that all who pass along the way pluck its fruit?" }),
-                        ("13", new[] { "The boar from the forest ravages it,", "and all that move in the field feed on it." }),
-                        ("14", new[] { "Turn again, O God of hosts!", "Look down from heaven, and see;", "have regard for this vine," }),
-                        ("15", new[] { "the stock that your right hand planted,", "and for the son whom you made strong for yourself." }),
-                        ("16", new[] { "They have burned it with fire; they have cut it down;", "may they perish at the rebuke of your face!" }),
-                        ("17", new[] { "But let your hand be on the man of your right hand,", "the son of man whom you have made strong for yourself!" }),
-                        ("18", new[] { "Then we shall not turn back from you;", "give us life, and we will call upon your name!" }),
-                        ("19", new[] { "Restore us, O LORD God of hosts!", "Let your face shine, that we may be saved!" }),
-                    };
+                    //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
+                    int dayOfWeek = (int)DateTime.Today.DayOfWeek;
+                    int daysToAdjust = dayOfWeek <= 3 ? -dayOfWeek : (7 - dayOfWeek);
+                    DateTime nearestSunday = DateTime.Today.Date.AddDays(daysToAdjust);
+
+                    //get the psalm reference
+                    LiturgicalData myData = LiturgicalData.Load();
+                    var calendar = new LiturgicalCalendar(2026, myData);
+                    var result = calendar.Lookup(DateOnly.FromDateTime(nearestSunday));
+
+                    var resultParsed = PsalmParser.ParseReading(result.Readings.Ps);
+
+
+                    //NOTE: TONY TODO: UI ADD OPTION TO GET 
+                    //OPTIONAL VERSES: resultParsed.OptionalVerses
+                    var psalm = PsalmParser.GetPsalm(
+                        resultParsed.Book,
+                        int.Parse(resultParsed.Chapter),
+                        resultParsed.RequiredVerses,
+                        "ESV"
+                    );
 
                     int verseIndex = 0;
 
