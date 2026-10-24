@@ -168,10 +168,10 @@ public class BulletinDocument : IDocument
                             {
                                 for (int i = 0; i < lines.Length; i++)
                                     if(verseIndex%2 == 0){
-                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]);
+                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]).AlignCenter();
                                     } else
                                     {
-                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]).Bold();
+                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]).Bold().AlignCenter();
                                     }
                             });
                         });
@@ -184,10 +184,10 @@ public class BulletinDocument : IDocument
                         r.ConstantItem(20).Text("C").Bold();
                         r.RelativeItem().Column(c =>
                         {
-                            c.Item().Text("Glory be to the Father and to the Son").Bold();
-                            c.Item().PaddingLeft(10).Text("and to the Holy Spirit;").Bold();
-                            c.Item().PaddingLeft(10).Text("as it was in the beginning,").Bold();
-                            c.Item().PaddingLeft(10).Text("is now, and will be forever. Amen").Bold();
+                            c.Item().Text("Glory be to the Father and to the Son").Bold().AlignCenter();
+                            c.Item().PaddingLeft(10).Text("and to the Holy Spirit;").Bold().AlignCenter();
+                            c.Item().PaddingLeft(10).Text("as it was in the beginning,").Bold().AlignCenter();
+                            c.Item().PaddingLeft(10).Text("is now, and will be forever. Amen").Bold().AlignCenter();
                         });
                     });
                 });
