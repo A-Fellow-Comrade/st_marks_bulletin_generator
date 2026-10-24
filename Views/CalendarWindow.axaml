@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="st_mark_bulletin_generator.Views.CalendarWindow"
+        Title="St. Mark Bulletins"
+        Width="420" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen">
+
+    <StackPanel Margin="16" Spacing="10">
+
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <Button Grid.Column="0" Content="Previous" Padding="12,6" Click="PrevMonth_Click"/>
+            <TextBlock Grid.Column="1" x:Name="MonthTitle" FontSize="18" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Grid.Column="2" Content="Next" Padding="12,6" Click="NextMonth_Click"/>
+        </Grid>
+
+        <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+            <TextBlock Grid.Column="0" Text="Sun" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Mon" Opacity="0.4" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="Tue" Opacity="0.4" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="3" Text="Wed" Opacity="0.4" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="4" Text="Thu" Opacity="0.4" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="5" Text="Fri" Opacity="0.4" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Column="6" Text="Sat" Opacity="0.4" HorizontalAlignment="Center"/>
+        </Grid>
+
+        <!-- The days are added by CalendarWindow.axaml.cs -->
+        <Grid x:Name="WeekGrid"
+              ColumnDefinitions="*,*,*,*,*,*,*"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"/>
+
+        <Border Padding="10,8" CornerRadius="4" Background="#20808080">
+            <StackPanel Spacing="2">
+                <TextBlock x:Name="SelectedTitle" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                <TextBlock x:Name="SelectedInfo" Opacity="0.85" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <Button Content="Go to the next Sunday" Padding="12,6" Click="NextSunday_Click"/>
+
+        <TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                   Text="Click a Sunday to open its bulletin. Gold Sundays already have a saved bulletin."/>
+    </StackPanel>
+</Window>
