@@ -31,7 +31,7 @@ jobs:
 
     env:
       # Replace with the path to your main project file
-      Project_Path: ./st_marks_bulletin_generator.csproj
+      Project_Path: ./st_mark_bulletin_generator.csproj
       Configuration: Release
 
     steps:
