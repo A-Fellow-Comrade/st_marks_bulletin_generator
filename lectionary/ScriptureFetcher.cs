@@ -9,41 +9,37 @@ namespace LiturgyTools;
 
 public class PsalmParser
 {
-    public static string GetPsalm(string book, int chapter, string verseRange, string translation, string directory = ".")
+    public static (string V, string[] Lines)[] GetPsalm(string book, int chapter, string verseRange, string translation, string directory = ".")
     {
-
-        // Parse the verse range (handles both "4-6" and "4")
         int startVerse, endVerse;
         if (verseRange.Contains("-"))
         {
             var parts = verseRange.Split('-');
             if (!int.TryParse(parts[0], out startVerse) || !int.TryParse(parts[1], out endVerse))
             {
-                return "Error: Invalid verse range format.";
+                throw new ArgumentException("Invalid verse range format.");
             }
         }
         else
         {
             if (!int.TryParse(verseRange, out startVerse))
             {
-                return "Error: Invalid verse range format.";
+                throw new ArgumentException("Invalid verse range format.");
             }
             endVerse = startVerse;
         }
 
-        // Construct the file path
         string fileName = Path.Combine(directory, $"{book}_{translation}.csv");
         if (!File.Exists(fileName))
         {
-            return $"Error: File '{fileName}' not found.";
+            throw new FileNotFoundException($"File '{fileName}' not found.");
         }
 
-        // Read and parse the CSV (uses a custom parser to handle commas and newlines inside quoted strings)
         var verseData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string csvContent = File.ReadAllText(fileName);
         var parsedCsv = ParseCsv(csvContent);
 
-        // Assuming column 0 is the Key (PSALM:1:1) and column 1 is the text
+        // Populate dictionary: Key is PSALM:1:1, Value is the verse text
         foreach (var row in parsedCsv)
         {
             if (row.Count >= 2)
@@ -52,10 +48,7 @@ public class PsalmParser
             }
         }
 
-        // Build the output string
-        var sb = new StringBuilder();
-        sb.AppendLine("var psalm = new (string V, string[] Lines)[]");
-        sb.AppendLine("                    {");
+        var resultList = new List<(string V, string[] Lines)>();
 
         for (int v = startVerse; v <= endVerse; v++)
         {
@@ -63,21 +56,19 @@ public class PsalmParser
             
             if (!verseData.TryGetValue(key, out string text))
             {
-                return $"Error: Verse {key} does not exist in the file.";
+                throw new KeyNotFoundException($"Verse {key} does not exist in the file.");
             }
 
             // Split the verse text by newlines to create the string array for poetic lines
-            var verseLines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var verseLines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(l => l.Trim())
+                                 .ToArray();
             
-            // Format each line with quotes, escaping any existing quotes inside the text
-            string formattedLines = string.Join(", ", verseLines.Select(l => $"\"{l.Replace("\"", "\\\"").Trim()}\""));
-
-            sb.AppendLine($"                        (\"{v}\",  new[] {{ {formattedLines} }}),");
+            resultList.Add((v.ToString(), verseLines));
         }
 
-        sb.AppendLine("                    };");
-
-        return sb.ToString();
+        // Return the actual array of tuples
+        return resultList.ToArray();
     }
 
     /// <summary>
