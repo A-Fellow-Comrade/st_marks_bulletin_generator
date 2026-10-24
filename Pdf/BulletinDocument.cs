@@ -116,9 +116,6 @@ public class BulletinDocument : IDocument
                 // ---- RIGHT: Psalm
                 row.RelativeItem().Element(Panel).Column(col =>
                 {
-                    col.Spacing(1.5f);
-                    col.Item().PaddingBottom(4).Text("Psalm 80: 7-19").FontSize(12).Bold();
-
                     //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
                     int dayOfWeek = (int)DateTime.Today.DayOfWeek;
                     int daysToAdjust = dayOfWeek <= 3 ? -dayOfWeek : (7 - dayOfWeek);
@@ -140,6 +137,19 @@ public class BulletinDocument : IDocument
                         resultParsed.RequiredVerses,
                         "ESV"
                     );
+
+                    //its the whole chapter, omit this in title
+                    string psalm_title;
+                    if(resultParsed.RequiredVerses == "none")
+                    {
+                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter;
+                    } else
+                    {
+                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter + " " + resultParsed.RequiredVerses;
+                    }
+
+                    col.Spacing(1.5f);
+                    col.Item().PaddingBottom(4).Text(psalm_title).FontSize(12).Bold().AlignCenter();
 
                     int verseIndex = 0;
 
