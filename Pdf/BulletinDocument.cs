@@ -3,6 +3,8 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Models;
+using LiturgyTools;
+using System;
 
 namespace st_mark_bulletin_generator.Pdf;
 
@@ -111,40 +113,69 @@ public class BulletinDocument : IDocument
                         "See Pastor before the service if a gluten-free wafer is needed.").AlignCenter();
                 });
 
-                // ---- RIGHT: Psalm 80 (still hardcoded; the psalms work replaces this) ----
+                // ---- RIGHT: Psalm
                 row.RelativeItem().Element(Panel).Column(col =>
                 {
-                    col.Spacing(1.5f);
-                    col.Item().PaddingBottom(4).Text("Psalm 80: 7-19").FontSize(12).Bold();
+                    //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
+                    int dayOfWeek = (int)DateTime.Today.DayOfWeek;
+                    int daysToAdjust = dayOfWeek <= 3 ? -dayOfWeek : (7 - dayOfWeek);
+                    DateTime nearestSunday = DateTime.Today.Date.AddDays(daysToAdjust);
 
-                    var psalm = new (string V, string[] Lines)[]
+                    //get the psalm reference
+                    LiturgicalData myData = LiturgicalData.Load();
+                    var calendar = new LiturgicalCalendar(2026, myData);
+                    var result = calendar.Lookup(DateOnly.FromDateTime(nearestSunday));
+
+                    var resultParsed = PsalmParser.ParseReading(result.Readings.Ps);
+
+
+                    //NOTE: TONY TODO: UI ADD OPTION TO GET 
+                    //OPTIONAL VERSES: resultParsed.OptionalVerses
+                    //Also add option to change which verses are fetched in UI
+                    var psalm = PsalmParser.GetPsalm(
+                        resultParsed.Book,
+                        int.Parse(resultParsed.Chapter),
+                        resultParsed.RequiredVerses,
+                        "ESV"
+                    );
+
+                    //its the whole chapter, omit this in title
+                    string psalm_title;
+                    if(resultParsed.RequiredVerses == "none")
                     {
-                        ("7",  new[] { "Restore us, O God of hosts;", "let your face shine, that we may be saved!" }),
-                        ("8",  new[] { "You brought a vine out of Egypt;", "you drove out the nations and planted it." }),
-                        ("9",  new[] { "You cleared the ground for it;", "it took deep root and filled the land." }),
-                        ("10", new[] { "The mountains were covered with its shade,", "the mighty cedars with its branches." }),
-                        ("11", new[] { "It sent out its branches to the sea", "and its shoots to the River." }),
-                        ("12", new[] { "Why then have you broken down its walls,", "so that all who pass along the way pluck its fruit?" }),
-                        ("13", new[] { "The boar from the forest ravages it,", "and all that move in the field feed on it." }),
-                        ("14", new[] { "Turn again, O God of hosts!", "Look down from heaven, and see;", "have regard for this vine," }),
-                        ("15", new[] { "the stock that your right hand planted,", "and for the son whom you made strong for yourself." }),
-                        ("16", new[] { "They have burned it with fire; they have cut it down;", "may they perish at the rebuke of your face!" }),
-                        ("17", new[] { "But let your hand be on the man of your right hand,", "the son of man whom you have made strong for yourself!" }),
-                        ("18", new[] { "Then we shall not turn back from you;", "give us life, and we will call upon your name!" }),
-                        ("19", new[] { "Restore us, O LORD God of hosts!", "Let your face shine, that we may be saved!" }),
-                    };
+                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter;
+                    } else
+                    {
+                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter + " " + resultParsed.RequiredVerses;
+                    }
+
+                    col.Spacing(1.5f);
+                    col.Item().PaddingBottom(4).Text(psalm_title).FontSize(12).Bold().AlignCenter();
+
+                    int verseIndex = 0;
 
                     foreach (var (v, lines) in psalm)
                     {
                         col.Item().Row(r =>
                         {
-                            r.ConstantItem(20).Text(v);
+                            if(verseIndex%2 == 0){
+                                r.ConstantItem(20).Text(v);
+                            } else
+                            {
+                                r.ConstantItem(20).Text(v).Bold();
+                            }
                             r.RelativeItem().Column(c =>
                             {
                                 for (int i = 0; i < lines.Length; i++)
-                                    c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]);
+                                    if(verseIndex%2 == 0){
+                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]);
+                                    } else
+                                    {
+                                        c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]).Bold();
+                                    }
                             });
                         });
+                        verseIndex++;
                     }
 
                     // Gloria Patri
@@ -153,10 +184,10 @@ public class BulletinDocument : IDocument
                         r.ConstantItem(20).Text("C").Bold();
                         r.RelativeItem().Column(c =>
                         {
-                            c.Item().Text("Glory be to the Father and to the Son");
-                            c.Item().PaddingLeft(10).Text("and to the Holy Spirit;");
-                            c.Item().PaddingLeft(10).Text("as it was in the beginning,");
-                            c.Item().PaddingLeft(10).Text("is now, and will be forever. Amen");
+                            c.Item().Text("Glory be to the Father and to the Son").Bold();
+                            c.Item().PaddingLeft(10).Text("and to the Holy Spirit;").Bold();
+                            c.Item().PaddingLeft(10).Text("as it was in the beginning,").Bold();
+                            c.Item().PaddingLeft(10).Text("is now, and will be forever. Amen").Bold();
                         });
                     });
                 });
