@@ -134,6 +134,8 @@ public class BulletinDocument : IDocument
                         ("19", new[] { "Restore us, O LORD God of hosts!", "Let your face shine, that we may be saved!" }),
                     };
 
+                    int verseIndex = 0;
+
                     foreach (var (v, lines) in psalm)
                     {
                         col.Item().Row(r =>
@@ -142,7 +144,7 @@ public class BulletinDocument : IDocument
                             r.RelativeItem().Column(c =>
                             {
                                 for (int i = 0; i < lines.Length; i++)
-                                    if(i%2 == 0){
+                                    if(verseIndex%2 == 0){
                                         c.Item().PaddingLeft(i == 0 ? 0 : 10).Text(lines[i]);
                                     } else
                                     {
@@ -150,6 +152,7 @@ public class BulletinDocument : IDocument
                                     }
                             });
                         });
+                        verseIndex++;
                     }
 
                     // Gloria Patri
