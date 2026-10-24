@@ -14,11 +14,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            //saved bulletins: one file per per sunda
-            var store = new BulletinStore(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "St. Mark Bulletins", "Bulletins"));
-            //the calendar is the main window, and the form opens from it
-            desktop.MainWindow = new CalendarWindow(store);
+            desktop.MainWindow = new CalendarWindow(AppSettings.Load());
         }
         base.OnFrameworkInitializationCompleted();
     }
