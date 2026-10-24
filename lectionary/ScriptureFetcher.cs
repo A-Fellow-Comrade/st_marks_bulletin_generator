@@ -9,26 +9,8 @@ namespace LiturgyTools;
 
 public class PsalmParser
 {
-    public static (string V, string[] Lines)[] GetPsalm(string book, int chapter, string verseRange, string translation, string directory = ".")
+    public static (string V, string[] Lines)[] GetPsalm(string book, int chapter, string verseRange, string translation, string directory = "Data")
     {
-        int startVerse, endVerse;
-        if (verseRange.Contains("-"))
-        {
-            var parts = verseRange.Split('-');
-            if (!int.TryParse(parts[0], out startVerse) || !int.TryParse(parts[1], out endVerse))
-            {
-                throw new ArgumentException("Invalid verse range format.");
-            }
-        }
-        else
-        {
-            if (!int.TryParse(verseRange, out startVerse))
-            {
-                throw new ArgumentException("Invalid verse range format.");
-            }
-            endVerse = startVerse;
-        }
-
         string fileName = Path.Combine(directory, $"{book}_{translation}.csv");
         if (!File.Exists(fileName))
         {
@@ -39,19 +21,65 @@ public class PsalmParser
         string csvContent = File.ReadAllText(fileName);
         var parsedCsv = ParseCsv(csvContent);
 
+        var chapterVerses = new List<int>();
+
         // Populate dictionary: Key is PSALM:1:1, Value is the verse text
         foreach (var row in parsedCsv)
         {
             if (row.Count >= 2)
             {
-                verseData[row[0].Trim()] = row[1];
+                string key = row[0].Trim();
+                verseData[key] = row[1];
+
+                // Keep track of verses in the requested chapter to handle the "none" fallback
+                var parts = key.Split(':');
+                if (parts.Length == 3 && 
+                    parts[0].Equals(book, StringComparison.OrdinalIgnoreCase) && 
+                    int.TryParse(parts[1], out int c) && c == chapter &&
+                    int.TryParse(parts[2], out int v))
+                {
+                    chapterVerses.Add(v);
+                }
+            }
+        }
+
+        var versesToFetch = new HashSet<int>();
+
+        // Handle full chapters where required verses were parsed as "none"
+        if (string.IsNullOrWhiteSpace(verseRange) || verseRange.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            foreach (var v in chapterVerses) versesToFetch.Add(v);
+        }
+        else
+        {
+            // Split by commas for disjointed ranges
+            var segments = verseRange.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var segment in segments)
+            {
+                var cleanSegment = segment.Trim();
+                if (cleanSegment.Contains("-"))
+                {
+                    var rangeParts = cleanSegment.Split('-');
+                    int start = ParseVerseNumber(rangeParts[0]);
+                    int end = ParseVerseNumber(rangeParts[1]);
+                    for (int i = start; i <= end; i++)
+                    {
+                        versesToFetch.Add(i);
+                    }
+                }
+                else
+                {
+                    versesToFetch.Add(ParseVerseNumber(cleanSegment));
+                }
             }
         }
 
         var resultList = new List<(string V, string[] Lines)>();
+        var sortedVerses = versesToFetch.OrderBy(v => v).ToList();
 
-        for (int v = startVerse; v <= endVerse; v++)
+        for (int i = 0; i < sortedVerses.Count; i++)
         {
+            int v = sortedVerses[i];
             string key = $"{book.ToUpper()}:{chapter}:{v}";
             
             if (!verseData.TryGetValue(key, out string text))
@@ -67,8 +95,20 @@ public class PsalmParser
             resultList.Add((v.ToString(), verseLines));
         }
 
-        // Return the actual array of tuples
         return resultList.ToArray();
+    }
+
+    /// <summary>
+    /// Strips alphabetical characters (like 'a' or 'b') to safely parse the integer verse number.
+    /// </summary>
+    private static int ParseVerseNumber(string verseStr)
+    {
+        var digitsOnly = new string(verseStr.Where(char.IsDigit).ToArray());
+        if (int.TryParse(digitsOnly, out int result))
+        {
+            return result;
+        }
+        throw new ArgumentException($"Invalid verse format: {verseStr}");
     }
 
     /// <summary>
