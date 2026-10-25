@@ -13,12 +13,12 @@ public class SavedBulletin
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = ""; //"Setting Three"
     public string Prelude { get; set; } = "";
-    public int OpeningHymn { get; set; } = 0;
+    public string OpeningHymn { get; set; } = "";
     public string OpeningTitle { get; set; } = ""; 
     public string Creed { get; set; } = ""; //"Nicene Creed"
     public string DayHymn { get; set; } = "";
     public string DayTitle { get; set; } = "";
-    public int ClosingHymn { get; set; } = 0;
+    public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
     public string Announcements { get; set; } = "";

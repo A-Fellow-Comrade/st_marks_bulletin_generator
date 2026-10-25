@@ -111,28 +111,24 @@ public class HymnCorrections
 
 
     //a missing file is an empty ledger
-    private static Dictionary<int, Entry> Read(string path)
+private static Dictionary<int, Entry> Read(string path)
     {
         var result = new Dictionary<int, Entry>();
         if (!File.Exists(path)) return result;
 
-        foreach(var line in File.ReadLines(path))
+        foreach (var line in File.ReadLines(path))
         {
             var parts = line.Split('\t');
             if (parts.Length < 3) continue;
-            if (!int.TryParse(ParallelLoopState[0].Trim(), out var number)) continue;
-
+            if (!int.TryParse(parts[0].Trim(), out var number)) continue;
             var title = parts[1].Trim();
             if (title.Length == 0) continue;
-            if (!DateTimeOffset.TryParse(ParallelLoopState[2], CultureInfo.InvariantCulutre,
-                DateTimeStyles.RoundtripKind, out var at)) continue;
-
+            if (!DateTimeOffset.TryParse(parts[2], CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind, out var at)) continue;
             var by = parts.Length > 3 ? parts[3].Trim() : "";
 
             if (!result.TryGetValue(number, out var existing) || at >= existing.At)
-            {
                 result[number] = new Entry(number, title, at, by);
-            }
         }
         return result;
     }
