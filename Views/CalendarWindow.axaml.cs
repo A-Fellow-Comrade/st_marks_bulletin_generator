@@ -15,8 +15,11 @@ namespace st_mark_bulletin_generator.Views;
 // Sundays that have a saved bulletin are gold. Clicking a Sunday opens (or
 // re-uses) the bulletin form for that Sunday.
 //
-// It also looks after the shared folder: asks for it on the first launch,
-// remembers it for this computer, and says so plainly if it can't be reached.
+// It also looks after the bulletin folder. On the first launch it simply uses
+// Documents\StMarkBulletins, so nobody has to choose anything. Whoever sets up
+// a second computer can press "Choose folder..." and pick a synced folder. The
+// choice is remembered for this computer, and if the folder can't be reached
+// later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
     private static readonly IBrush SavedBrush = new SolidColorBrush(Color.Parse("#66FFB300"));
@@ -41,15 +44,6 @@ public partial class CalendarWindow : Window
         Connect();
     }
 
-    protected override void OnOpened(EventArgs e)
-    {
-        base.OnOpened(e);
-
-        // First launch on this computer: ask where the bulletins are kept.
-        if (_store == null && string.IsNullOrWhiteSpace(_settings.SharedFolder))
-            PickFolder();
-    }
-
     // Closing the calendar closes the form too (the form saves its edits as it closes).
     protected override void OnClosing(WindowClosingEventArgs e)
     {
@@ -59,8 +53,20 @@ public partial class CalendarWindow : Window
 
     // ───────────────────────────── the shared folder ─────────────────────────────
 
-    // Opens the remembered folder. Never creates the shared folder itself: if it
-    // isn't there, say so and let the pastor choose again or try again.
+    // The folder used when nobody has chosen one: Documents\StMarkBulletins.
+    private static string DefaultFolder()
+    {
+        var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        if (string.IsNullOrWhiteSpace(documents))
+            documents = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        return Path.Combine(documents, "StMarkBulletins");
+    }
+
+    // Opens the remembered folder. On the very first launch there is none yet,
+    // so the standard one is created and remembered. After that the folder is
+    // never created again: if it has gone missing (a OneDrive folder that isn't
+    // available, an unplugged drive), say so and let the person choose again or
+    // try again, rather than quietly starting over in an empty folder.
     private void Connect()
     {
         _editor?.Close();
@@ -71,12 +77,26 @@ public partial class CalendarWindow : Window
         var folder = _settings.SharedFolder;
         if (string.IsNullOrWhiteSpace(folder))
         {
-            ShowFolderMessage(
-                "Choose the shared folder where the bulletins are kept, for example a " +
-                "folder in OneDrive or Dropbox that every computer can see.",
-                isProblem: true, canRetry: false);
+            try
+            {
+                folder = DefaultFolder();
+                Directory.CreateDirectory(folder);
+                _settings.SharedFolder = folder;
+                _settings.Save();
+            }
+            catch (Exception ex)
+            {
+                _settings.SharedFolder = null;
+                ShowFolderMessage(
+                    $"Couldn't set up the bulletin folder ({ex.Message}). " +
+                    "Please press \"Choose folder...\" and pick a folder for the bulletins.",
+                    isProblem: true, canRetry: false);
+                Render();
+                return;
+            }
         }
-        else if (!Directory.Exists(folder))
+
+        if (!Directory.Exists(folder))
         {
             ShowFolderMessage(
                 $"Can't reach the bulletin folder:\n{folder}\n" +
@@ -91,7 +111,11 @@ public partial class CalendarWindow : Window
                 _corrections = new HymnCorrections(
                     Path.Combine(AppSettings.DataFolder, "hymn_corrections_local.tsv"),
                     Path.Combine(folder, "hymn_corrections.tsv"));
-                ShowFolderMessage($"Bulletins are kept in:\n{folder}", isProblem: false, canRetry: false);
+                ShowFolderMessage(
+                    $"Bulletins are kept in:\n{folder}\n" +
+                    "(Only needed when setting up a second computer: press \"Choose folder...\" " +
+                    "and pick a folder that both computers can see.)",
+                    isProblem: false, canRetry: false);
             }
             catch (Exception ex)
             {
