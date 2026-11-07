@@ -6,7 +6,9 @@ using st_mark_bulletin_generator.Models;
 using LiturgyTools;
 using System;
 
+
 namespace st_mark_bulletin_generator.Pdf;
+
 
 public class BulletinDocument : IDocument
 {
@@ -14,8 +16,10 @@ public class BulletinDocument : IDocument
     private static readonly string CoverImage =
         Path.Combine(AppContext.BaseDirectory, "imgs", "cover.jpg");
 
+
     private readonly Bulletin _b;
     private readonly HymnRepository _hymns;
+
 
     public BulletinDocument(Bulletin bulletin, HymnRepository hymns)
     {
@@ -23,27 +27,50 @@ public class BulletinDocument : IDocument
         _hymns = hymns;
     }
 
+
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+
+
+    // Front cover line, e.g. "October 18, 2026 at 10 a.m."
+    private string DateLine()
+    {
+        if (_b.Date is not DateOnly d) return "";
+        var text = d.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        var time = _b.ServiceTime.Trim();
+        return time.Length > 0 ? $"{text} at {time}" : text;
+    }
+
 
     // Each PDF page is a landscape Letter sheet holding two 5.5" x 8.5" panels.
     private static IContainer Panel(IContainer c) => c.Padding(0.5f, Unit.Inch);
 
-    // One hymn line: bold label + number, then the title from the database.
-    private void HymnRow(ColumnDescriptor col, string label, int? number)
+
+    // One hymn line: bold label + number, then the title shown in the form, or
+    //if blank, then the database
+    private void HymnRow(ColumnDescriptor col, string label, int? number, string title)
     {
         col.Item().Text(t =>
         {
             t.Span(number is int n ? $"{label} #{n} " : $"{label} ").Bold();
             t.Span(number is int m
-                ? _hymns.GetByNumber(m)?.Title ?? "(title not found)"
+                ? (!string.IsNullOrWhiteSpace(title)
+                ? title:
+                _hymns.GetByNumber(m)?.Title ?? "(title not found)")
                 : "");
         });
     }
+
 
     public void Compose(IDocumentContainer container)
     {
         var announcements = _b.Announcements.Split('\n',
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+
+        // "Today is the nineteenth Sunday after Pentecost. " (left out if the name box is empty)
+        var sundayName = _b.SundayName.Trim().TrimEnd('.');
+        var todayIs = sundayName.Length > 0 ? $"Today is {sundayName}. " : "";
+
 
         // ───────────────────────── PAGE 1 : INSIDE SPREAD ─────────────────────────
         container.Page(page =>
@@ -52,6 +79,7 @@ public class BulletinDocument : IDocument
             page.Margin(0);
             page.DefaultTextStyle(t => t.FontFamily(FontName).FontSize(10.5f));
 
+
             page.Content().Row(row =>
             {
                 // ---- LEFT: Order of service ----
@@ -59,13 +87,16 @@ public class BulletinDocument : IDocument
                 {
                     col.Spacing(5);
 
+
                     col.Item().Text("DIVINE SERVICE").AlignCenter().FontSize(14).Bold();
                     if (!string.IsNullOrWhiteSpace(_b.Minister))
                         col.Item().Text($"{_b.Minister}, presiding minister").AlignCenter();
                     if (!string.IsNullOrWhiteSpace(_b.Organist))
                         col.Item().Text($"{_b.Organist}, organist").AlignCenter();
 
+
                     col.Item().LineHorizontal(1);
+
 
                     col.Item().PaddingTop(4).Text("Welcome to St. Mark Lutheran Church.").AlignCenter();
                     col.Item().Text(
@@ -73,7 +104,9 @@ public class BulletinDocument : IDocument
                         $"(in the hymnal rack) on page {_b.SettingPage}, {_b.SettingName}.")
                         .AlignCenter();
 
+
                     col.Item().Height(10);
+
 
                     col.Item().Text(t =>
                     {
@@ -81,7 +114,9 @@ public class BulletinDocument : IDocument
                         t.Span(_b.Prelude);
                     });
 
-                    HymnRow(col, "HYMN", _b.OpeningHymn);
+
+                    HymnRow(col, "HYMN", _b.OpeningHymn, _b.OpeningTitle);
+
 
                     col.Item().Text(t =>
                     {
@@ -89,8 +124,10 @@ public class BulletinDocument : IDocument
                         t.Span($"LSB {_b.CreedPages}");
                     });
 
-                    HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay);
-                    HymnRow(col, "CLOSING HYMN", _b.ClosingHymn);
+
+                    HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay, _b.DayTitle);
+                    HymnRow(col, "CLOSING HYMN", _b.ClosingHymn, _b.ClosingTitle);
+
 
                     col.Item().Text(t =>
                     {
@@ -98,7 +135,9 @@ public class BulletinDocument : IDocument
                         t.Span(_b.Postlude);
                     });
 
+
                     col.Item().Height(10);
+
 
                     col.Item().PaddingTop(8).Text("HOLY COMMUNION").AlignCenter().Bold();
                     col.Item().PaddingLeft(6).Text(
@@ -154,6 +193,7 @@ public class BulletinDocument : IDocument
 
                     int verseIndex = 0;
 
+
                     foreach (var (v, lines) in psalm)
                     {
                         col.Item().Row(r =>
@@ -178,6 +218,7 @@ public class BulletinDocument : IDocument
                         verseIndex++;
                     }
 
+
                     // Gloria Patri
                     col.Item().PaddingTop(8).Row(r =>
                     {
@@ -194,12 +235,14 @@ public class BulletinDocument : IDocument
             });
         });
 
+
         // ───────────────────────── PAGE 2 : OUTSIDE SPREAD ─────────────────────────
         container.Page(page =>
         {
             page.Size(PageSizes.Letter.Landscape());
             page.Margin(0);
             page.DefaultTextStyle(t => t.FontFamily(FontName).FontSize(10.5f));
+
 
             page.Content().Row(row =>
             {
@@ -208,12 +251,14 @@ public class BulletinDocument : IDocument
                 {
                     col.Spacing(4);
 
+
                     col.Item().AlignCenter().Text("Welcome to St. Mark's").Italic();
                     col.Item().Text(
-                        "Today is the nineteenth Sunday after Pentecost. Please use the Record of " +
+                        todayIs + "Please use the Record of " +
                         "Fellowship books located at the center end of your pew. Sign in then pass it " +
                         "on. If this is your first time at St. Mark, also sign our guest book in the " +
                         "narthex so we have a record of your visit.");
+
 
                     // Announcements from the form, one bullet per line.
                     if (announcements.Length > 0)
@@ -222,6 +267,7 @@ public class BulletinDocument : IDocument
                         foreach (var a in announcements)
                             col.Item().Text($"* {a}");
                     }
+
 
                     // Contact box
                     col.Item().PaddingTop(16).Border(1).BorderColor(Colors.Black).Padding(4).Column(b =>
@@ -236,18 +282,22 @@ public class BulletinDocument : IDocument
                             .Italic().FontSize(9).FontColor(Colors.Grey.Darken3);
                     });
 
+
                     // Thank-yous
                     col.Item().PaddingTop(40).AlignCenter().Text("Thank you Kathryn Dorr for preparing the altar this morning.").AlignCenter();
                     col.Item().AlignCenter().Text("Thank you Roger and Denise for setting up refreshments following the service this morning.").AlignCenter();
 
+
                     col.Item().PaddingTop(12).AlignCenter().Text("~More people are needed to help with these tasks.~").Italic();
                 });
+
 
                 // ---- RIGHT: Front cover ----
                 row.RelativeItem().Element(Panel).Column(col =>
                 {
                     col.Item().PaddingTop(12).AlignCenter().Text("St. Mark Evangelical-Lutheran Church").FontSize(15).AlignCenter();
                     col.Item().AlignCenter().Text("of West Henrietta, New York").FontSize(15);
+
 
                     col.Item().PaddingTop(4).AlignCenter().Text(t =>
                     {
@@ -257,11 +307,14 @@ public class BulletinDocument : IDocument
                         t.Span(" year of Proclaiming the Gospel");
                     });
 
+
                     col.Item().PaddingTop(14).AlignCenter().Height(3.2f, Unit.Inch)
                        .Image(CoverImage).FitArea();
 
+
                     col.Item().PaddingTop(30).AlignCenter().Text("DIVINE SERVICE").FontSize(16);
-                    col.Item().AlignCenter().Text("October 4, T 2026 at 10 a.m.").FontSize(11);
+                    col.Item().AlignCenter().Text(DateLine()).FontSize(11);
+
 
                     col.Item().PaddingTop(14).AlignCenter().Text("Lutheran Church-Missouri Synod").FontSize(11);
                     col.Item().AlignCenter().Text("saintmarkslutheran.org").FontSize(11);
