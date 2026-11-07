@@ -18,10 +18,10 @@
         </Border>
 
         <Grid ColumnDefinitions="Auto,*,Auto">
-            <Button Grid.Column="0" Content="Previous" Padding="12,6" Click="PrevMonth_Click"/>
+            <Button Grid.Column="0" Content="Previous month" Padding="12,6" Click="PrevMonth_Click"/>
             <TextBlock Grid.Column="1" x:Name="MonthTitle" FontSize="18" FontWeight="SemiBold"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button Grid.Column="2" Content="Next" Padding="12,6" Click="NextMonth_Click"/>
+            <Button Grid.Column="2" Content="Next month" Padding="12,6" Click="NextMonth_Click"/>
         </Grid>
 
         <Grid ColumnDefinitions="*,*,*,*,*,*,*">
@@ -43,7 +43,20 @@
             </StackPanel>
         </Border>
 
-        <Button x:Name="NextSundayButton" Content="Go to the Next Sunday" Padding="12,6" Click="NextSunday_Click"/>
-        <TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap" Text="Click a Sunday to open its bulletin. Gold Sundays will already have a saved Bulletin."/>
+        <Grid ColumnDefinitions="*,*,*">
+            <Button Grid.Column="0" x:Name="PrevSundayButton" Content="Previous Sunday" 
+                Padding="8,6" Margin="0,0,4,0" HorizontalAlignment="Stretch" 
+                HorizontalContentAlignment="Center" Click="PrevSunday_Click"/>
+
+            <Button Grid.Column="1" x:Name="ThisSundayButton" Content="This coming Sunday"
+                Padding="8,6" Margin="2,0" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center" Click="ThisSunday_Click"/>
+           
+            <Button Grid.Column="2" x:Name="NextSundayButton" Content="Next Sunday"
+                Padding="8,6" Margin="4,0,0,0" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center" Click="NextSunday_Click"/>
+        </Grid>
+        <TextBlock FontSize="12" Opacity="0.7" TextWrapping="Wrap" 
+            Text="Click a Sunday to open its bulletin. Gold Sundays already have a saved bulletin"/>
     </StackPanel>
 </Window>
