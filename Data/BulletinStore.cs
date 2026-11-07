@@ -11,19 +11,43 @@ public class BulletinStore
     {
         WriteIndented= true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-
     };
+    //the one filename format used for saving and for listing
+    private const string DateFormat = "yyyy-MM-dd";
+    private const string OldDateFormat = "yyyy-MMM-dd";
 
     private readonly string _folder;
     public BulletinStore(string folder)
     {
         _folder= folder;
         Directory.CreateDirectory(_folder);
+        RenameOldFiles();
 
     }
 
     public string folder => _folder;
-    private string PathFor(DateOnly date) => Path.Combine(_folder, date.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture) + ".json");
+    private string PathFor(DateOnly date) =>
+        Path.Combine(_folder, date.ToString(DateFormat, CultureInfo.InvariantCulture) + ".json");
+
+    //one time clean up:
+    private void RenameOldFiles()
+    {
+        try
+        {
+            foreach (var file in Directory.EnumerateFiles(_folder, "*.json").ToList())
+            {
+                var name = Path.GetFileNameWithoutExtension(file);
+                if (!DateOnly.TryParseExact(name, OldDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+                    continue;
+                var proper = PathFor(date);
+                if(!File.Exists(proper)) File.Move(file, proper);
+            }
+        }
+        catch
+        {
+            //old file stays where it is, do nothing
+        }
+    }
 
     //lists every sunday with a saved file, oldest first
     public List<DateOnly> ListDates()
@@ -31,7 +55,7 @@ public class BulletinStore
         var dates = new List<DateOnly>();
         foreach(var file in Directory.EnumerateFiles(_folder, "*.json"))
         {
-            if (DateOnly.TryParseExact(Path.GetFileNameWithoutExtension(file), "yyyy-MM-dd",
+            if (DateOnly.TryParseExact(Path.GetFileNameWithoutExtension(file), DateFormat,
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
                 dates.Add(d);
         }
