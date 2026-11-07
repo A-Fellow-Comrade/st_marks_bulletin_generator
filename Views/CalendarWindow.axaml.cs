@@ -34,6 +34,9 @@ public partial class CalendarWindow : Window
     private DateOnly _month;                   // first day of the month being shown
     private DateOnly _selected;                // the Sunday that is selected
 
+    //added so Avalonia's XAML loader and previewer can find the window
+    public CalendarWindow() => throw new InvalidOperationException(
+        "CalendarWindow needs the app settings: use CalendarWindow(AppSettings).");
     public CalendarWindow(AppSettings settings)
     {
         _settings = settings;
@@ -182,7 +185,12 @@ public partial class CalendarWindow : Window
         Render();
     }
 
-    private void NextSunday_Click(object? sender, RoutedEventArgs e) =>
+    //steps one week from the sunday that is selected
+    private void PrevSunday_Click(object? sender, RoutedEventArgs e) => Choose(_selected.AddDays(-7));
+    private void NextSunday_Click(object? sender, RoutedEventArgs e) => Choose(_selected.AddDays(7));
+    
+    //goes back to the sunday that is coming up
+    private void ThisSunday_Click(object? sender, RoutedEventArgs e) =>
         Choose(CalendarMath.FirstSundayOnOrAfter(DateOnly.FromDateTime(DateTime.Today)));
 
     // Selects a Sunday and shows it in the bulletin form.
@@ -227,6 +235,8 @@ public partial class CalendarWindow : Window
 
         // Nothing can be opened until a reachable folder is chosen.
         WeekGrid.IsEnabled = _store != null;
+        PrevSundayButton.IsEnabled = _store != null;
+        ThisSundayButton.IsEnabled = _store != null;
         NextSundayButton.IsEnabled = _store != null;
 
         WeekGrid.Children.Clear();
