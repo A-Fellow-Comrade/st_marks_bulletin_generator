@@ -1,17 +1,24 @@
 namespace st_mark_bulletin_generator.Models;
 
+
 public class Bulletin
 {
+    public DateOnly? Date { get; set; }                // the Sunday
+    public string ServiceTime { get; set; } = "";      // "10 a.m."
+    public string SundayName { get; set; } = "";       // "the nineteenth Sunday after Pentecost"
     public string Minister { get; set; } = "";
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = "";    // "Setting Three"
     public int? SettingPage { get; set; }            // 184
     public string Prelude { get; set; } = "";
     public int? OpeningHymn { get; set; }
+    public string OpeningTitle { get; set; } = ""; //as shown in the form
     public string Creed { get; set; } = "";          // "Nicene Creed"
     public string CreedPages { get; set; } = "";     // "158"
     public int? HymnOfTheDay { get; set; }
+    public string DayTitle { get; set; } = "";     
     public int? ClosingHymn { get; set; }
+    public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
     public string Announcements { get; set; } = "";  // one per line
 }
