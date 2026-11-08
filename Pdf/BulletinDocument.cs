@@ -13,8 +13,14 @@ namespace st_mark_bulletin_generator.Pdf;
 public class BulletinDocument : IDocument
 {
     private const string FontName = "Lato";
-    private static string CoverImage =>
+    private static string RandomCoverImage =>
         Path.Combine(AppContext.BaseDirectory, "imgs", $"{Random.Shared.Next(1, 7)}.jpg");
+
+    // Returns the bulletin's chosen image, or a random one if none was chosen.
+    private string CoverImage =>
+        (!string.IsNullOrEmpty(_b.CoverImagePath) && File.Exists(_b.CoverImagePath))
+            ? _b.CoverImagePath
+            : RandomCoverImage;
 
 
     private readonly Bulletin _b;

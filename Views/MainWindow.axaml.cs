@@ -64,6 +64,9 @@ public partial class MainWindow : Window
     // corrections, so they must not overwrite the hymn database.
     private readonly Dictionary<string, (int? Number, string Title)> _snapshot = new();
 
+    // The image file path the user picked, or null for random (default).
+    private string? _selectedCoverImagePath;
+
     public MainWindow(BulletinStore store, HymnCorrections corrections)
     {
         // Permanent per-user folder, so rebuilding or cleaning the project
@@ -245,6 +248,20 @@ public partial class MainWindow : Window
         return true;
     }
 
+    private async void PickImage_Click(object? sender, RoutedEventArgs e)
+    {
+        var imgsFolder = Path.Combine(AppContext.BaseDirectory, "imgs");
+        var dialog = new CoverImagePickerWindow(imgsFolder, _selectedCoverImagePath);
+        var confirmed = await dialog.ShowDialog<bool>(this);
+
+        if (!confirmed) return;         // user hit Cancel – keep whatever was set before
+
+        _selectedCoverImagePath = dialog.SelectedImagePath;
+        PickImageLabel.Text = _selectedCoverImagePath != null
+            ? Path.GetFileName(_selectedCoverImagePath)
+            : "Random";
+    }
+
     private void Generate_Click(object? sender, RoutedEventArgs e)
     {
         if (_currentDate is not DateOnly sunday)
@@ -286,7 +303,8 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
-            Announcements = AnnouncementsBox.Text ?? ""
+            Announcements = AnnouncementsBox.Text ?? "",
+            CoverImagePath = _selectedCoverImagePath,
         };
 
         try
