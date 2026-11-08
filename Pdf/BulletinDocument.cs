@@ -308,7 +308,7 @@ public class BulletinDocument : IDocument
                     col.Item().PaddingTop(4).AlignCenter().Text(t =>
                     {
                         t.DefaultTextStyle(s => s.Italic().FontSize(10));
-                        t.Span("Our 125");
+                        t.Span($"Our {DateTime.Now.Year - 1901}");
                         t.Span("th").Superscript();
                         t.Span(" year of Proclaiming the Gospel");
                     });
