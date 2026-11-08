@@ -22,10 +22,11 @@ namespace st_mark_bulletin_generator.Views;
 // later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
-    private static readonly IBrush SavedBrush = new SolidColorBrush(Color.Parse("#66FFB300"));
-    private static readonly IBrush SelectedBrush = Brushes.DodgerBlue;
-    private static readonly IBrush QuietBrush = new SolidColorBrush(Color.Parse("#20808080"));
-    private static readonly IBrush ProblemBrush = new SolidColorBrush(Color.Parse("#40FFB300"));
+    private static readonly IBrush SavedBrush    = new SolidColorBrush(Color.Parse("#66FFB300"));
+    private static readonly IBrush SelectedBrush = new SolidColorBrush(Color.Parse("#5C1A2E"));
+    private static readonly IBrush SelectedFg    = Brushes.White;
+    private static readonly IBrush QuietBrush    = new SolidColorBrush(Color.Parse("#F5F0EB"));
+    private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
 
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
@@ -134,7 +135,8 @@ public partial class CalendarWindow : Window
     private void ShowFolderMessage(string text, bool isProblem, bool canRetry)
     {
         FolderText.Text = text;
-        FolderBorder.Background = isProblem ? ProblemBrush : QuietBrush;
+        FolderBorder.Background = isProblem ? ProblemBrush : null;
+        FolderBorder.BorderBrush = isProblem ? new SolidColorBrush(Color.Parse("#F0C040")) : new SolidColorBrush(Color.Parse("#E0D8D0"));
         RetryButton.IsVisible = canRetry;
     }
 
@@ -269,8 +271,8 @@ public partial class CalendarWindow : Window
         if (saved.Contains(date)) button.Background = SavedBrush;
         if (date == _selected)
         {
-            button.BorderBrush = SelectedBrush;
-            button.BorderThickness = new Thickness(2);
+            button.Background = SelectedBrush;
+            button.Foreground = SelectedFg;
         }
         button.Click += (_, _) => Choose(date);
         return button;

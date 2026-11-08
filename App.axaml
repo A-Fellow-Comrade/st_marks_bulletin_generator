@@ -1,8 +1,24 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="st_mark_bulletin_generator.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    <Application.Resources>
+        <!-- Brand colours -->
+        <Color x:Key="BrandBurgundy">#5C1A2E</Color>
+        <Color x:Key="BrandGold">#B8860B</Color>
+        <Color x:Key="BrandSurface">#FAF7F4</Color>
+        <Color x:Key="BrandCard">#FFFFFF</Color>
+        <Color x:Key="BrandBorder">#E0D8D0</Color>
+        <Color x:Key="BrandMuted">#7A6A5A</Color>
+
+        <SolidColorBrush x:Key="BrandBurgundyBrush" Color="#5C1A2E"/>
+        <SolidColorBrush x:Key="BrandGoldBrush"     Color="#B8860B"/>
+        <SolidColorBrush x:Key="BrandSurfaceBrush"  Color="#FAF7F4"/>
+        <SolidColorBrush x:Key="BrandCardBrush"     Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BrandBorderBrush"   Color="#E0D8D0"/>
+        <SolidColorBrush x:Key="BrandMutedBrush"    Color="#7A6A5A"/>
+    </Application.Resources>
 </Application>
