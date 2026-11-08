@@ -155,7 +155,6 @@ public class BulletinDocument : IDocument
                 // ---- RIGHT: Psalm
                 row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                 {
-                    //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
                     int dayOfWeek = (int)DateTime.Today.DayOfWeek;
                     int daysToAdjust = dayOfWeek <= 3 ? -dayOfWeek : (7 - dayOfWeek);
                     DateTime nearestSunday = DateTime.Today.Date.AddDays(daysToAdjust);
@@ -168,9 +167,7 @@ public class BulletinDocument : IDocument
                     var resultParsed = PsalmParser.ParseReading(result.Readings.Ps);
 
 
-                    //NOTE: TONY TODO: UI ADD OPTION TO GET 
-                    //OPTIONAL VERSES: resultParsed.OptionalVerses
-                    //Also add option to change which verses are fetched in UI
+
                     var psalm = PsalmParser.GetPsalm(
                         resultParsed.Book,
                         int.Parse(resultParsed.Chapter),
