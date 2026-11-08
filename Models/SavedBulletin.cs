@@ -21,6 +21,10 @@ public class SavedBulletin
     public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
+    public string PsalmVersion { get; set; } = "";
+    public string PsalmNumber { get; set; } = "";
+    public string PsalmVerses { get; set; } = "";
+    public bool PsalmIncludeOptional { get; set; }
     public string Announcements { get; set; } = "";
     public string SavedAt { get; set; } = ""; //"yyyy-MM-dd HH:mm:ss"
     public string SavedBy { get; set; } = ""; //computer name
