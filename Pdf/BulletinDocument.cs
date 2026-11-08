@@ -163,7 +163,7 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                     int verseIndex = 0;
 
 
-                    foreach (var (v, lines) in psalm)
+                    foreach (var (v, lines) in _b.Psalm)
                     {
                         col.Item().Row(r =>
                         {
