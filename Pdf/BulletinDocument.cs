@@ -11,8 +11,8 @@ namespace st_mark_bulletin_generator.Pdf;
 public class BulletinDocument : IDocument
 {
     private const string FontName = "Lato";
-    private static readonly string CoverImage =
-        Path.Combine(AppContext.BaseDirectory, "imgs", "cover.jpg");
+    private static string CoverImage =>
+        Path.Combine(AppContext.BaseDirectory, "imgs", $"{Random.Shared.Next(1, 7)}.jpg");
 
     private readonly Bulletin _b;
     private readonly HymnRepository _hymns;
