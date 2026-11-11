@@ -111,27 +111,35 @@
         <TextBox   Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
 
 
-        <!-- Psalm -->
-        <TextBlock Grid.Row="13" Text="Psalm version"/>
-        <ComboBox  Grid.Row="13" Grid.Column="1" x:Name="PsalmVersionBox"
-                   HorizontalAlignment="Stretch"/>
-        <TextBlock Grid.Row="13" Grid.Column="2" x:Name="PsalmAppointedText"
-                   FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="10,4,0,4"/>
+        <!-- Psalm readings: heading, then  Psalm [number] : [verses] -->
+        <TextBlock Grid.Row="13" Grid.ColumnSpan="3" Text="Psalm Readings"
+                   FontSize="14" FontWeight="SemiBold" Margin="0,14,0,2"/>
 
 
-        <TextBlock Grid.Row="14" Text="Psalm #"/>
-        <TextBox   Grid.Row="14" Grid.Column="1" x:Name="PsalmNumberBox"/>
-        <Button    Grid.Row="14" Grid.Column="2" Content="Use appointed psalm"
-                   Margin="10,4,0,4" Click="UseAppointed_Click"/>
+        <TextBlock Grid.Row="14" Text="Psalm"/>
+        <Grid      Grid.Row="14" Grid.Column="1" ColumnDefinitions="*,Auto">
+            <TextBox   Grid.Column="0" x:Name="PsalmNumberBox"/>
+            <TextBlock Grid.Column="1" Text=":" FontSize="16" FontWeight="SemiBold"
+                       Margin="8,0,2,0" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid      Grid.Row="14" Grid.Column="2" ColumnDefinitions="*,Auto" Margin="4,0,0,0">
+            <TextBox  Grid.Column="0" x:Name="PsalmVersesBox"
+                      Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
+            <ComboBox Grid.Column="1" x:Name="PsalmVersionBox" MinWidth="90" Margin="8,4,0,4"/>
+        </Grid>
 
 
-        <TextBlock Grid.Row="15" Text="Psalm verses"/>
-        <TextBox   Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmVersesBox"
-                   Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
+        <TextBlock Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmAppointedText"
+                   FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,2"/>
 
 
-        <CheckBox  Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmOptionalBox"
-                   Content="Include optional verses"/>
+        <StackPanel Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2"
+                    Orientation="Horizontal" Spacing="16">
+            <CheckBox x:Name="PsalmOptionalBox" Content="Include optional verses"
+                      VerticalAlignment="Center"/>
+            <Button   Content="Use appointed psalm" VerticalAlignment="Center"
+                      Click="UseAppointed_Click"/>
+        </StackPanel>
 
 
         <TextBlock Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmStatusText"
