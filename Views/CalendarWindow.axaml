@@ -80,23 +80,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Data import / export -->
-            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="Import / export data"
-                               FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
-                    <TextBlock Text="One .bulletinbackup file holds all settings and saved bulletins. Hymns are not included."
-                               Foreground="{DynamicResource MutedBrush}" FontSize="12" TextWrapping="Wrap"/>
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="nav" x:Name="ExportDataButton" Content="Export data…" Click="ExportData_Click"/>
-                        <Button Classes="nav" x:Name="ImportDataButton" Content="Import data…" Click="ImportData_Click"/>
-                    </StackPanel>
-                    <TextBlock x:Name="DataStatusText" FontSize="12" TextWrapping="Wrap"
-                               Foreground="{DynamicResource LabelBrush}"/>
-                </StackPanel>
-            </Border>
-
             <!-- Month navigation -->
             <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
                 <Button Grid.Column="0" Classes="nav" Content="◀" Padding="12,6" Click="PrevMonth_Click"/>
