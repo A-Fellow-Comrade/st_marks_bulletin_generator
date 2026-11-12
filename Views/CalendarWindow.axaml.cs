@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -8,6 +9,7 @@ using Avalonia.Platform.Storage;
 using LiturgyTools;
 using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Liturgical;
+using st_mark_bulletin_generator.Models;
 
 namespace st_mark_bulletin_generator.Views;
 
@@ -179,6 +181,123 @@ public partial class CalendarWindow : Window
         {
             ShowFolderMessage($"Couldn't choose the folder: {ex.Message}", isProblem: true, canRetry: false);
         }
+    }
+
+    // ───────────────────────────── data import / export ─────────────────────────────
+
+    private async void ExportData_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_store == null) return;
+        try
+        {
+            var picked = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export bulletin data",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("Bulletin backup (*.bulletinbackup)")
+                    {
+                        Patterns = new[] { "*.bulletinbackup" },
+                    },
+                },
+                DefaultExtension = "bulletinbackup",
+                SuggestedFileName = $"StMarkBulletins_{DateTime.Now:yyyy-MM-dd}.bulletinbackup",
+            });
+            if (picked is null) return;
+
+            var path = picked.Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            var bundle = new BulletinBundle
+            {
+                Settings = _settings,
+                Bulletins = new List<SavedBulletin>(),
+            };
+            foreach (var date in _store.ListDates())
+            {
+                var record = _store.Load(date);
+                if (record != null) bundle.Bulletins.Add(record);
+            }
+
+            var json = JsonSerializer.Serialize(bundle, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, json);
+
+            SetDataStatus($"Exported {bundle.Bulletins.Count} bulletin(s) to {Path.GetFileName(path)}.", isProblem: false);
+        }
+        catch (Exception ex)
+        {
+            SetDataStatus($"Export failed: {ex.Message}", isProblem: true);
+        }
+    }
+
+    private async void ImportData_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_store == null) return;
+        try
+        {
+            var picked = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import bulletin data",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("Bulletin backup (*.bulletinbackup)")
+                    {
+                        Patterns = new[] { "*.bulletinbackup" },
+                    },
+                },
+            });
+            if (picked.Count == 0) return;
+
+            var path = picked[0].Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            var json = File.ReadAllText(path);
+            var bundle = JsonSerializer.Deserialize<BulletinBundle>(json);
+            if (bundle == null) throw new InvalidDataException("The backup file is empty.");
+            if (bundle.Version != 1)
+                throw new InvalidDataException($"Unsupported backup version {bundle.Version}.");
+
+            // Overwrite ALL existing data: apply settings from the file (values
+            // missing from the file are cleared, not kept), then reconnect so the
+            // store points at the (possibly new) shared folder.
+            _settings.SharedFolder = bundle.Settings?.SharedFolder;
+            _settings.Theme = bundle.Settings?.Theme ?? "Light";
+            _settings.Save();
+            Connect();
+
+            int written = 0;
+            if (_store != null)
+            {
+                // Remove every old bulletin file so nothing stale remains.
+                foreach (var existing in Directory.EnumerateFiles(_store.folder, "*.json"))
+                    File.Delete(existing);
+
+                foreach (var b in bundle.Bulletins)
+                {
+                    if (!DateOnly.TryParseExact(b.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out var date))
+                        continue;
+                    _store.Save(date, b);
+                    written++;
+                }
+            }
+
+            Render();
+            SetDataStatus($"Imported {written} bulletin(s); all previous data replaced.", isProblem: false);
+        }
+        catch (Exception ex)
+        {
+            SetDataStatus($"Import failed: {ex.Message}", isProblem: true);
+        }
+    }
+
+    private void SetDataStatus(string text, bool isProblem)
+    {
+        DataStatusText.Text = text;
+        DataStatusText.Foreground = isProblem
+            ? new SolidColorBrush(Color.Parse("#8A1C1C"))
+            : new SolidColorBrush(Color.Parse("#1C6A1C"));
     }
 
     // Switches light/dark mode, persists the choice, and refreshes both windows.
