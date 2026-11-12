@@ -50,12 +50,7 @@
         <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto">
         <TextBox Grid.Column="0" x:Name="SundayNameBox"
               ToolTip.Tip="Printed on the back cover as: Today is ____."/>
-        <ComboBox Grid.Column="1" x:Name="LectionaryBox" SelectedIndex="0"
-                MinWidth="170" Margin="8,4,0,4"
-                ToolTip.Tip="Which lectionary the Sunday name and the appointed psalm come from.">
-            <ComboBoxItem>Three-year lectionary</ComboBoxItem>
-            <ComboBoxItem>One-year lectionary</ComboBoxItem>
-        </ComboBox>
+        
         </Grid>
 
 
@@ -141,7 +136,15 @@
                    FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,2"/>
 
 
-        <StackPanel Grid.Row="16" Grid.Column="1" Grid.ColumnSpan="2"
+        <ComboBox Grid.Row="16" Grid.Column="1" x:Name="LectionaryBox" SelectedIndex="0"
+                MinWidth="170" Margin="8,4,0,4"
+                ToolTip.Tip="Which lectionary the Sunday name and the appointed psalm come from.">
+            <ComboBoxItem>Three-year lectionary</ComboBoxItem>
+            <ComboBoxItem>One-year lectionary</ComboBoxItem>
+        </ComboBox>
+
+
+        <StackPanel Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="2"
                     Orientation="Horizontal" Spacing="16">
             <CheckBox x:Name="PsalmOptionalBox" Content="Include optional verses"
                       VerticalAlignment="Center"/>
