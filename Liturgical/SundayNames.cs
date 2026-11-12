@@ -31,7 +31,11 @@ public static class SundayNames
         new(Enumerable.Range(1, 27).Select(Utils.Ordinal), StringComparer.OrdinalIgnoreCase);
 
     // Returns "" (and explains why in `problem`) if the name can't be worked out.
-    public static string Get(DateOnly date, out string? problem)
+        // Returns "" (and explains why in `problem`) if the name can't be worked out.
+    public static string Get(DateOnly date, out string? problem) =>
+        Get(date, Lectionary.ThreeYear, out problem);
+
+    public static string Get(DateOnly date, Lectionary lectionary, out string? problem)
     {
         problem = null;
         if (date.DayOfWeek != DayOfWeek.Sunday) return "";
@@ -42,7 +46,7 @@ public static class SundayNames
             // (Lookup builds the right church year for any date by itself).
             _calendar ??= new LiturgicalCalendar(AdventYearFor(date), LiturgicalData.Load());
 
-            var result = _calendar.Lookup(date);
+                        var result = _calendar.Lookup(date, lectionary);
             if (result is null)
             {
                 problem = "the lectionary data has no entry for that date";

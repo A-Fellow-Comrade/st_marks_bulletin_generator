@@ -5,6 +5,7 @@
         Width="680" SizeToContent="Height"
         WindowStartupLocation="CenterScreen">
 
+
     <Window.Styles>
         <Style Selector="TextBox">
             <Setter Property="Margin" Value="0,4"/>
@@ -20,9 +21,11 @@
         </Style>
     </Window.Styles>
 
+
     <Grid Margin="16"
           ColumnDefinitions="Auto,140,*"
-          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
 
         <Border Grid.Row="0" Grid.ColumnSpan="3" x:Name="BannerBorder" IsVisible="False"
                 Background="#40FFB300" CornerRadius="4" Padding="10,6" Margin="0,0,0,10">
@@ -34,23 +37,30 @@
                 </StackPanel>
             </StackPanel>
         </Border>
-        
+       
         <TextBlock Grid.Row="1" Text="Sunday"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SundayLabel"
                     FontWeight="SemiBold" Margin="0,4"/>
-        
+       
         <TextBlock Grid.Row="2" Text="Service time"/>
         <TextBox   Grid.Row="2" Grid.Column="1" x:Name="ServiceTimeBox"/>
 
+
         <TextBlock Grid.Row="3" Text="Sunday name"/>
-        <TextBox   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SundayNameBox"
-                   ToolTip.Tip="Printed on the back cover as: Today is ____."/>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto">
+        <TextBox Grid.Column="0" x:Name="SundayNameBox"
+              ToolTip.Tip="Printed on the back cover as: Today is ____."/>
+        
+        </Grid>
+
 
         <TextBlock Grid.Row="4" Text="Presiding minister"/>
         <TextBox   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="MinisterBox"/>
 
+
         <TextBlock Grid.Row="5" Text="Organist"/>
         <TextBox   Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="OrganistBox"/>
+
 
         <TextBlock Grid.Row="6" Text="Service setting"/>
         <ComboBox  Grid.Row="6" Grid.Column="1" x:Name="SettingBox"
@@ -64,14 +74,17 @@
         </ComboBox>
         <TextBlock Grid.Row="6" Grid.Column="2" x:Name="SettingPageLabel" Margin="10,4"/>
 
+
         <TextBlock Grid.Row="7" Text="Organ prelude"/>
         <TextBox   Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PreludeBox"/>
+
 
         <TextBlock Grid.Row="8" Text="Opening hymn #"/>
         <TextBox   Grid.Row="8" Grid.Column="1" x:Name="OpeningHymnBox"
                    Tag="OpeningTitle" TextChanged="HymnBox_TextChanged"/>
         <TextBox Grid.Row="8" Grid.Column="2" x:Name="OpeningTitle" Margin="10,4,0,4"
         Tag="OpeningHymnBox" LostFocus="Title_LostFocus"/>
+
 
         <TextBlock Grid.Row="9" Text="Creed"/>
         <ComboBox  Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" x:Name="CreedBox"
@@ -82,11 +95,13 @@
             <ComboBoxItem>Athanasian Creed</ComboBoxItem>
         </ComboBox>
 
+
         <TextBlock Grid.Row="10" Text="Hymn of the Day #"/>
         <TextBox   Grid.Row="10" Grid.Column="1" x:Name="DayHymnBox"
                    Tag="DayTitle" TextChanged="HymnBox_TextChanged"/>
         <TextBox Grid.Row="10" Grid.Column="2" x:Name="DayTitle" Margin="10,4,0,4"
         Tag="DayHymnBox" LostFocus="Title_LostFocus"/>
+
 
         <TextBlock Grid.Row="11" Text="Closing hymn #"/>
         <TextBox   Grid.Row="11" Grid.Column="1" x:Name="ClosingHymnBox"
@@ -94,22 +109,71 @@
         <TextBox Grid.Row="11" Grid.Column="2" x:Name="ClosingTitle" Margin="10,4,0,4"
         Tag="ClosingHymnBox" LostFocus="Title_LostFocus"/>
 
+
         <TextBlock Grid.Row="12" Text="Organ postlude"/>
         <TextBox   Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
 
-        <TextBlock Grid.Row="13" Text="Announcements" VerticalAlignment="Top" Margin="0,12,10,4"/>
-        <TextBox   Grid.Row="13" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AnnouncementsBox"
+
+        <!-- Psalm readings: heading, then  Psalm [number] : [verses] -->
+        <TextBlock Grid.Row="13" Grid.ColumnSpan="3" Text="Psalm Readings"
+                   FontSize="14" FontWeight="SemiBold" Margin="0,14,0,2"/>
+
+
+        <TextBlock Grid.Row="14" Text="Psalm"/>
+        <Grid      Grid.Row="14" Grid.Column="1" ColumnDefinitions="*,Auto">
+            <TextBox   Grid.Column="0" x:Name="PsalmNumberBox"/>
+            <TextBlock Grid.Column="1" Text=":" FontSize="16" FontWeight="SemiBold"
+                       Margin="8,0,2,0" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid      Grid.Row="14" Grid.Column="2" ColumnDefinitions="*,Auto" Margin="4,0,0,0">
+            <TextBox  Grid.Column="0" x:Name="PsalmVersesBox"
+                      Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
+            <ComboBox Grid.Column="1" x:Name="PsalmVersionBox" MinWidth="90" Margin="8,4,0,4"/>
+        </Grid>
+
+
+        <TextBlock Grid.Row="15" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmAppointedText"
+                   FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,2"/>
+
+
+        <ComboBox Grid.Row="16" Grid.Column="1" x:Name="LectionaryBox" SelectedIndex="0"
+                MinWidth="170" Margin="8,4,0,4"
+                ToolTip.Tip="Which lectionary the Sunday name and the appointed psalm come from.">
+            <ComboBoxItem>Three-year lectionary</ComboBoxItem>
+            <ComboBoxItem>One-year lectionary</ComboBoxItem>
+        </ComboBox>
+
+
+        <StackPanel Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="2"
+                    Orientation="Horizontal" Spacing="16">
+            <CheckBox x:Name="PsalmOptionalBox" Content="Include optional verses"
+                      VerticalAlignment="Center"/>
+            <Button   Content="Use appointed psalm" VerticalAlignment="Center"
+                      Click="UseAppointed_Click"/>
+        </StackPanel>
+
+
+        <TextBlock Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PsalmStatusText"
+                   FontSize="12" Opacity="0.8" TextWrapping="Wrap" Margin="0,0,0,4"/>
+
+
+        <TextBlock Grid.Row="18" Text="Announcements" VerticalAlignment="Top" Margin="0,12,10,4"/>
+        <TextBox   Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AnnouncementsBox"
                     AcceptsReturn="True" TextWrapping="Wrap" Height="110"/>
 
-        <Button Grid.Row="14" Grid.ColumnSpan="3" Content="Generate PDF"
+
+        <Button Grid.Row="19" Grid.ColumnSpan="3" Content="Generate PDF"
                 Margin="0,20,0,0" Padding="12,6" HorizontalAlignment="Left"
                 Click="Generate_Click"/>
 
-        <TextBlock Grid.Row="15" Grid.ColumnSpan="3" x:Name="StatusText"
+
+        <TextBlock Grid.Row="20" Grid.ColumnSpan="3" x:Name="StatusText"
                    Margin="0,12,0,0" TextWrapping="Wrap"/>
 
-        <TextBlock Grid.Row="16" Grid.ColumnSpan="3" x:Name="SaveNote"
+
+        <TextBlock Grid.Row="21" Grid.ColumnSpan="3" x:Name="SaveNote"
                     Margin="0,2,0,0" FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
+
 
     </Grid>
 </Window>

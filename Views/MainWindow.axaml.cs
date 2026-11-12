@@ -64,6 +64,21 @@ public partial class MainWindow : Window
     // corrections, so they must not overwrite the hymn database.
     private readonly Dictionary<string, (int? Number, string Title)> _snapshot = new();
 
+    // The psalm: versions come from the Psalm_XXX.csv files that are installed.
+    private readonly List<string> _versions = PsalmLookup.Versions();
+    private AppointedPsalm _appointed = new();   // what the lectionary appoints for this Sunday
+    private bool _psalmBusy;                     // true while the psalm boxes are being filled by code
+    private string _shownPsalm = "";             // the psalm number the Verses box belongs to
+    private const int LongPsalmCharacters = 2000;
+    //which lectionary the sunday name and appointed psalm were last used from/
+    private LiturgyTools.Lectionary _lectionaryShown = LiturgyTools.Lectionary.ThreeYear;
+    private bool _lectionaryBusy; // true while the dropdown is set by code
+
+    // Only here so Avalonia's XAML loader and previewer can find the window (they
+    // need a public constructor without parameters). The app never uses it.
+    public MainWindow() => throw new InvalidOperationException(
+        "MainWindow needs the bulletin store: use MainWindow(BulletinStore, HymnCorrections).");
+
     public MainWindow(BulletinStore store, HymnCorrections corrections)
     {
         // Permanent per-user folder, so rebuilding or cleaning the project
@@ -87,6 +102,9 @@ public partial class MainWindow : Window
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
 
+        PsalmVersionBox.ItemsSource = _versions;
+        PsalmVersionBox.SelectedIndex = 0;
+
         // Auto-save: a moment after the last edit.
         _saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
         _saveTimer.Tick += (_, _) => SaveCurrent();
@@ -107,6 +125,10 @@ public partial class MainWindow : Window
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
+
+        HookPsalmEvents();
+        LectionaryBox.SelectionChanged += (_, _) =>
+        { if (!_lectionaryBusy) LectionaryChanged(); };
     }
 
     private void MarkDirty()
@@ -129,7 +151,7 @@ public partial class MainWindow : Window
     // Asks the lectionary data for the church-year name of a Sunday.
     private string LookUpSundayName(DateOnly date)
     {
-        var name = SundayNames.Get(date, out var problem);
+        var name = SundayNames.Get(date, CurrentLectionary, out var problem);
         if (problem != null)
             StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
         return name;
@@ -261,6 +283,14 @@ public partial class MainWindow : Window
         if (!TryReadHymn(DayHymnBox.Text, "Hymn of the Day", out var hymnOfDay)) return;
         if (!TryReadHymn(ClosingHymnBox.Text, "Closing hymn", out var closing)) return;
 
+        // The psalm is fetched now, so a problem stops the PDF with a clear message.
+        var psalm = PsalmLookup.Load(SelectedVersion, PsalmNumberBox.Text, PsalmVersesBox.Text);
+        if (psalm.Problem != null)
+        {
+            StatusText.Text = $"Psalm: {psalm.Problem}";
+            return;
+        }
+
         // Generating the PDF keeps this Sunday, even if it was only copied.
         SaveCurrent();
 
@@ -286,6 +316,8 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
+            PsalmTitle = psalm.Title,
+            Psalm = psalm.Verses,
             Announcements = AnnouncementsBox.Text ?? ""
         };
 
@@ -378,6 +410,7 @@ public partial class MainWindow : Window
         try
         {
             var saved = LoadRecord(date);
+            string? psalmVersionHint = null;
             if (saved != null)
             {
                 ApplyRecord(saved);
@@ -393,6 +426,7 @@ public partial class MainWindow : Window
                 {
                     ApplyRecord(source);
                     _copiedFrom = previous;
+                    psalmVersionHint = source.PsalmVersion;
                 }
                 else
                 {
@@ -405,6 +439,10 @@ public partial class MainWindow : Window
                 _diskStamp = null;
                 SaveNote.Text = "";
             }
+
+            // The psalm belongs to the Sunday: a saved one keeps its own, any other
+            // gets the psalm the lectionary appoints.
+            LoadPsalm(date, saved, psalmVersionHint);
         }
         finally
         {
@@ -477,8 +515,7 @@ public partial class MainWindow : Window
         return "a moment ago";
     }
 
-    // "Use their version": the pastor's edits go to a side file, and the form
-    // reloads what the other computer saved.
+
     private void UseTheirs_Click(object? sender, RoutedEventArgs e)
     {
         if (_currentDate is not DateOnly date) return;
@@ -513,6 +550,243 @@ public partial class MainWindow : Window
         if (kept.Length > 0) StatusText.Text = $"Their version was kept in the file {kept}.";
     }
 
+
+    // ───────────────────────── the lectionary ─────────────────────────
+    private LiturgyTools.Lectionary CurrentLectionary =>
+        LectionaryBox.SelectedIndex == 1
+            ? LiturgyTools.Lectionary.OneYear
+            : LiturgyTools.Lectionary.ThreeYear;
+
+    // Shows a saved choice without treating it as an edit.
+    private void SetLectionary(string? text)
+    {
+        _lectionaryBusy = true;
+        try
+        {
+            LectionaryBox.SelectedIndex =
+                LectionaryChoice.FromText(text) == LiturgyTools.Lectionary.OneYear ? 1 : 0;
+        }
+        finally
+        {
+            _lectionaryBusy = false;
+        }
+
+        _lectionaryShown = CurrentLectionary;
+    }
+
+    private void LectionaryChanged()
+    {
+        var before = _lectionaryShown;
+        var now = CurrentLectionary;
+
+        if (before == now) return;
+        _lectionaryShown = now;
+
+        if (_currentDate is not DateOnly date) return;
+
+        var typed = SundayNameBox.Text?.Trim() ?? "";
+        var oldName = SundayNames.Get(date, before, out _);
+
+        if (typed.Length == 0 || typed == oldName)
+            SundayNameBox.Text = LookUpSundayName(date);
+
+
+        bool untouched =
+            ((PsalmNumberBox.Text?.Trim() ?? "").Length == 0 &&
+             (PsalmVersesBox.Text?.Trim() ?? "").Length == 0) ||
+            (PsalmIsAppointed &&
+             (PsalmVersesBox.Text?.Trim() ?? "") ==
+             _appointed.VersesFor(PsalmOptionalBox.IsChecked == true));
+
+        _appointed = PsalmLookup.FindAppointed(date, now);
+
+        if (untouched)
+        {
+            _psalmBusy = true;
+            try
+            {
+                SetAppointedPsalm();
+            }
+            finally
+            {
+                _psalmBusy = false;
+            }
+            _shownPsalm = PsalmNumberBox.Text?.Trim() ?? "";
+        }
+
+        UpdatePsalmControls();
+        MarkDirty();
+    }
+
+
+    // ───────────────────────── the psalm ─────────────────────────
+
+    private void HookPsalmEvents()
+    {
+        PsalmVersionBox.SelectionChanged += (_, _) =>
+        {
+            if (_psalmBusy) return;
+            MarkDirty();
+            RefreshPsalmPreview();
+        };
+        PsalmNumberBox.TextChanged += (_, _) => { if (!_psalmBusy) MarkDirty(); };
+        PsalmNumberBox.LostFocus += (_, _) => { if (!_psalmBusy) CommitPsalmNumber(); };
+        PsalmVersesBox.TextChanged += (_, _) => { if (!_psalmBusy) MarkDirty(); };
+        PsalmVersesBox.LostFocus += (_, _) => { if (!_psalmBusy) RefreshPsalmPreview(); };
+        PsalmOptionalBox.IsCheckedChanged += (_, _) => { if (!_psalmBusy) OptionalChanged(); };
+    }
+
+    private string? SelectedVersion => PsalmVersionBox.SelectedItem as string;
+
+    // True when the number in the box is the psalm the lectionary appoints.
+    private bool PsalmIsAppointed =>
+        _appointed.Chapter.Length > 0 && (PsalmNumberBox.Text?.Trim() ?? "") == _appointed.Chapter;
+
+    private void SelectVersion(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version)) version = SelectedVersion ?? _versions[0];
+
+        // A version whose text file has gone missing is still listed, so a saved
+        // Sunday keeps showing it (the preview then says the file wasn't found).
+        if (!_versions.Contains(version))
+        {
+            _versions.Add(version);
+            PsalmVersionBox.ItemsSource = null;
+            PsalmVersionBox.ItemsSource = _versions;
+        }
+        PsalmVersionBox.SelectedItem = version;
+    }
+
+    private void SetAppointedPsalm()
+    {
+        PsalmNumberBox.Text = _appointed.Chapter;
+        PsalmVersesBox.Text = _appointed.Required;
+        PsalmOptionalBox.IsChecked = false;
+    }
+
+    // Fills the psalm boxes for a Sunday. A saved Sunday keeps its own psalm; any
+    // other gets the psalm the lectionary appoints (it is never copied from last
+    // week, but the version is).
+    private void LoadPsalm(DateOnly date, SavedBulletin? saved, string? versionHint)
+    {
+        _psalmBusy = true;
+        try
+        {
+            _appointed = PsalmLookup.FindAppointed(date, CurrentLectionary);
+
+            if (saved != null && !string.IsNullOrEmpty(saved.PsalmVersion))
+            {
+                SelectVersion(saved.PsalmVersion);
+                PsalmNumberBox.Text = saved.PsalmNumber;
+                PsalmVersesBox.Text = saved.PsalmVerses;
+                PsalmOptionalBox.IsChecked = saved.PsalmIncludeOptional;
+            }
+            else
+            {
+                SelectVersion(versionHint);
+                SetAppointedPsalm();
+            }
+            _shownPsalm = PsalmNumberBox.Text?.Trim() ?? "";
+        }
+        finally
+        {
+            _psalmBusy = false;
+        }
+        UpdatePsalmControls();
+    }
+
+    private void UpdatePsalmControls()
+    {
+        PsalmAppointedText.Text = _appointed.Problem ??
+            ("Appointed: " + _appointed.Display +
+             (_appointed.Alternates.Length > 0 ? $" (or {_appointed.Alternates})" : ""));
+
+        // The optional verses belong to the appointed psalm only.
+        bool canUseOptional = _appointed.Optional.Length > 0 && PsalmIsAppointed;
+        PsalmOptionalBox.IsEnabled = canUseOptional;
+        PsalmOptionalBox.Content = _appointed.Optional.Length > 0
+            ? $"Include optional verses ({_appointed.Optional})"
+            : "Include optional verses (none this Sunday)";
+
+        if (!canUseOptional && PsalmOptionalBox.IsChecked == true)
+        {
+            _psalmBusy = true;
+            try { PsalmOptionalBox.IsChecked = false; }
+            finally { _psalmBusy = false; }
+        }
+
+        RefreshPsalmPreview();
+    }
+
+    // One line under the psalm boxes: what will print, or what is wrong.
+    private void RefreshPsalmPreview()
+    {
+        var version = SelectedVersion ?? "";
+        var result = PsalmLookup.Load(version, PsalmNumberBox.Text, PsalmVersesBox.Text);
+        if (result.Problem != null)
+        {
+            PsalmStatusText.Text = result.Problem;
+            return;
+        }
+
+        var count = result.Verses.Length;
+        var text = $"{result.Title} ({version}): {count} verse{(count == 1 ? "" : "s")}.";
+        if (result.TotalCharacters > LongPsalmCharacters)
+            text += " This is long, so it will print in smaller type.";
+        PsalmStatusText.Text = text;
+    }
+
+    // The pastor finished typing a psalm number. A different psalm means the old
+    // verses no longer apply: back to the appointed verses if it is the appointed
+    // psalm, otherwise the whole psalm.
+    private void CommitPsalmNumber()
+    {
+        var number = PsalmNumberBox.Text?.Trim() ?? "";
+        if (number != _shownPsalm)
+        {
+            _shownPsalm = number;
+            _psalmBusy = true;
+            try
+            {
+                PsalmOptionalBox.IsChecked = false;
+                PsalmVersesBox.Text = PsalmIsAppointed ? _appointed.Required : "";
+            }
+            finally
+            {
+                _psalmBusy = false;
+            }
+            MarkDirty();
+        }
+        UpdatePsalmControls();
+    }
+
+    private void OptionalChanged()
+    {
+        _psalmBusy = true;
+        try { PsalmVersesBox.Text = _appointed.VersesFor(PsalmOptionalBox.IsChecked == true); }
+        finally { _psalmBusy = false; }
+
+        MarkDirty();
+        RefreshPsalmPreview();
+    }
+
+    private void UseAppointed_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_appointed.Chapter.Length == 0)
+        {
+            PsalmStatusText.Text = _appointed.Problem ?? "There is no appointed psalm to use.";
+            return;
+        }
+
+        _psalmBusy = true;
+        try { SetAppointedPsalm(); }
+        finally { _psalmBusy = false; }
+
+        _shownPsalm = _appointed.Chapter;
+        MarkDirty();
+        UpdatePsalmControls();
+    }
+
     private SavedBulletin ReadForm(DateOnly date) => new()
     {
         Date = Pretty(date, "yyyy-MM-dd"),
@@ -530,6 +804,11 @@ public partial class MainWindow : Window
         ClosingHymn = ClosingHymnBox.Text?.Trim() ?? "",
         ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
         Postlude = PostludeBox.Text?.Trim() ?? "",
+        Lectionary = LectionaryChoice.ToText(CurrentLectionary),
+        PsalmVersion = SelectedVersion ?? "",
+        PsalmNumber = PsalmNumberBox.Text?.Trim() ?? "",
+        PsalmVerses = PsalmVersesBox.Text?.Trim() ?? "",
+        PsalmIncludeOptional = PsalmOptionalBox.IsChecked == true,
         Announcements = AnnouncementsBox.Text ?? "",
         SavedAt = DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture),
         SavedBy = Environment.MachineName,
@@ -537,6 +816,7 @@ public partial class MainWindow : Window
 
     private void ApplyRecord(SavedBulletin r)
     {
+        SetLectionary(r.Lectionary);
         ServiceTimeBox.Text = r.ServiceTime ?? "";
         SundayNameBox.Text = r.SundayName ?? "";
         MinisterBox.Text = r.Minister ?? "";

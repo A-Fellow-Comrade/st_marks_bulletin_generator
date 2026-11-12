@@ -285,11 +285,32 @@ public partial class CalendarWindow : Window
         Opacity = 0.25,
     };
 
+    // The lectionary a Sunday uses: its own saved bulletin's, otherwise the nearest
+    // earlier one's (as the form does when it starts a new Sunday), otherwise three-year.
+    private Lectionary LectionaryFor(DateOnly date)
+    {
+        try
+        {
+            if (_store == null) return Lectionary.ThreeYear;
+
+            var record = _store.Load(date);
+
+            if (record == null && _store.FindNearestEarlier(date) is DateOnly earlier)
+                record = _store.Load(earlier);
+
+            return LectionaryChoice.FromText(record?.Lectionary);
+        }
+        catch
+        {
+            return Lectionary.ThreeYear;
+        }
+    }
+
     private void ShowSelected(HashSet<DateOnly> saved)
     {
         SelectedTitle.Text = _selected.ToString("dddd, MMMM d, yyyy", CultureInfo.InvariantCulture);
 
-        var name = SundayNames.Get(_selected, out _);
+        var name = SundayNames.Get(_selected, LectionaryFor(_selected), out _);
         var status = saved.Contains(_selected) ? "Saved bulletin" : "Not started yet";
         SelectedInfo.Text = name.Length > 0
             ? $"{char.ToUpperInvariant(name[0])}{name[1..]}. {status}."
