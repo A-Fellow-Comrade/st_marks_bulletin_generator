@@ -72,30 +72,31 @@ public static class PsalmLookup
 
     // ───────────────────────────── the appointed psalm ─────────────────────────────
 
-    public static AppointedPsalm FindAppointed(DateOnly date)
+    public static AppointedPsalm FindAppointed(DateOnly date, Lectionary lectionary = Lectionary.ThreeYear)
     {
         try
         {
             _data ??= LiturgicalData.Load();
-            var adventYear = date >= CalendarMath.Advent1ForYear(date.Year) ? date.Year : date.Year - 1;
-            _calendar ??= new LiturgicalCalendar(adventYear, _data);
+            var adventYear = date >= CalendarMath.Advent1ForYear(date.Year)
+                ? date.Year : date.Year - 1;
 
-            var result = _calendar.Lookup(date);
-            if (result is null)
-                return new AppointedPsalm { Problem = "The lectionary data has no entry for that date." };
+            _calendar ??= new LiturgicalCalendar(adventYear, _data);
+            var result = _calendar.Lookup(date, lectionary);
+
+            if (result is null) return new AppointedPsalm{Problem = "The lectionary data has no entry for that date."};
 
             var ps = result.Readings?.Ps;
-            if (string.IsNullOrWhiteSpace(ps))
-                return new AppointedPsalm { Problem = "The lectionary lists no psalm for this Sunday." };
+
+            if (string.IsNullOrWhiteSpace(ps)) return new AppointedPsalm{ Problem = $"The {LectionaryChoice.Describe(lectionary)} lectionary lists no psalm for this Sunday. " +
+                "Type a psalm number if you would like one.",};
 
             return ParseAppointed(ps);
         }
         catch (Exception ex)
         {
-            return new AppointedPsalm { Problem = $"Couldn't look up the appointed psalm ({ex.Message})." };
+            return new AppointedPsalm{ Problem = $"Couldn't look up the appointed psalm ({ex.Message})."};
         }
     }
-
     // Matches "Psalm 89", "Psalm 89:1-5 (19-29)", "Psalm 115:(1-8) 9-18".
     private static readonly Regex ReferencePattern = new(
         @"^(?<book>[A-Za-z]+(?: [A-Za-z]+)*?)\s+(?<chapter>\d+)(?:\s*:\s*(?<rest>.*))?$",
