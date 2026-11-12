@@ -47,8 +47,16 @@
 
 
         <TextBlock Grid.Row="3" Text="Sunday name"/>
-        <TextBox   Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SundayNameBox"
-                   ToolTip.Tip="Printed on the back cover as: Today is ____."/>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto">
+        <TextBox Grid.Column="0" x:Name="SundayNameBox"
+              ToolTip.Tip="Printed on the back cover as: Today is ____."/>
+        <ComboBox Grid.Column="1" x:Name="LectionaryBox" SelectedIndex="0"
+                MinWidth="170" Margin="8,4,0,4"
+                ToolTip.Tip="Which lectionary the Sunday name and the appointed psalm come from.">
+            <ComboBoxItem>Three-year lectionary</ComboBoxItem>
+            <ComboBoxItem>One-year lectionary</ComboBoxItem>
+        </ComboBox>
+        </Grid>
 
 
         <TextBlock Grid.Row="4" Text="Presiding minister"/>
