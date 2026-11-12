@@ -230,9 +230,65 @@ public partial class CalendarWindow : Window
         }
     }
 
+    // Shows a modal warning that importing will replace ALL existing data.
+    // Returns true only if the user explicitly confirms.
+    private async Task<bool> ConfirmReplaceAsync()
+    {
+        var dialog = new Window
+        {
+            Title = "Confirm import",
+            Width = 440,
+            Height = 200,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Background = (IBrush?)Application.Current?.Resources["SurfaceBrush"] ?? Brushes.White,
+        };
+
+        var panel = new StackPanel { Spacing = 12, Margin = new Thickness(20) };
+        var text = new TextBlock
+        {
+            Text = "Importing will replace ALL existing data on this computer, " +
+                   "including any bulletins not present in the backup file. This cannot be undone.\n\n" +
+                   "Continue?",
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = 13,
+            Foreground = (IBrush?)Application.Current?.Resources["TextBrush"] ?? Brushes.Black,
+        };
+        var buttons = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 4, 0, 0),
+        };
+        var yes = new Button
+        {
+            Content = "Yes, replace all data",
+            MinWidth = 140,
+        };
+        var no = new Button
+        {
+            Content = "Cancel",
+            MinWidth = 80,
+        };
+
+        var confirmed = false;
+        yes.Click += (_, _) => { confirmed = true; dialog.Close(true); };
+        no.Click += (_, _) => dialog.Close(false);
+
+        buttons.Children.Add(yes);
+        buttons.Children.Add(no);
+        panel.Children.Add(text);
+        panel.Children.Add(buttons);
+        dialog.Content = panel;
+
+        return await dialog.ShowDialog<bool>(this) == true && confirmed;
+    }
+
     private async void ImportData_Click(object? sender, RoutedEventArgs e)
     {
         if (_store == null) return;
+        if (!await ConfirmReplaceAsync()) return;
         try
         {
             var picked = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
