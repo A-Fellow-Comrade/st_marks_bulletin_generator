@@ -21,6 +21,7 @@ public class SavedBulletin
     public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
+    public string Lectionary { get; set; } = ""; //choose lectionary the fields come from
     public string PsalmVersion { get; set; } = "";
     public string PsalmNumber { get; set; } = "";
     public string PsalmVerses { get; set; } = "";
