@@ -103,6 +103,7 @@ public partial class MainWindow : Window
         _corrections = corrections;
 
         InitializeComponent();
+        AnnouncementsBox.Toolbar.ToolbarLevel = AvaloniaRichEditor.Controls.ToolbarLevel.Normal;
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
@@ -149,10 +150,13 @@ public partial class MainWindow : Window
         {
             MinisterBox, OrganistBox, PreludeBox, ServiceTimeBox, SundayNameBox,
             OpeningHymnBox, OpeningTitle, DayHymnBox, DayTitle,
-            ClosingHymnBox, ClosingTitle, PostludeBox, AnnouncementsBox,
+            ClosingHymnBox, ClosingTitle, PostludeBox,
         };
         foreach (var box in boxes)
             box.TextChanged += (_, _) => MarkDirty();
+
+        //anncounements weird
+        AnnouncementsBox.Editor.TextChanged += (_,_) => MarkDirty();
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
@@ -361,7 +365,7 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
-            Announcements = AnnouncementsBox.Text ?? "",
+            Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
             CoverImagePath = _selectedCoverImagePath,
             PsalmTitle = psalm.Title,
             Psalm = psalm.Verses,
@@ -848,7 +852,7 @@ public partial class MainWindow : Window
         PsalmNumber = PsalmNumberBox.Text?.Trim() ?? "",
         PsalmVerses = PsalmVersesBox.Text?.Trim() ?? "",
         PsalmIncludeOptional = PsalmOptionalBox.IsChecked == true,
-        Announcements = AnnouncementsBox.Text ?? "",
+        Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
         SavedAt = DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture),
         SavedBy = Environment.MachineName,
     };
@@ -867,7 +871,7 @@ public partial class MainWindow : Window
         SetHymn(DayHymnBox, DayTitle, r.DayHymn, r.DayTitle);
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
-        AnnouncementsBox.Text = r.Announcements ?? "";
+        AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
     }
 
     // Empty form with the usual defaults (the pastor's very first launch).
@@ -884,7 +888,7 @@ public partial class MainWindow : Window
         SetHymn(DayHymnBox, DayTitle, "", "");
         SetHymn(ClosingHymnBox, ClosingTitle, "", "");
         PostludeBox.Text = "";
-        AnnouncementsBox.Text = "";
+        AnnouncementsBox.Editor.LoadHtml("");
     }
 
     // Sets a hymn number and shows the title that was saved with it. If no

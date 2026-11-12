@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:rte="using:AvaloniaRichEditor.Controls"
         x:Class="st_mark_bulletin_generator.Views.MainWindow"
         Title="St. Mark Bulletin Generator"
         Width="700" Height="820" MinHeight="500"
@@ -269,9 +270,7 @@
             <Border Classes="card">
                 <StackPanel>
                     <TextBlock Classes="section-title" Text="ANNOUNCEMENTS"/>
-                    <TextBox x:Name="AnnouncementsBox"
-                             AcceptsReturn="True" TextWrapping="Wrap" Height="100"
-                             Watermark="One announcement per line…"/>
+                    <rte:RichEditorView x:Name="AnnouncementsBox" Height="200"/>
                 </StackPanel>
             </Border>
 
