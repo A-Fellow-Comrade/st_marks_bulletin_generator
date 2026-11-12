@@ -25,7 +25,6 @@ public partial class CalendarWindow : Window
     private static readonly IBrush SavedBrush    = new SolidColorBrush(Color.Parse("#66FFB300"));
     private static readonly IBrush SelectedBrush = new SolidColorBrush(Color.Parse("#5C1A2E"));
     private static readonly IBrush SelectedFg    = Brushes.White;
-    private static readonly IBrush QuietBrush    = new SolidColorBrush(Color.Parse("#F5F0EB"));
     private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
 
     private readonly AppSettings _settings;
@@ -46,6 +45,15 @@ public partial class CalendarWindow : Window
         _selected = CalendarMath.FirstSundayOnOrAfter(DateOnly.FromDateTime(DateTime.Today));
         _month = new DateOnly(_selected.Year, _selected.Month, 1);
         Connect();
+
+        UpdateThemeToggle();
+        // If the bulletin form switches theme, refresh this window and keep the
+        // toggle label in sync.
+        ((App)Application.Current).ThemeChanged += _ =>
+        {
+            UpdateThemeToggle();
+            Render();
+        };
     }
 
     // Closing the calendar closes the form too (the form saves its edits as it closes).
@@ -173,6 +181,22 @@ public partial class CalendarWindow : Window
         }
     }
 
+    // Switches light/dark mode, persists the choice, and refreshes both windows.
+    private void ThemeToggle_Click(object? sender, RoutedEventArgs e)
+    {
+        var next = _settings.Theme == "Dark" ? "Light" : "Dark";
+        _settings.Theme = next;
+        _settings.Save();
+
+        var app = (App)Application.Current;
+        app.ApplyTheme(next);
+        UpdateThemeToggle();
+        Render();
+    }
+
+    private void UpdateThemeToggle() =>
+        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
+
     // ───────────────────────────── months and Sundays ─────────────────────────────
 
     private void PrevMonth_Click(object? sender, RoutedEventArgs e)
@@ -210,7 +234,7 @@ public partial class CalendarWindow : Window
     {
         if (_editor == null)
         {
-            _editor = new MainWindow(store, corrections);
+            _editor = new MainWindow(store, corrections, _settings);
             _editor.BulletinSaved += Render;               // keeps the gold marks up to date
             _editor.Closed += (_, _) => _editor = null;
             _editor.ShowSunday(sunday);

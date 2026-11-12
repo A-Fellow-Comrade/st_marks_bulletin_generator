@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -67,8 +68,10 @@ public partial class MainWindow : Window
     // The image file path the user picked, or null for random (default).
     private string? _selectedCoverImagePath;
 
-    public MainWindow(BulletinStore store, HymnCorrections corrections)
+    public MainWindow(BulletinStore store, HymnCorrections corrections, AppSettings settings)
     {
+        _settings = settings;
+
         // Permanent per-user folder, so rebuilding or cleaning the project
         // can't erase corrected hymn titles. On Windows this is
         // %LocalAppData%\StMarkBulletin; on Linux, ~/.local/share/StMarkBulletin.
@@ -90,10 +93,36 @@ public partial class MainWindow : Window
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
 
+        // Reflect the remembered theme on the toggle button.
+        UpdateThemeToggle();
+
+        // If the other window switches theme, keep this button's label in sync.
+        ((App)Application.Current).ThemeChanged += _ => UpdateThemeToggle();
+
         // Auto-save: a moment after the last edit.
         _saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
         _saveTimer.Tick += (_, _) => SaveCurrent();
         HookChangeEvents();
+    }
+
+    private readonly AppSettings _settings;
+
+    // Switches light/dark mode, persists the choice, and tells every window
+    // to refresh.
+    private void ThemeToggle_Click(object? sender, RoutedEventArgs e)
+    {
+        var next = _settings.Theme == "Dark" ? "Light" : "Dark";
+        _settings.Theme = next;
+        _settings.Save();
+
+        var app = (App)Application.Current;
+        app.ApplyTheme(next);
+        UpdateThemeToggle();
+    }
+
+    private void UpdateThemeToggle()
+    {
+        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
     }
 
     // Any edit to the form marks the current Sunday as needing a save.

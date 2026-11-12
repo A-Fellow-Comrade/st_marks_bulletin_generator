@@ -13,6 +13,10 @@ public class AppSettings
 
     //The shared folder, like inside onedrive. Bulletins live in its bulletins subfolder, and hymn correction
     public string? SharedFolder { get; set; }
+
+    //"Light" or "Dark". Remembered per computer so the choice survives restarts.
+    public string Theme { get; set; } = "Light";
+
     public static AppSettings Load()
     {
         try

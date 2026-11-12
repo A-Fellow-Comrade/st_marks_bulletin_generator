@@ -5,13 +5,13 @@
         Width="700" Height="820" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         CanResize="True"
-        Background="#FAF7F4">
+        Background="{DynamicResource SurfaceBrush}">
 
     <Window.Styles>
         <!-- Section card -->
         <Style Selector="Border.card">
-            <Setter Property="Background"     Value="#FFFFFF"/>
-            <Setter Property="BorderBrush"    Value="#E0D8D0"/>
+            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius"   Value="6"/>
             <Setter Property="Padding"        Value="16,12"/>
@@ -22,14 +22,14 @@
         <Style Selector="TextBlock.section-title">
             <Setter Property="FontSize"       Value="10"/>
             <Setter Property="FontWeight"     Value="SemiBold"/>
-            <Setter Property="Foreground"     Value="#7A6A5A"/>
+            <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
             <Setter Property="Margin"         Value="0,0,0,10"/>
             <Setter Property="LetterSpacing"  Value="1.5"/>
         </Style>
 
         <!-- Form labels -->
         <Style Selector="TextBlock.label">
-            <Setter Property="Foreground"       Value="#5A4A3A"/>
+            <Setter Property="Foreground"       Value="{DynamicResource LabelBrush}"/>
             <Setter Property="FontSize"         Value="12"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin"           Value="0,0,12,0"/>
@@ -37,22 +37,22 @@
 
         <!-- All text boxes -->
         <Style Selector="TextBox">
-            <Setter Property="Background"     Value="#FDFBF9"/>
-            <Setter Property="BorderBrush"    Value="#D0C8C0"/>
+            <Setter Property="Background"     Value="{DynamicResource InputBackgroundBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"         Value="0,3"/>
             <Setter Property="CornerRadius"   Value="4"/>
         </Style>
 
         <!-- All combo boxes -->
         <Style Selector="ComboBox">
-            <Setter Property="Background"  Value="#FDFBF9"/>
-            <Setter Property="BorderBrush" Value="#D0C8C0"/>
+            <Setter Property="Background"  Value="{DynamicResource InputBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"      Value="0,3"/>
         </Style>
 
         <!-- Primary action button (Generate PDF) -->
         <Style Selector="Button.primary">
-            <Setter Property="Background"              Value="#5C1A2E"/>
+            <Setter Property="Background"              Value="{DynamicResource BrandBurgundyBrush}"/>
             <Setter Property="Foreground"              Value="White"/>
             <Setter Property="FontSize"                Value="14"/>
             <Setter Property="FontWeight"              Value="SemiBold"/>
@@ -67,19 +67,33 @@
 
         <!-- Secondary buttons -->
         <Style Selector="Button.secondary">
-            <Setter Property="Background"  Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#C0B0A0"/>
+            <Setter Property="Background"  Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground"  Value="#3A2A1A"/>
+            <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"     Value="10,6"/>
             <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+
+        <!-- Theme toggle (visible on the dark header bar) -->
+        <Style Selector="Button.theme-toggle">
+            <Setter Property="Background"  Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground"  Value="White"/>
+            <Setter Property="Padding"     Value="8,4"/>
+            <Setter Property="FontSize"    Value="12"/>
+        </Style>
+        <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource BrandBurgundyBrush}"/>
         </Style>
     </Window.Styles>
 
     <DockPanel>
 
         <!-- ══════════════ HEADER (pinned) ══════════════ -->
-        <Border DockPanel.Dock="Top" Background="#5C1A2E" Padding="20,16">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="20,16">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
@@ -91,6 +105,9 @@
                     <TextBlock x:Name="SaveNote"
                                Foreground="#C0A060" FontSize="11"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
+                    <Button x:Name="ThemeToggle" Classes="theme-toggle"
+                            Content="☀  Light" Click="ThemeToggle_Click"
+                            HorizontalAlignment="Right"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -225,7 +242,7 @@
                         <Button Classes="secondary" x:Name="PickImageButton"
                                 Content="🖼  Choose image…" Click="PickImage_Click"/>
                         <TextBlock x:Name="PickImageLabel" Text="Random"
-                                   VerticalAlignment="Center" Foreground="#7A6A5A" FontStyle="Italic"/>
+                                   VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontStyle="Italic"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -237,7 +254,7 @@
             <!-- Status text -->
             <TextBlock x:Name="StatusText"
                        Margin="0,10,0,0" TextWrapping="Wrap"
-                       Foreground="#5A4A3A" FontSize="12"/>
+                       Foreground="{DynamicResource LabelBrush}" FontSize="12"/>
 
         </StackPanel>
         </ScrollViewer>

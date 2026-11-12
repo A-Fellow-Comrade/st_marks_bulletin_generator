@@ -5,23 +5,23 @@
         Width="440" Height="680" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         CanResize="True"
-        Background="#FAF7F4">
+        Background="{DynamicResource SurfaceBrush}">
 
     <Window.Styles>
         <Style Selector="Button.nav">
             <Setter Property="Background"    Value="Transparent"/>
-            <Setter Property="BorderBrush"   Value="#C0B0A0"/>
+            <Setter Property="BorderBrush"   Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground"    Value="#3A2A1A"/>
+            <Setter Property="Foreground"    Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"       Value="10,6"/>
             <Setter Property="CornerRadius"  Value="4"/>
             <Setter Property="FontSize"      Value="12"/>
         </Style>
         <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#EEE8E0"/>
+            <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
         </Style>
         <Style Selector="Button.today">
-            <Setter Property="Background"    Value="#5C1A2E"/>
+            <Setter Property="Background"    Value="{DynamicResource BrandBurgundyBrush}"/>
             <Setter Property="Foreground"    Value="White"/>
             <Setter Property="Padding"       Value="10,6"/>
             <Setter Property="CornerRadius"  Value="4"/>
@@ -30,17 +30,34 @@
         <Style Selector="Button.today:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="#7A2340"/>
         </Style>
+
+        <!-- Theme toggle (visible on the dark header bar) -->
+        <Style Selector="Button.theme-toggle">
+            <Setter Property="Background"  Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground"  Value="White"/>
+            <Setter Property="Padding"     Value="8,4"/>
+            <Setter Property="FontSize"    Value="12"/>
+        </Style>
+        <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource BrandBurgundyBrush}"/>
+        </Style>
     </Window.Styles>
 
     <DockPanel>
 
         <!-- Header (pinned) -->
-        <Border DockPanel.Dock="Top" Background="#5C1A2E" Padding="18,14">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="18,14">
             <StackPanel Spacing="2">
                 <TextBlock Text="St. Mark Bulletin Generator"
                            Foreground="White" FontSize="17" FontWeight="SemiBold"/>
                 <TextBlock Text="Select a Sunday to open its bulletin"
                            Foreground="#C0A060" FontSize="12"/>
+                <Button x:Name="ThemeToggle" Classes="theme-toggle"
+                        Content="☀  Light" Click="ThemeToggle_Click"
+                        HorizontalAlignment="Right" Margin="0,8,0,0"/>
             </StackPanel>
         </Border>
 
@@ -51,10 +68,10 @@
 
             <!-- Folder info card -->
             <Border x:Name="FolderBorder" CornerRadius="6" Padding="14,10"
-                    Background="#FFFFFF" BorderBrush="#E0D8D0" BorderThickness="1">
+                    Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                 <StackPanel Spacing="8">
                     <TextBlock x:Name="FolderText" FontSize="12" TextWrapping="Wrap"
-                               Foreground="#5A4A3A"/>
+                               Foreground="{DynamicResource LabelBrush}"/>
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button Classes="nav" Content="Choose folder…" Click="ChooseFolder_Click"/>
                         <Button Classes="nav" x:Name="RetryButton" Content="Try again"
@@ -67,30 +84,30 @@
             <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
                 <Button Grid.Column="0" Classes="nav" Content="◀" Padding="12,6" Click="PrevMonth_Click"/>
                 <TextBlock Grid.Column="1" x:Name="MonthTitle"
-                           FontSize="17" FontWeight="SemiBold" Foreground="#3A2A1A"
+                           FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Button Grid.Column="2" Classes="nav" Content="▶" Padding="12,6" Click="NextMonth_Click"/>
             </Grid>
 
             <!-- Calendar card -->
-            <Border Background="#FFFFFF" BorderBrush="#E0D8D0" BorderThickness="1"
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                     CornerRadius="6" Padding="10">
                 <StackPanel Spacing="4">
                     <!-- Day-of-week headers -->
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,4">
                         <TextBlock Grid.Column="0" Text="Sun" FontWeight="SemiBold"
-                                   Foreground="#5C1A2E" HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="1" Text="Mon" Foreground="#A09080"
+                                   Foreground="{DynamicResource BrandBurgundyBrush}" HorizontalAlignment="Center" FontSize="12"/>
+                        <TextBlock Grid.Column="1" Text="Mon" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="2" Text="Tue" Foreground="#A09080"
+                        <TextBlock Grid.Column="2" Text="Tue" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="3" Text="Wed" Foreground="#A09080"
+                        <TextBlock Grid.Column="3" Text="Wed" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="4" Text="Thu" Foreground="#A09080"
+                        <TextBlock Grid.Column="4" Text="Thu" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="5" Text="Fri" Foreground="#A09080"
+                        <TextBlock Grid.Column="5" Text="Fri" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
-                        <TextBlock Grid.Column="6" Text="Sat" Foreground="#A09080"
+                        <TextBlock Grid.Column="6" Text="Sat" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
                     </Grid>
 
@@ -102,12 +119,12 @@
             </Border>
 
             <!-- Selected Sunday info -->
-            <Border Background="#FFFFFF" BorderBrush="#E0D8D0" BorderThickness="1"
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                     CornerRadius="6" Padding="14,10">
                 <StackPanel Spacing="3">
                     <TextBlock x:Name="SelectedTitle" FontWeight="SemiBold"
-                               FontSize="13" Foreground="#3A2A1A" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="SelectedInfo" Foreground="#7A6A5A"
+                               FontSize="13" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="SelectedInfo" Foreground="{DynamicResource MutedBrush}"
                                FontSize="12" TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
@@ -132,11 +149,11 @@
             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
                 <Border Width="14" Height="14" CornerRadius="3"
                         Background="#66FFB300" VerticalAlignment="Center"/>
-                <TextBlock Text="Saved bulletin" Foreground="#7A6A5A" FontSize="11"
+                <TextBlock Text="Saved bulletin" Foreground="{DynamicResource MutedBrush}" FontSize="11"
                            VerticalAlignment="Center"/>
                 <Border Width="14" Height="14" CornerRadius="3"
                         Background="#5C1A2E" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                <TextBlock Text="Selected Sunday" Foreground="#7A6A5A" FontSize="11"
+                <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
                            VerticalAlignment="Center"/>
             </StackPanel>
 
