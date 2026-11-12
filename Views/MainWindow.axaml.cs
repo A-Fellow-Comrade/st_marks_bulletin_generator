@@ -743,10 +743,6 @@ public partial class MainWindow : Window
 
     private void UpdatePsalmControls()
     {
-        PsalmAppointedText.Text = _appointed.Problem ??
-            ("Appointed: " + _appointed.Display +
-             (_appointed.Alternates.Length > 0 ? $" (or {_appointed.Alternates})" : ""));
-
         // The optional verses belong to the appointed psalm only.
         bool canUseOptional = _appointed.Optional.Length > 0 && PsalmIsAppointed;
         PsalmOptionalBox.IsEnabled = canUseOptional;
@@ -771,7 +767,6 @@ public partial class MainWindow : Window
         var result = PsalmLookup.Load(version, PsalmNumberBox.Text, PsalmVersesBox.Text);
         if (result.Problem != null)
         {
-            PsalmStatusText.Text = result.Problem;
             return;
         }
 
@@ -779,7 +774,6 @@ public partial class MainWindow : Window
         var text = $"{result.Title} ({version}): {count} verse{(count == 1 ? "" : "s")}.";
         if (result.TotalCharacters > LongPsalmCharacters)
             text += " This is long, so it will print in smaller type.";
-        PsalmStatusText.Text = text;
     }
 
     // The pastor finished typing a psalm number. A different psalm means the old
@@ -820,7 +814,6 @@ public partial class MainWindow : Window
     {
         if (_appointed.Chapter.Length == 0)
         {
-            PsalmStatusText.Text = _appointed.Problem ?? "There is no appointed psalm to use.";
             return;
         }
 
