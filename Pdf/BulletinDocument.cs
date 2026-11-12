@@ -159,48 +159,17 @@ public class BulletinDocument : IDocument
                 });
 
                 // ---- RIGHT: Psalm
-                row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
-                {
-                    //TONY TODO: This gets the nearest sunday. Integrate with calendar UI.
-                    int dayOfWeek = (int)DateTime.Today.DayOfWeek;
-                    int daysToAdjust = dayOfWeek <= 3 ? -dayOfWeek : (7 - dayOfWeek);
-                    DateTime nearestSunday = DateTime.Today.Date.AddDays(daysToAdjust);
-
-                    //get the psalm reference
-                    LiturgicalData myData = LiturgicalData.Load();
-                    var calendar = new LiturgicalCalendar(2026, myData);
-                    var result = calendar.Lookup(DateOnly.FromDateTime(nearestSunday));
-
-                    var resultParsed = PsalmParser.ParseReading(result.Readings.Ps);
-
-
-                    //NOTE: TONY TODO: UI ADD OPTION TO GET 
-                    //OPTIONAL VERSES: resultParsed.OptionalVerses
-                    //Also add option to change which verses are fetched in UI
-                    var psalm = PsalmParser.GetPsalm(
-                        resultParsed.Book,
-                        int.Parse(resultParsed.Chapter),
-                        resultParsed.RequiredVerses,
-                        "ESV"
-                    );
-
-                    //its the whole chapter, omit this in title
-                    string psalm_title;
-                    if(resultParsed.RequiredVerses == "none")
-                    {
-                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter;
-                    } else
-                    {
-                        psalm_title = resultParsed.Book + " " + resultParsed.Chapter + " " + resultParsed.RequiredVerses;
-                    }
-
-                    col.Spacing(1.5f);
-                    col.Item().PaddingBottom(4).Text(psalm_title).FontSize(12).Bold().AlignCenter();
+                // ---- RIGHT: Psalm ----
+// The title and verses come from the bulletin form.
+row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
+{
+    col.Spacing(1.5f);
+    col.Item().PaddingBottom(4).Text(_b.PsalmTitle).FontSize(12).Bold().AlignCenter();
 
                     int verseIndex = 0;
 
 
-                    foreach (var (v, lines) in psalm)
+                    foreach (var (v, lines) in _b.Psalm)
                     {
                         col.Item().Row(r =>
                         {

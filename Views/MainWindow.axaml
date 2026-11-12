@@ -7,6 +7,7 @@
         CanResize="True"
         Background="{DynamicResource SurfaceBrush}">
 
+
     <Window.Styles>
         <!-- Section card -->
         <Style Selector="Border.card">
@@ -221,6 +222,48 @@
                         <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Organ postlude"/>
                         <TextBox   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
                     </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── CARD: Psalm ── -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Classes="section-title" Text="PSALM"/>
+                    <Grid ColumnDefinitions="130,100,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Lectionary"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"
+                                  x:Name="LectionaryBox" SelectedIndex="0">
+                            <ComboBoxItem>Three-year lectionary</ComboBoxItem>
+                            <ComboBoxItem>One-year lectionary</ComboBoxItem>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Psalm"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="PsalmNumberBox"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text=":" FontSize="16"
+                                   FontWeight="SemiBold" Margin="8,0,2,0"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="1" Grid.Column="3" x:Name="PsalmVersionBox"
+                                  MinWidth="90"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Verses"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                                 x:Name="PsalmVersesBox"
+                                 Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0"/>
+                        <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+                                    Orientation="Horizontal" Spacing="12">
+                            <CheckBox x:Name="PsalmOptionalBox" Content="Include optional verses"
+                                      VerticalAlignment="Center"/>
+                            <Button Classes="secondary" Content="Use appointed psalm"
+                                    Click="UseAppointed_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock x:Name="PsalmAppointedText" Margin="0,8,0,2"
+                               FontSize="12" TextWrapping="Wrap"
+                               Foreground="{DynamicResource MutedBrush}"/>
+                    <TextBlock x:Name="PsalmStatusText" FontSize="12" TextWrapping="Wrap"
+                               Foreground="{DynamicResource MutedBrush}"/>
                 </StackPanel>
             </Border>
 
