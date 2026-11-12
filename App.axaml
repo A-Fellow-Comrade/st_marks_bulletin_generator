@@ -1,8 +1,58 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="st_mark_bulletin_generator.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+    <Application.Resources>
+        <!-- Brand colours (same in both modes) -->
+        <Color x:Key="BrandBurgundy">#5C1A2E</Color>
+        <Color x:Key="BrandGold">#B8860B</Color>
+
+        <SolidColorBrush x:Key="BrandBurgundyBrush" Color="{StaticResource BrandBurgundy}"/>
+        <SolidColorBrush x:Key="BrandGoldBrush"     Color="{StaticResource BrandGold}"/>
+
+        <!-- Calendar mark colours (same in both modes) -->
+        <SolidColorBrush x:Key="SavedMarkBrush" Color="#66FFB300"/>
+        <SolidColorBrush x:Key="SelectedMarkBrush" Color="{StaticResource BrandBurgundy}"/>
+
+        <!-- ──────── Light surface palette ──────── -->
+        <Color x:Key="LightSurface">#FAF7F4</Color>
+        <Color x:Key="LightCard">#FFFFFF</Color>
+        <Color x:Key="LightBorder">#E0D8D0</Color>
+        <Color x:Key="LightInputBackground">#FDFBF9</Color>
+        <Color x:Key="LightInputBorder">#D0C8C0</Color>
+        <Color x:Key="LightText">#3A2A1A</Color>
+        <Color x:Key="LightLabel">#5A4A3A</Color>
+        <Color x:Key="LightMuted">#7A6A5A</Color>
+
+        <SolidColorBrush x:Key="SurfaceBrush"      Color="{StaticResource LightSurface}"/>
+        <SolidColorBrush x:Key="CardBrush"         Color="{StaticResource LightCard}"/>
+        <SolidColorBrush x:Key="BorderBrush"       Color="{StaticResource LightBorder}"/>
+        <SolidColorBrush x:Key="InputBackgroundBrush" Color="{StaticResource LightInputBackground}"/>
+        <SolidColorBrush x:Key="InputBorderBrush"     Color="{StaticResource LightInputBorder}"/>
+        <SolidColorBrush x:Key="TextBrush"         Color="{StaticResource LightText}"/>
+        <SolidColorBrush x:Key="LabelBrush"        Color="{StaticResource LightLabel}"/>
+        <SolidColorBrush x:Key="MutedBrush"        Color="{StaticResource LightMuted}"/>
+
+        <!-- ──────── Dark surface palette ──────── -->
+        <Color x:Key="DarkSurface">#1E1A18</Color>
+        <Color x:Key="DarkCard">#2A2420</Color>
+        <Color x:Key="DarkBorder">#4A3E38</Color>
+        <Color x:Key="DarkInputBackground">#3A2E28</Color>
+        <Color x:Key="DarkInputBorder">#5A4A3E</Color>
+        <Color x:Key="DarkText">#E8E0D8</Color>
+        <Color x:Key="DarkLabel">#D8C8B8</Color>
+        <Color x:Key="DarkMuted">#B8A898</Color>
+
+        <SolidColorBrush x:Key="DarkSurfaceBrush"      Color="{StaticResource DarkSurface}"/>
+        <SolidColorBrush x:Key="DarkCardBrush"         Color="{StaticResource DarkCard}"/>
+        <SolidColorBrush x:Key="DarkBorderBrush"       Color="{StaticResource DarkBorder}"/>
+        <SolidColorBrush x:Key="DarkInputBackgroundBrush" Color="{StaticResource DarkInputBackground}"/>
+        <SolidColorBrush x:Key="DarkInputBorderBrush"     Color="{StaticResource DarkInputBorder}"/>
+        <SolidColorBrush x:Key="DarkTextBrush"         Color="{StaticResource DarkText}"/>
+        <SolidColorBrush x:Key="DarkLabelBrush"        Color="{StaticResource DarkLabel}"/>
+        <SolidColorBrush x:Key="DarkMutedBrush"        Color="{StaticResource DarkMuted}"/>
+    </Application.Resources>
 </Application>

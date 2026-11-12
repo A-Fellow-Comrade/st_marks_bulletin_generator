@@ -1,0 +1,108 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="st_mark_bulletin_generator.Views.CoverImagePickerWindow"
+        Title="Choose Cover Image"
+        Width="620" Height="540"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="{DynamicResource SurfaceBrush}">
+
+    <Window.Styles>
+        <Style Selector="Border.thumb">
+            <Setter Property="Margin"          Value="6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="CornerRadius"    Value="6"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Background"      Value="{DynamicResource CardBrush}"/>
+        </Style>
+        <Style Selector="Border.thumb:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        </Style>
+        <Style Selector="Border.thumb.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandBurgundyBrush}"/>
+        </Style>
+        <Style Selector="Button.del">
+            <Setter Property="Width"               Value="22"/>
+            <Setter Property="Height"              Value="22"/>
+            <Setter Property="Padding"             Value="0"/>
+            <Setter Property="FontSize"            Value="11"/>
+            <Setter Property="Background"          Value="#AA333333"/>
+            <Setter Property="Foreground"          Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment"   Value="Top"/>
+            <Setter Property="Cursor"              Value="Arrow"/>
+        </Style>
+        <Style Selector="Button.del:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#AACC0000"/>
+        </Style>
+        <Style Selector="Button.action">
+            <Setter Property="Background"    Value="{DynamicResource BrandBurgundyBrush}"/>
+            <Setter Property="Foreground"    Value="White"/>
+            <Setter Property="Padding"       Value="12,7"/>
+            <Setter Property="CornerRadius"  Value="4"/>
+        </Style>
+        <Style Selector="Button.action:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#7A2340"/>
+        </Style>
+        <Style Selector="Button.secondary">
+            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground"     Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Padding"        Value="12,7"/>
+            <Setter Property="CornerRadius"   Value="4"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+
+        <!-- Header -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="18,12">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Cover Image" Foreground="White"
+                           FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="Choose an image for the bulletin cover, or leave on Random."
+                           Foreground="#C0A060" FontSize="12"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Bottom button bar -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="16,10">
+            <Grid ColumnDefinitions="*,Auto">
+                <Button Grid.Column="0" Classes="secondary"
+                        Content="⬆  Upload image…" Click="Upload_Click"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="secondary" Content="Cancel" Width="80" Click="Cancel_Click"/>
+                    <Button Classes="action"    Content="OK"     Width="80" Click="Ok_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Scrollable thumbnail area -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="10,10,10,0">
+            <StackPanel Spacing="8">
+
+                <!-- Random tile -->
+                <Border x:Name="RandomBorder" Classes="thumb"
+                        Width="130" Height="110" HorizontalAlignment="Left"
+                        PointerPressed="RandomBorder_PointerPressed">
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center" Spacing="6">
+                        <TextBlock Text="🎲" FontSize="32" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Random" HorizontalAlignment="Center"
+                                   FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Library thumbnails -->
+                <WrapPanel x:Name="ThumbPanel" Orientation="Horizontal"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+</Window>

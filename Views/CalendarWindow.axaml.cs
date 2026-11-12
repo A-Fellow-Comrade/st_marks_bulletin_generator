@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -8,6 +9,7 @@ using Avalonia.Platform.Storage;
 using LiturgyTools;
 using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Liturgical;
+using st_mark_bulletin_generator.Models;
 
 namespace st_mark_bulletin_generator.Views;
 
@@ -22,10 +24,10 @@ namespace st_mark_bulletin_generator.Views;
 // later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
-    private static readonly IBrush SavedBrush = new SolidColorBrush(Color.Parse("#66FFB300"));
-    private static readonly IBrush SelectedBrush = Brushes.DodgerBlue;
-    private static readonly IBrush QuietBrush = new SolidColorBrush(Color.Parse("#20808080"));
-    private static readonly IBrush ProblemBrush = new SolidColorBrush(Color.Parse("#40FFB300"));
+    private static readonly IBrush SavedBrush    = new SolidColorBrush(Color.Parse("#66FFB300"));
+    private static readonly IBrush SelectedBrush = new SolidColorBrush(Color.Parse("#5C1A2E"));
+    private static readonly IBrush SelectedFg    = Brushes.White;
+    private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
 
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
@@ -45,6 +47,15 @@ public partial class CalendarWindow : Window
         _selected = CalendarMath.FirstSundayOnOrAfter(DateOnly.FromDateTime(DateTime.Today));
         _month = new DateOnly(_selected.Year, _selected.Month, 1);
         Connect();
+
+        UpdateThemeToggle();
+        // If the bulletin form switches theme, refresh this window and keep the
+        // toggle label in sync.
+        ((App)Application.Current).ThemeChanged += _ =>
+        {
+            UpdateThemeToggle();
+            Render();
+        };
     }
 
     // Closing the calendar closes the form too (the form saves its edits as it closes).
@@ -134,7 +145,8 @@ public partial class CalendarWindow : Window
     private void ShowFolderMessage(string text, bool isProblem, bool canRetry)
     {
         FolderText.Text = text;
-        FolderBorder.Background = isProblem ? ProblemBrush : QuietBrush;
+        FolderBorder.Background = isProblem ? ProblemBrush : null;
+        FolderBorder.BorderBrush = isProblem ? new SolidColorBrush(Color.Parse("#F0C040")) : new SolidColorBrush(Color.Parse("#E0D8D0"));
         RetryButton.IsVisible = canRetry;
     }
 
@@ -170,6 +182,195 @@ public partial class CalendarWindow : Window
             ShowFolderMessage($"Couldn't choose the folder: {ex.Message}", isProblem: true, canRetry: false);
         }
     }
+
+    // ───────────────────────────── data import / export ─────────────────────────────
+
+    private async void ExportData_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_store == null) return;
+        try
+        {
+            var picked = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export bulletin data",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("Bulletin backup (*.bulletinbackup)")
+                    {
+                        Patterns = new[] { "*.bulletinbackup" },
+                    },
+                },
+                DefaultExtension = "bulletinbackup",
+                SuggestedFileName = $"StMarkBulletins_{DateTime.Now:yyyy-MM-dd}.bulletinbackup",
+            });
+            if (picked is null) return;
+
+            var path = picked.Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            var bundle = new BulletinBundle
+            {
+                Settings = _settings,
+                Bulletins = new List<SavedBulletin>(),
+            };
+            foreach (var date in _store.ListDates())
+            {
+                var record = _store.Load(date);
+                if (record != null) bundle.Bulletins.Add(record);
+            }
+
+            var json = JsonSerializer.Serialize(bundle, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(path, json);
+
+            SetDataStatus($"Exported {bundle.Bulletins.Count} bulletin(s) to {Path.GetFileName(path)}.", isProblem: false);
+        }
+        catch (Exception ex)
+        {
+            SetDataStatus($"Export failed: {ex.Message}", isProblem: true);
+        }
+    }
+
+    // Shows a modal warning that importing will replace ALL existing data.
+    // Returns true only if the user explicitly confirms.
+    private async Task<bool> ConfirmReplaceAsync()
+    {
+        var dialog = new Window
+        {
+            Title = "Confirm import",
+            Width = 440,
+            Height = 200,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Background = (IBrush?)Application.Current?.Resources["SurfaceBrush"] ?? Brushes.White,
+        };
+
+        var panel = new StackPanel { Spacing = 12, Margin = new Thickness(20) };
+        var text = new TextBlock
+        {
+            Text = "Importing will replace ALL existing data on this computer, " +
+                   "including any bulletins not present in the backup file. This cannot be undone.\n\n" +
+                   "Continue?",
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = 13,
+            Foreground = (IBrush?)Application.Current?.Resources["TextBrush"] ?? Brushes.Black,
+        };
+        var buttons = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 8,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 4, 0, 0),
+        };
+        var yes = new Button
+        {
+            Content = "Yes, replace all data",
+            MinWidth = 140,
+        };
+        var no = new Button
+        {
+            Content = "Cancel",
+            MinWidth = 80,
+        };
+
+        var confirmed = false;
+        yes.Click += (_, _) => { confirmed = true; dialog.Close(true); };
+        no.Click += (_, _) => dialog.Close(false);
+
+        buttons.Children.Add(yes);
+        buttons.Children.Add(no);
+        panel.Children.Add(text);
+        panel.Children.Add(buttons);
+        dialog.Content = panel;
+
+        return await dialog.ShowDialog<bool>(this) == true && confirmed;
+    }
+
+    private async void ImportData_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_store == null) return;
+        if (!await ConfirmReplaceAsync()) return;
+        try
+        {
+            var picked = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Import bulletin data",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("Bulletin backup (*.bulletinbackup)")
+                    {
+                        Patterns = new[] { "*.bulletinbackup" },
+                    },
+                },
+            });
+            if (picked.Count == 0) return;
+
+            var path = picked[0].Path.LocalPath;
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            var json = File.ReadAllText(path);
+            var bundle = JsonSerializer.Deserialize<BulletinBundle>(json);
+            if (bundle == null) throw new InvalidDataException("The backup file is empty.");
+            if (bundle.Version != 1)
+                throw new InvalidDataException($"Unsupported backup version {bundle.Version}.");
+
+            // Overwrite ALL existing data: apply settings from the file (values
+            // missing from the file are cleared, not kept), then reconnect so the
+            // store points at the (possibly new) shared folder.
+            _settings.SharedFolder = bundle.Settings?.SharedFolder;
+            _settings.Theme = bundle.Settings?.Theme ?? "Light";
+            _settings.Save();
+            Connect();
+
+            int written = 0;
+            if (_store != null)
+            {
+                // Remove every old bulletin file so nothing stale remains.
+                foreach (var existing in Directory.EnumerateFiles(_store.folder, "*.json"))
+                    File.Delete(existing);
+
+                foreach (var b in bundle.Bulletins)
+                {
+                    if (!DateOnly.TryParseExact(b.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                            DateTimeStyles.None, out var date))
+                        continue;
+                    _store.Save(date, b);
+                    written++;
+                }
+            }
+
+            Render();
+            SetDataStatus($"Imported {written} bulletin(s); all previous data replaced.", isProblem: false);
+        }
+        catch (Exception ex)
+        {
+            SetDataStatus($"Import failed: {ex.Message}", isProblem: true);
+        }
+    }
+
+    private void SetDataStatus(string text, bool isProblem)
+    {
+        DataStatusText.Text = text;
+        DataStatusText.Foreground = isProblem
+            ? new SolidColorBrush(Color.Parse("#8A1C1C"))
+            : new SolidColorBrush(Color.Parse("#1C6A1C"));
+    }
+
+    // Switches light/dark mode, persists the choice, and refreshes both windows.
+    private void ThemeToggle_Click(object? sender, RoutedEventArgs e)
+    {
+        var next = _settings.Theme == "Dark" ? "Light" : "Dark";
+        _settings.Theme = next;
+        _settings.Save();
+
+        var app = (App)Application.Current;
+        app.ApplyTheme(next);
+        UpdateThemeToggle();
+        Render();
+    }
+
+    private void UpdateThemeToggle() =>
+        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
 
     // ───────────────────────────── months and Sundays ─────────────────────────────
 
@@ -208,7 +409,7 @@ public partial class CalendarWindow : Window
     {
         if (_editor == null)
         {
-            _editor = new MainWindow(store, corrections);
+            _editor = new MainWindow(store, corrections, _settings);
             _editor.BulletinSaved += Render;               // keeps the gold marks up to date
             _editor.Closed += (_, _) => _editor = null;
             _editor.ShowSunday(sunday);
@@ -269,8 +470,8 @@ public partial class CalendarWindow : Window
         if (saved.Contains(date)) button.Background = SavedBrush;
         if (date == _selected)
         {
-            button.BorderBrush = SelectedBrush;
-            button.BorderThickness = new Thickness(2);
+            button.Background = SelectedBrush;
+            button.Foreground = SelectedFg;
         }
         button.Click += (_, _) => Choose(date);
         return button;

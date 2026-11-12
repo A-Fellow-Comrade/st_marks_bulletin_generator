@@ -13,8 +13,14 @@ namespace st_mark_bulletin_generator.Pdf;
 public class BulletinDocument : IDocument
 {
     private const string FontName = "Lato";
-    private static string CoverImage =>
+    private static string RandomCoverImage =>
         Path.Combine(AppContext.BaseDirectory, "imgs", $"{Random.Shared.Next(1, 7)}.jpg");
+
+    // Returns the bulletin's chosen image, or a random one if none was chosen.
+    private string CoverImage =>
+        (!string.IsNullOrEmpty(_b.CoverImagePath) && File.Exists(_b.CoverImagePath))
+            ? _b.CoverImagePath
+            : RandomCoverImage;
 
 
     private readonly Bulletin _b;
@@ -271,7 +277,7 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                     col.Item().PaddingTop(4).AlignCenter().Text(t =>
                     {
                         t.DefaultTextStyle(s => s.Italic().FontSize(10));
-                        t.Span("Our 125");
+                        t.Span($"Our {DateTime.Now.Year - 1901}");
                         t.Span("th").Superscript();
                         t.Span(" year of Proclaiming the Gospel");
                     });

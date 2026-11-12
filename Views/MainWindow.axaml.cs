@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -64,23 +65,27 @@ public partial class MainWindow : Window
     // corrections, so they must not overwrite the hymn database.
     private readonly Dictionary<string, (int? Number, string Title)> _snapshot = new();
 
+    // The image file path the user picked, or null for random (default).
+    private string? _selectedCoverImagePath;
+
     // The psalm: versions come from the Psalm_XXX.csv files that are installed.
     private readonly List<string> _versions = PsalmLookup.Versions();
     private AppointedPsalm _appointed = new();   // what the lectionary appoints for this Sunday
     private bool _psalmBusy;                     // true while the psalm boxes are being filled by code
     private string _shownPsalm = "";             // the psalm number the Verses box belongs to
     private const int LongPsalmCharacters = 2000;
-    //which lectionary the sunday name and appointed psalm were last used from/
     private LiturgyTools.Lectionary _lectionaryShown = LiturgyTools.Lectionary.ThreeYear;
     private bool _lectionaryBusy; // true while the dropdown is set by code
 
     // Only here so Avalonia's XAML loader and previewer can find the window (they
     // need a public constructor without parameters). The app never uses it.
     public MainWindow() => throw new InvalidOperationException(
-        "MainWindow needs the bulletin store: use MainWindow(BulletinStore, HymnCorrections).");
+        "MainWindow needs the bulletin store: use MainWindow(BulletinStore, HymnCorrections, AppSettings).");
 
-    public MainWindow(BulletinStore store, HymnCorrections corrections)
+    public MainWindow(BulletinStore store, HymnCorrections corrections, AppSettings settings)
     {
+        _settings = settings;
+
         // Permanent per-user folder, so rebuilding or cleaning the project
         // can't erase corrected hymn titles. On Windows this is
         // %LocalAppData%\StMarkBulletin; on Linux, ~/.local/share/StMarkBulletin.
@@ -102,6 +107,12 @@ public partial class MainWindow : Window
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
 
+        // Reflect the remembered theme on the toggle button.
+        UpdateThemeToggle();
+
+        // If the other window switches theme, keep this button's label in sync.
+        ((App)Application.Current).ThemeChanged += _ => UpdateThemeToggle();
+
         PsalmVersionBox.ItemsSource = _versions;
         PsalmVersionBox.SelectedIndex = 0;
 
@@ -109,6 +120,26 @@ public partial class MainWindow : Window
         _saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
         _saveTimer.Tick += (_, _) => SaveCurrent();
         HookChangeEvents();
+    }
+
+    private readonly AppSettings _settings;
+
+    // Switches light/dark mode, persists the choice, and tells every window
+    // to refresh.
+    private void ThemeToggle_Click(object? sender, RoutedEventArgs e)
+    {
+        var next = _settings.Theme == "Dark" ? "Light" : "Dark";
+        _settings.Theme = next;
+        _settings.Save();
+
+        var app = (App)Application.Current;
+        app.ApplyTheme(next);
+        UpdateThemeToggle();
+    }
+
+    private void UpdateThemeToggle()
+    {
+        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
     }
 
     // Any edit to the form marks the current Sunday as needing a save.
@@ -267,6 +298,20 @@ public partial class MainWindow : Window
         return true;
     }
 
+    private async void PickImage_Click(object? sender, RoutedEventArgs e)
+    {
+        var imgsFolder = Path.Combine(AppContext.BaseDirectory, "imgs");
+        var dialog = new CoverImagePickerWindow(imgsFolder, _selectedCoverImagePath);
+        var confirmed = await dialog.ShowDialog<bool>(this);
+
+        if (!confirmed) return;         // user hit Cancel – keep whatever was set before
+
+        _selectedCoverImagePath = dialog.SelectedImagePath;
+        PickImageLabel.Text = _selectedCoverImagePath != null
+            ? Path.GetFileName(_selectedCoverImagePath)
+            : "Random";
+    }
+
     private void Generate_Click(object? sender, RoutedEventArgs e)
     {
         if (_currentDate is not DateOnly sunday)
@@ -316,9 +361,10 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
+            Announcements = AnnouncementsBox.Text ?? "",
+            CoverImagePath = _selectedCoverImagePath,
             PsalmTitle = psalm.Title,
             Psalm = psalm.Verses,
-            Announcements = AnnouncementsBox.Text ?? ""
         };
 
         try
@@ -697,10 +743,6 @@ public partial class MainWindow : Window
 
     private void UpdatePsalmControls()
     {
-        PsalmAppointedText.Text = _appointed.Problem ??
-            ("Appointed: " + _appointed.Display +
-             (_appointed.Alternates.Length > 0 ? $" (or {_appointed.Alternates})" : ""));
-
         // The optional verses belong to the appointed psalm only.
         bool canUseOptional = _appointed.Optional.Length > 0 && PsalmIsAppointed;
         PsalmOptionalBox.IsEnabled = canUseOptional;
@@ -725,7 +767,6 @@ public partial class MainWindow : Window
         var result = PsalmLookup.Load(version, PsalmNumberBox.Text, PsalmVersesBox.Text);
         if (result.Problem != null)
         {
-            PsalmStatusText.Text = result.Problem;
             return;
         }
 
@@ -733,7 +774,6 @@ public partial class MainWindow : Window
         var text = $"{result.Title} ({version}): {count} verse{(count == 1 ? "" : "s")}.";
         if (result.TotalCharacters > LongPsalmCharacters)
             text += " This is long, so it will print in smaller type.";
-        PsalmStatusText.Text = text;
     }
 
     // The pastor finished typing a psalm number. A different psalm means the old
@@ -774,7 +814,6 @@ public partial class MainWindow : Window
     {
         if (_appointed.Chapter.Length == 0)
         {
-            PsalmStatusText.Text = _appointed.Problem ?? "There is no appointed psalm to use.";
             return;
         }
 
