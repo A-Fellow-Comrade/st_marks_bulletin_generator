@@ -250,6 +250,9 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
 
                         col.Item().HTML(handler =>
                         {
+                            handler.SetContainerStyleForHtmlElement(
+                                "p", container => container.PaddingVertical(1)
+                            );
                             handler.SetHtml(htmlWithAsterisks);
                         });
                     }
