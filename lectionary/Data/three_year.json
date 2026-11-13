@@ -1588,7 +1588,24 @@
     "season": "Ordinary Time",
     "color": "White",
     "feast": false,
-    "readings": null
+    "A": {
+      "ot": "Ezekiel 34:11-16, 20-24",
+      "ps": "Psalm 95:1-7a (antiphon: v. 7a)",
+      "ep": "1 Corinthians 15:20-28",
+      "go": "Matthew 25:31-46"
+    },
+    "B": {
+      "ot": "Isaiah 51:4-6",
+      "ps": "Psalm 93 (antiphon: v. 2)",
+      "ep": "Jude 20-25",
+      "go": "Mark 13:24-37"
+    },
+    "C": {
+      "ot": "Malachi 3:13-18",
+      "ps": "Psalm 46 (antiphon: v. 7)",
+      "ep": "Colossians 1:13-20",
+      "go": "Luke 23:27-43"
+    }
   },
   "reformation": {
     "name": "Reformation Day",
@@ -1596,7 +1613,12 @@
     "color": "Red",
     "feast": true,
     "minor": true,
-    "readings": null
+    "readings": {
+      "ot": "Revelation 14:6–7",
+      "ps": "Psalm 46 (antiphon: v. 7)",
+      "ep": "Romans 3:19-28",
+      "go": "John 8:31-36"
+    }
   },
   "all_saints": {
     "name": "All Saints' Day",
@@ -1604,7 +1626,24 @@
     "color": "White",
     "feast": true,
     "minor": true,
-    "readings": null
+    "A": {
+      "ot": "Revelation 7:(2-8) 9-17",
+      "ps": "Psalm 149 (antiphon: v. 4)",
+      "ep": "1 John 3:1-3",
+      "go": "Matthew 5:1-12"
+    },
+    "B": {
+      "ot": "Revelation 7:(2-8) 9-17",
+      "ps": "Psalm 149 (antiphon: v. 4)",
+      "ep": "1 John 3:1-3",
+      "go": "Matthew 5:1-12"
+    },
+    "C": {
+      "ot": "Revelation 7:(2-8) 9-17",
+      "ps": "Psalm 149 (antiphon: v. 4)",
+      "ep": "1 John 3:1-3",
+      "go": "Matthew 5:1-12"
+    }
   },
   "thanksgiving": {
     "name": "Day of Thanksgiving",
