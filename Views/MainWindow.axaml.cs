@@ -2,8 +2,10 @@ using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuestPDF.Fluent;
 using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Liturgical;
@@ -104,15 +106,25 @@ public partial class MainWindow : Window
 
         InitializeComponent();
         AnnouncementsBox.Toolbar.ToolbarLevel = AvaloniaRichEditor.Controls.ToolbarLevel.Normal;
+        AnnouncementsBox.Toolbar.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == ContentControl.ContentProperty)
+                ApplyAnnouncementsTheme();
+        };
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
 
         // Reflect the remembered theme on the toggle button.
         UpdateThemeToggle();
+        ApplyAnnouncementsTheme();
 
         // If the other window switches theme, keep this button's label in sync.
-        ((App)Application.Current).ThemeChanged += _ => UpdateThemeToggle();
+        ((App)Application.Current).ThemeChanged += _ =>
+        {
+            UpdateThemeToggle();
+            ApplyAnnouncementsTheme();
+        };
 
         PsalmVersionBox.ItemsSource = _versions;
         PsalmVersionBox.SelectedIndex = 0;
@@ -141,6 +153,26 @@ public partial class MainWindow : Window
     private void UpdateThemeToggle()
     {
         ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
+    }
+
+    private void ApplyAnnouncementsTheme()
+    {
+        var resources = ((App)Application.Current).Resources;
+        var foreground = (IBrush)resources["TextBrush"];
+
+        AnnouncementsBox.Editor.DefaultForeground = foreground;
+        AnnouncementsBox.Editor.CaretBrush = foreground;
+
+        if (AnnouncementsBox.Toolbar.Content is Border toolbarBorder)
+            toolbarBorder.Background = (IBrush)resources["CardBrush"];
+
+        foreach (var control in AnnouncementsBox.Toolbar.GetVisualDescendants())
+        {
+            if (control is Border { Width: 1, Height: 22 } separator)
+                separator.Background = (IBrush)resources["BorderBrush"];
+            else if (control is ComboBox comboBox)
+                comboBox.BorderBrush = (IBrush)resources["InputBorderBrush"];
+        }
     }
 
     // Any edit to the form marks the current Sunday as needing a save.
