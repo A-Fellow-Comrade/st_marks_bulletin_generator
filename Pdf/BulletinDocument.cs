@@ -5,6 +5,8 @@ using st_mark_bulletin_generator.Data;
 using st_mark_bulletin_generator.Models;
 using LiturgyTools;
 using System;
+using HTMLQuestPDF.Extensions;
+using System.Text.RegularExpressions;
 
 
 namespace st_mark_bulletin_generator.Pdf;
@@ -69,8 +71,7 @@ public class BulletinDocument : IDocument
 
     public void Compose(IDocumentContainer container)
     {
-        var announcements = _b.Announcements.Split('\n',
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var announcementsHtml = _b.Announcements ?? "";
 
 
         // "Today is the nineteenth Sunday after Pentecost. " (left out if the name box is empty)
@@ -236,11 +237,21 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
 
 
                     // Announcements from the form, one bullet per line.
-                    if (announcements.Length > 0)
+                    if (!string.IsNullOrWhiteSpace(announcementsHtml))
                     {
                         col.Item().PaddingTop(2).AlignCenter().Text("Item of Interest").Italic();
-                        foreach (var a in announcements)
-                            col.Item().Text($"* {a}");
+
+                        var htmlWithAsterisks = Regex.Replace(
+                            announcementsHtml,
+                            @"(<p\b[^>]*>)",
+                            "$1* ",
+                            RegexOptions.IgnoreCase
+                        );
+
+                        col.Item().HTML(handler =>
+                        {
+                            handler.SetHtml(htmlWithAsterisks);
+                        });
                     }
 
 

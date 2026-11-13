@@ -12,6 +12,7 @@
     <PackageReference Include="AvaloniaRichEditor" Version="1.3.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="QuestPDF" Version="2026.9.1" />
+    <PackageReference Include="QuestPDF.HTML" Version="1.5.1" />
   </ItemGroup>
 
   <ItemGroup>
