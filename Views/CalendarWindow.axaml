@@ -188,7 +188,7 @@
                 <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
                            VerticalAlignment="Center"/>
             </StackPanel>
-c
+
         </StackPanel>
         </ScrollViewer>
     </DockPanel>
