@@ -1,6 +1,5 @@
 namespace st_mark_bulletin_generator.Models;
 
-
 public class Bulletin
 {
     public DateOnly? Date { get; set; }                // the Sunday
@@ -16,13 +15,14 @@ public class Bulletin
     public string Creed { get; set; } = "";          // "Nicene Creed"
     public string CreedPages { get; set; } = "";     // "158"
     public int? HymnOfTheDay { get; set; }
-    public string DayTitle { get; set; } = "";     
+    public string DayTitle { get; set; } = "";    
     public int? ClosingHymn { get; set; }
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
-    public string PsalmTitle { get; set; } = ""; 
+    public string PsalmTitle { get; set; } = "";
     public (string V, string[] Lines)[] Psalm { get; set; } = Array.Empty<(string V, string[] Lines)>();
-    public string Announcements { get; set; } = "";  // one per line
+    public string Announcements { get; set; } = "";  // rich text (HTML), one per paragraph
+    public string Acknowledgements { get; set; } = ""; // rich text (HTML): thank-yous for this Sunday
 
     // null → pick randomly at render time
     public string? CoverImagePath { get; set; }

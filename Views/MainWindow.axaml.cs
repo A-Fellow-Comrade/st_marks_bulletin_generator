@@ -105,30 +105,23 @@ public partial class MainWindow : Window
         _corrections = corrections;
 
         InitializeComponent();
-        AnnouncementsBox.Toolbar.ToolbarLevel = AvaloniaRichEditor.Controls.ToolbarLevel.Normal;
-        AnnouncementsBox.Toolbar.PropertyChanged += (_, e) =>
-        {
-            if (e.Property == ContentControl.ContentProperty)
-            {
-                ApplyAnnouncementsTheme();
-                ConfigureAnnouncementsToolbar();
-            }
-        };
+
+        // The two rich-text boxes (Announcements, Acknowledgements) share their set-up.
+        RichBox.Prepare(AnnouncementsBox, AnnouncementsPlaceholder, MarkDirty);
+        RichBox.Prepare(AcknowledgementsBox, AcknowledgementsPlaceholder, MarkDirty);
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
 
         // Reflect the remembered theme on the toggle button.
         UpdateThemeToggle();
-        ApplyAnnouncementsTheme();
-        ConfigureAnnouncementsToolbar();
-        UpdateAnnouncementsWatermark();
 
         // If the other window switches theme, keep this button's label in sync.
         ((App)Application.Current).ThemeChanged += _ =>
         {
             UpdateThemeToggle();
-            ApplyAnnouncementsTheme();
+            RichBox.ApplyTheme(AnnouncementsBox);
+            RichBox.ApplyTheme(AcknowledgementsBox);
         };
 
         PsalmVersionBox.ItemsSource = _versions;
@@ -160,53 +153,18 @@ public partial class MainWindow : Window
         ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
     }
 
-    private void ApplyAnnouncementsTheme()
+    // Shows or hides each rich-text box's "Type here..." note.
+    private void UpdatePlaceholders()
     {
-        var resources = ((App)Application.Current).Resources;
-        var foreground = (IBrush)resources["TextBrush"];
-
-        AnnouncementsBox.Editor.DefaultForeground = foreground;
-        AnnouncementsBox.Editor.CaretBrush = foreground;
-
-        if (AnnouncementsBox.Toolbar.Content is Border toolbarBorder)
-            toolbarBorder.Background = (IBrush)resources["CardBrush"];
-
-        foreach (var control in AnnouncementsBox.Toolbar.GetVisualDescendants())
-        {
-            if (control is Border { Width: 1, Height: 22 } separator)
-                separator.Background = (IBrush)resources["BorderBrush"];
-            else if (control is ComboBox comboBox)
-                comboBox.BorderBrush = (IBrush)resources["InputBorderBrush"];
-        }
+        RichBox.UpdatePlaceholder(AnnouncementsBox, AnnouncementsPlaceholder);
+        RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
     }
 
-    private void ConfigureAnnouncementsToolbar()
+    // The thank-yous belong to one Sunday, so they are never carried over to another.
+    private void ClearAcknowledgements()
     {
-        if (AnnouncementsBox.Toolbar.Content is not Border { Child: WrapPanel wrap })
-            return;
-
-        string bold = AvaloniaRichEditor.RichEditorLocalization.GetString("Bold");
-        string italic = AvaloniaRichEditor.RichEditorLocalization.GetString("Italic");
-        string underline = AvaloniaRichEditor.RichEditorLocalization.GetString("Underline");
-        string textColor = AvaloniaRichEditor.RichEditorLocalization.GetString("TextColor");
-
-        foreach (var item in wrap.Children)
-        {
-            bool keep = item is Button button
-                && ToolTip.GetTip(button)?.ToString() is string tip
-                && (tip.StartsWith(bold + " (", StringComparison.Ordinal)
-                    || tip.StartsWith(italic + " (", StringComparison.Ordinal)
-                    || tip.StartsWith(underline + " (", StringComparison.Ordinal)
-                    || string.Equals(tip, textColor, StringComparison.Ordinal));
-            item.IsVisible = keep;
-        }
-    }
-
-    private void UpdateAnnouncementsWatermark()
-    {
-        AnnouncementsPlaceholder.IsVisible =
-            string.IsNullOrWhiteSpace(AnnouncementsBox.Editor.GetPlainText())
-            && AnnouncementsBox.Editor.GetImageCount() == 0;
+        AcknowledgementsBox.Editor.LoadHtml("");
+        RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
     }
 
     // Any edit to the form marks the current Sunday as needing a save.
@@ -221,12 +179,7 @@ public partial class MainWindow : Window
         foreach (var box in boxes)
             box.TextChanged += (_, _) => MarkDirty();
 
-        //anncounements weird
-        AnnouncementsBox.Editor.TextChanged += (_, _) =>
-        {
-            UpdateAnnouncementsWatermark();
-            MarkDirty();
-        };
+        // (the rich-text boxes mark the form dirty through RichBox.Prepare)
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
@@ -436,6 +389,7 @@ public partial class MainWindow : Window
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
             Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
+            Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
             CoverImagePath = _selectedCoverImagePath,
             PsalmTitle = psalm.Title,
             Psalm = psalm.Verses,
@@ -545,6 +499,7 @@ public partial class MainWindow : Window
                 if (source != null)
                 {
                     ApplyRecord(source);
+                    ClearAcknowledgements();      // thank-yous are for one Sunday only
                     _copiedFrom = previous;
                     psalmVersionHint = source.PsalmVersion;
                 }
@@ -635,7 +590,6 @@ public partial class MainWindow : Window
         return "a moment ago";
     }
 
-
     private void UseTheirs_Click(object? sender, RoutedEventArgs e)
     {
         if (_currentDate is not DateOnly date) return;
@@ -669,7 +623,6 @@ public partial class MainWindow : Window
 
         if (kept.Length > 0) StatusText.Text = $"Their version was kept in the file {kept}.";
     }
-
 
     // ───────────────────────── the lectionary ─────────────────────────
     private LiturgyTools.Lectionary CurrentLectionary =>
@@ -710,7 +663,6 @@ public partial class MainWindow : Window
         if (typed.Length == 0 || typed == oldName)
             SundayNameBox.Text = LookUpSundayName(date);
 
-
         bool untouched =
             ((PsalmNumberBox.Text?.Trim() ?? "").Length == 0 &&
              (PsalmVersesBox.Text?.Trim() ?? "").Length == 0) ||
@@ -737,7 +689,6 @@ public partial class MainWindow : Window
         UpdatePsalmControls();
         MarkDirty();
     }
-
 
     // ───────────────────────── the psalm ─────────────────────────
 
@@ -923,6 +874,7 @@ public partial class MainWindow : Window
         PsalmVerses = PsalmVersesBox.Text?.Trim() ?? "",
         PsalmIncludeOptional = PsalmOptionalBox.IsChecked == true,
         Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
+        Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
         SavedAt = DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture),
         SavedBy = Environment.MachineName,
     };
@@ -942,7 +894,8 @@ public partial class MainWindow : Window
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
-        UpdateAnnouncementsWatermark();
+        AcknowledgementsBox.Editor.LoadHtml(r.Acknowledgements ?? "");
+        UpdatePlaceholders();
     }
 
     // Empty form with the usual defaults (the pastor's very first launch).
@@ -960,7 +913,8 @@ public partial class MainWindow : Window
         SetHymn(ClosingHymnBox, ClosingTitle, "", "");
         PostludeBox.Text = "";
         AnnouncementsBox.Editor.LoadHtml("");
-        UpdateAnnouncementsWatermark();
+        ClearAcknowledgements();
+        UpdatePlaceholders();
     }
 
     // Sets a hymn number and shows the title that was saved with it. If no
