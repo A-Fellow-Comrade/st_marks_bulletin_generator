@@ -270,7 +270,9 @@
             <Border Classes="card">
                 <StackPanel>
                     <TextBlock Classes="section-title" Text="ANNOUNCEMENTS"/>
-                    <rte:RichEditorView x:Name="AnnouncementsBox" Height="200"/>
+                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
+                        <rte:RichEditorView x:Name="AnnouncementsBox" Height="200" ShowStatusBar="False"/>
+                    </Border>
                 </StackPanel>
             </Border>
 
