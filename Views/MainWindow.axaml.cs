@@ -122,6 +122,7 @@ public partial class MainWindow : Window
         UpdateThemeToggle();
         ApplyAnnouncementsTheme();
         ConfigureAnnouncementsToolbar();
+        UpdateAnnouncementsWatermark();
 
         // If the other window switches theme, keep this button's label in sync.
         ((App)Application.Current).ThemeChanged += _ =>
@@ -201,6 +202,13 @@ public partial class MainWindow : Window
         }
     }
 
+    private void UpdateAnnouncementsWatermark()
+    {
+        AnnouncementsPlaceholder.IsVisible =
+            string.IsNullOrWhiteSpace(AnnouncementsBox.Editor.GetPlainText())
+            && AnnouncementsBox.Editor.GetImageCount() == 0;
+    }
+
     // Any edit to the form marks the current Sunday as needing a save.
     private void HookChangeEvents()
     {
@@ -214,7 +222,11 @@ public partial class MainWindow : Window
             box.TextChanged += (_, _) => MarkDirty();
 
         //anncounements weird
-        AnnouncementsBox.Editor.TextChanged += (_,_) => MarkDirty();
+        AnnouncementsBox.Editor.TextChanged += (_, _) =>
+        {
+            UpdateAnnouncementsWatermark();
+            MarkDirty();
+        };
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
@@ -930,6 +942,7 @@ public partial class MainWindow : Window
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
+        UpdateAnnouncementsWatermark();
     }
 
     // Empty form with the usual defaults (the pastor's very first launch).
@@ -947,6 +960,7 @@ public partial class MainWindow : Window
         SetHymn(ClosingHymnBox, ClosingTitle, "", "");
         PostludeBox.Text = "";
         AnnouncementsBox.Editor.LoadHtml("");
+        UpdateAnnouncementsWatermark();
     }
 
     // Sets a hymn number and shows the title that was saved with it. If no

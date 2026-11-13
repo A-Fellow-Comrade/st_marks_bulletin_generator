@@ -271,7 +271,24 @@
                 <StackPanel>
                     <TextBlock Classes="section-title" Text="ANNOUNCEMENTS"/>
                     <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
-                        <rte:RichEditorView x:Name="AnnouncementsBox" Height="200" ShowStatusBar="False"/>
+                        <Grid>
+                            <rte:RichEditorView x:Name="AnnouncementsBox" Height="200" ShowStatusBar="False"/>
+                            <Border x:Name="AnnouncementsPlaceholder"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource BrandGoldBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="12,8"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                                <TextBlock Text="Type here...&#10;Put each new announcement on its own line."
+                                           Foreground="{DynamicResource MutedBrush}"
+                                           FontStyle="Italic"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"/>
+                            </Border>
+                        </Grid>
                     </Border>
                 </StackPanel>
             </Border>
