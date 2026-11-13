@@ -109,7 +109,10 @@ public partial class MainWindow : Window
         AnnouncementsBox.Toolbar.PropertyChanged += (_, e) =>
         {
             if (e.Property == ContentControl.ContentProperty)
+            {
                 ApplyAnnouncementsTheme();
+                ConfigureAnnouncementsToolbar();
+            }
         };
 
         // Start on Setting Three (what your current bulletin uses).
@@ -118,6 +121,7 @@ public partial class MainWindow : Window
         // Reflect the remembered theme on the toggle button.
         UpdateThemeToggle();
         ApplyAnnouncementsTheme();
+        ConfigureAnnouncementsToolbar();
 
         // If the other window switches theme, keep this button's label in sync.
         ((App)Application.Current).ThemeChanged += _ =>
@@ -172,6 +176,28 @@ public partial class MainWindow : Window
                 separator.Background = (IBrush)resources["BorderBrush"];
             else if (control is ComboBox comboBox)
                 comboBox.BorderBrush = (IBrush)resources["InputBorderBrush"];
+        }
+    }
+
+    private void ConfigureAnnouncementsToolbar()
+    {
+        if (AnnouncementsBox.Toolbar.Content is not Border { Child: WrapPanel wrap })
+            return;
+
+        string bold = AvaloniaRichEditor.RichEditorLocalization.GetString("Bold");
+        string italic = AvaloniaRichEditor.RichEditorLocalization.GetString("Italic");
+        string underline = AvaloniaRichEditor.RichEditorLocalization.GetString("Underline");
+        string textColor = AvaloniaRichEditor.RichEditorLocalization.GetString("TextColor");
+
+        foreach (var item in wrap.Children)
+        {
+            bool keep = item is Button button
+                && ToolTip.GetTip(button)?.ToString() is string tip
+                && (tip.StartsWith(bold + " (", StringComparison.Ordinal)
+                    || tip.StartsWith(italic + " (", StringComparison.Ordinal)
+                    || tip.StartsWith(underline + " (", StringComparison.Ordinal)
+                    || string.Equals(tip, textColor, StringComparison.Ordinal));
+            item.IsVisible = keep;
         }
     }
 
