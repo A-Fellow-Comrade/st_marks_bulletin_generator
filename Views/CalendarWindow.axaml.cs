@@ -153,6 +153,15 @@ public partial class CalendarWindow : Window
         RetryButton.IsVisible = canRetry;
     }
 
+    // Opens the church settings (the wording printed on every bulletin). They live in
+    // the shared folder, so this needs a reachable folder.
+    private async void Settings_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_churchStore == null) return;
+        await new SettingsWindow(_churchStore).ShowDialog<bool>(this);
+    }
+
+
     private void ChooseFolder_Click(object? sender, RoutedEventArgs e) => PickFolder();
 
     private void Retry_Click(object? sender, RoutedEventArgs e) => Connect();
@@ -266,6 +275,7 @@ public partial class CalendarWindow : Window
 
         // Nothing can be opened until a reachable folder is chosen.
         WeekGrid.IsEnabled = _store != null;
+        SettingsButton.IsEnabled = _churchStore != null;
         PrevSundayButton.IsEnabled = _store != null;
         ThisSundayButton.IsEnabled = _store != null;
         NextSundayButton.IsEnabled = _store != null;

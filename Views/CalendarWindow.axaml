@@ -55,9 +55,14 @@
                            Foreground="White" FontSize="17" FontWeight="SemiBold"/>
                 <TextBlock Text="Select a Sunday to open its bulletin"
                            Foreground="#C0A060" FontSize="12"/>
-                <Button x:Name="ThemeToggle" Classes="theme-toggle"
-                        Content="☀  Light" Click="ThemeToggle_Click"
-                        HorizontalAlignment="Right" Margin="0,8,0,0"/>
+                <StackPanel Orientation="Horizontal" Spacing="8"
+                            HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button x:Name="SettingsButton" Classes="theme-toggle"
+                            Content="⚙  Settings" Click="Settings_Click"
+                            ToolTip.Tip="The wording printed on every bulletin: church name, contact details and so on"/>
+                    <Button x:Name="ThemeToggle" Classes="theme-toggle"
+                            Content="☀  Light" Click="ThemeToggle_Click"/>
+                </StackPanel>
             </StackPanel>
         </Border>
 
