@@ -1,0 +1,75 @@
+name: Cross-Platform .NET Desktop Release
+
+on:
+  release:
+    types: [published]
+
+# Kill in-progress builds if a newer release is published
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # Define the OS runners and their corresponding .NET Runtime Identifiers (RID)
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-x64
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      Project_Path: ./st_mark_bulletin_generator.csproj
+      Configuration: Release
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore ${{ env.Project_Path }} -r ${{ matrix.rid }}
+
+    - name: Publish Application
+      run: >
+        dotnet publish ${{ env.Project_Path }}
+        -c ${{ env.Configuration }}
+        -r ${{ matrix.rid }}
+        --self-contained true
+        -p:PublishSingleFile=true
+        -o ./publish_output
+
+    - name: Build Windows Installer (Inno Setup)
+      if: matrix.os == 'windows-latest'
+      run: iscc installer.iss
+
+    - name: Package Linux and macOS Binaries
+      if: matrix.os != 'windows-latest'
+      run: tar -czvf st_mark_bulletin_generator-${{ matrix.rid }}.tar.gz -C ./publish_output .
+
+    - name: Upload Windows Setup to Release
+      if: matrix.os == 'windows-latest'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./installer_output/setup.exe
+
+    - name: Upload Linux and macOS Archives to Release
+      if: matrix.os != 'windows-latest'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./st_mark_bulletin_generator-${{ matrix.rid }}.tar.gz
