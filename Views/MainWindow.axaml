@@ -8,7 +8,6 @@
         CanResize="True"
         Background="{DynamicResource SurfaceBrush}">
 
-
     <Window.Styles>
         <!-- Section card -->
         <Style Selector="Border.card">
@@ -108,8 +107,14 @@
                                Foreground="#C0A060" FontSize="11"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
                     <Button x:Name="ThemeToggle" Classes="theme-toggle"
-                            Content="☀  Light" Click="ThemeToggle_Click"
-                            HorizontalAlignment="Right"/>
+                            Click="ThemeToggle_Click"
+                            HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon x:Name="ThemeSunIcon" Data="{StaticResource IconSun}" Width="14" Height="14"/>
+                            <PathIcon x:Name="ThemeMoonIcon" Data="{StaticResource IconMoon}" Width="14" Height="14" IsVisible="False"/>
+                            <TextBlock x:Name="ThemeLabel" Text="Light" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -240,12 +245,12 @@
                                 FontWeight="SemiBold" Margin="8,0,2,0"
                                 VerticalAlignment="Center"/>
 
-                        <TextBox Grid.Row="0" Grid.Column="3" 
+                        <TextBox Grid.Row="0" Grid.Column="3"
                                 x:Name="PsalmVersesBox"
                                 Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
 
                         <ComboBox Grid.Row="0" Grid.Column="4" x:Name="PsalmVersionBox"
-                                MinWidth="90"/> 
+                                MinWidth="90"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0"/>
                         <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
@@ -292,6 +297,34 @@
                     </Border>
                 </StackPanel>
             </Border>
+
+            <!-- ── CARD: Acknowledgements ── -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Classes="section-title" Text="ACKNOWLEDGEMENTS"/>
+                    <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
+                        <Grid>
+                            <rte:RichEditorView x:Name="AcknowledgementsBox" Height="140" ShowStatusBar="False"/>
+                            <Border x:Name="AcknowledgementsPlaceholder"
+                                    Background="{DynamicResource InputBackgroundBrush}"
+                                    BorderBrush="{DynamicResource BrandGoldBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="12,8"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                                <TextBlock Text="Type here...&#10;Thank the people who helped this Sunday, one per line."
+                                           Foreground="{DynamicResource MutedBrush}"
+                                           FontStyle="Italic"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
 
             <!-- ── CARD: Cover Image ── -->
             <Border Classes="card">

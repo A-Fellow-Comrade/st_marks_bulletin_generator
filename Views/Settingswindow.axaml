@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="st_mark_bulletin_generator.Views.SettingsWindow"
+        Title="Church settings"
+        Width="700" Height="780" MinWidth="520" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="{DynamicResource SurfaceBrush}">
+
+    <Window.Styles>
+        <!-- Section card -->
+        <Style Selector="Border.card">
+            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"   Value="6"/>
+            <Setter Property="Padding"        Value="16,12"/>
+            <Setter Property="Margin"         Value="0,0,0,10"/>
+        </Style>
+
+        <!-- Section heading inside a card -->
+        <Style Selector="TextBlock.section-title">
+            <Setter Property="FontSize"       Value="10"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="Margin"         Value="0,0,0,2"/>
+            <Setter Property="LetterSpacing"  Value="1.5"/>
+        </Style>
+
+        <!-- A setting's name, above its box -->
+        <Style Selector="TextBlock.field">
+            <Setter Property="Foreground"     Value="{DynamicResource LabelBrush}"/>
+            <Setter Property="FontSize"       Value="12"/>
+            <Setter Property="Margin"         Value="0,10,0,0"/>
+        </Style>
+
+        <!-- Small note under a setting's name -->
+        <Style Selector="TextBlock.hint">
+            <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="FontSize"       Value="11"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+            <Setter Property="Margin"         Value="0,1,0,0"/>
+        </Style>
+
+        <!-- Message next to the buttons: plain, or red for a problem -->
+        <Style Selector="TextBlock#StatusText">
+            <Setter Property="Foreground" Value="{DynamicResource LabelBrush}"/>
+        </Style>
+        <Style Selector="TextBlock#StatusText.error">
+            <Setter Property="Foreground" Value="#D9534F"/>
+        </Style>
+
+        <!-- All text boxes -->
+        <Style Selector="TextBox">
+            <Setter Property="Background"     Value="{DynamicResource InputBackgroundBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource InputBorderBrush}"/>
+            <Setter Property="Margin"         Value="0,3"/>
+            <Setter Property="CornerRadius"   Value="4"/>
+        </Style>
+
+        <!-- Secondary buttons -->
+        <Style Selector="Button.secondary">
+            <Setter Property="Background"  Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Padding"     Value="12,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+
+        <!-- Save button -->
+        <Style Selector="Button.save">
+            <Setter Property="Background"  Value="{DynamicResource BrandBurgundyBrush}"/>
+            <Setter Property="Foreground"  Value="White"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+            <Setter Property="Padding"     Value="22,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="Button.save:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#7A2340"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+
+        <!-- ══════════════ HEADER (pinned) ══════════════ -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="20,16">
+            <StackPanel Spacing="2">
+                <TextBlock Text="Church settings"
+                           Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                <TextBlock Text="Wording printed on every bulletin. Changes appear in the next PDF made on any computer using this folder."
+                           Foreground="#E8C97A" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ══════════════ BUTTONS (pinned) ══════════════ -->
+        <Border DockPanel.Dock="Bottom"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                Padding="16,10">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" x:Name="StatusText"
+                           FontSize="12" TextWrapping="Wrap"
+                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="secondary" x:Name="RestoreButton"
+                            Content="Restore standard wording" Click="Restore_Click"/>
+                    <Button Classes="secondary" x:Name="CancelButton"
+                            Content="Cancel" Click="Cancel_Click"/>
+                    <Button Classes="save" x:Name="SaveButton"
+                            Content="Save" Click="Save_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══════════════ SCROLLABLE BODY ══════════════ -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="FieldsPanel" Margin="16,14,16,16" Spacing="0">
+
+                <!-- Shown when the settings file couldn't be read -->
+                <Border x:Name="ProblemBorder" IsVisible="False"
+                        Background="#FFF3CD" BorderBrush="#F0C040" BorderThickness="1"
+                        CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="⚠" FontSize="14" VerticalAlignment="Center" Foreground="#8A6000"/>
+                        <TextBlock x:Name="ProblemText" TextWrapping="Wrap"
+                                   Foreground="#5A4000" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Leave a box empty to leave that line off the bulletin."
+                           Foreground="{DynamicResource MutedBrush}" FontSize="12"
+                           TextWrapping="Wrap" Margin="2,0,0,10"/>
+
+                <!-- The cards and their boxes are added from ChurchSettingsFields when the window opens. -->
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
