@@ -16,20 +16,21 @@ jobs:
   build:
     strategy:
       matrix:
-        # Define the OS runners and their corresponding .NET Runtime Identifiers (RID)
+        # macOS now targets Apple Silicon (osx-arm64)
         include:
           - os: windows-latest
             rid: win-x64
           - os: ubuntu-latest
             rid: linux-x64
           - os: macos-latest
-            rid: osx-x64
+            rid: osx-arm64
 
     runs-on: ${{ matrix.os }}
 
     env:
       Project_Path: ./st_mark_bulletin_generator.csproj
       Configuration: Release
+      App_Version: 1.0.0 # Used for Linux packages and Mac Info.plist
 
     steps:
     - name: Checkout Repository
@@ -54,13 +55,10 @@ jobs:
         -p:PublishSingleFile=true
         -o ./publish_output
 
+    # --- WINDOWS ---
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
       run: iscc installer.iss
-
-    - name: Package Linux and macOS Binaries
-      if: matrix.os != 'windows-latest'
-      run: tar -czvf st_mark_bulletin_generator-${{ matrix.rid }}.tar.gz -C ./publish_output .
 
     - name: Upload Windows Setup to Release
       if: matrix.os == 'windows-latest'
@@ -68,8 +66,88 @@ jobs:
       with:
         files: ./installer_output/setup.exe
 
-    - name: Upload Linux and macOS Archives to Release
-      if: matrix.os != 'windows-latest'
+    # --- macOS ---
+    - name: Package macOS App and DMG
+      if: matrix.os == 'macos-latest'
+      run: |
+        APP_NAME="St Mark Bulletin Generator.app"
+        mkdir -p "$APP_NAME/Contents/MacOS"
+        
+        # Move binary into the .app bundle and make it executable
+        cp ./publish_output/st_mark_bulletin_generator "$APP_NAME/Contents/MacOS/"
+        chmod +x "$APP_NAME/Contents/MacOS/st_mark_bulletin_generator"
+        
+        # Generate Info.plist so macOS recognizes it as a native graphical app
+        cat <<EOF > "$APP_NAME/Contents/Info.plist"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleExecutable</key>
+            <string>st_mark_bulletin_generator</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.stmark.bulletingenerator</string>
+            <key>CFBundleName</key>
+            <string>St Mark Bulletin Generator</string>
+            <key>CFBundleVersion</key>
+            <string>${{ env.App_Version }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ env.App_Version }}</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+        </dict>
+        </plist>
+        EOF
+        
+        # Create a Disk Image (.dmg) containing the .app bundle
+        hdiutil create -volname "St Mark Bulletin Generator" -srcfolder "$APP_NAME" -ov -format UDZO st_mark_bulletin_generator-osx-arm64.dmg
+
+    - name: Upload macOS DMG to Release
+      if: matrix.os == 'macos-latest'
       uses: softprops/action-gh-release@v2
       with:
-        files: ./st_mark_bulletin_generator-${{ matrix.rid }}.tar.gz
+        files: ./st_mark_bulletin_generator-osx-arm64.dmg
+
+    # --- LINUX ---
+    - name: Install Packaging Tools (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      # Install rpm to build .rpms, and fpm (ruby gem) for packaging
+      run: sudo apt-get update && sudo apt-get install -y rpm && sudo gem install fpm
+
+    - name: Package DEB and RPM (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        # Create Linux filesystem structure
+        mkdir -p linux_root/opt/st_mark_bulletin_generator
+        mkdir -p linux_root/usr/local/bin
+        mkdir -p linux_root/usr/share/applications
+        
+        # Copy binaries to /opt/
+        cp -r ./publish_output/* linux_root/opt/st_mark_bulletin_generator/
+        chmod +x linux_root/opt/st_mark_bulletin_generator/st_mark_bulletin_generator
+        
+        # Symlink executable to user's PATH
+        ln -s /opt/st_mark_bulletin_generator/st_mark_bulletin_generator linux_root/usr/local/bin/st-mark-bulletin-generator
+        
+        # Create a .desktop file so the app appears in Linux desktop menus (GNOME, COSMIC, KDE)
+        cat <<EOF > linux_root/usr/share/applications/st-mark-bulletin-generator.desktop
+        [Desktop Entry]
+        Name=St Mark Bulletin Generator
+        Exec=/opt/st_mark_bulletin_generator/st_mark_bulletin_generator
+        Type=Application
+        Categories=Office;Utility;
+        Terminal=false
+        EOF
+        
+        # Generate DEB
+        fpm -s dir -t deb -n "st-mark-bulletin-generator" -v ${{ env.App_Version }} --architecture amd64 -C linux_root .
+        # Generate RPM
+        fpm -s dir -t rpm -n "st-mark-bulletin-generator" -v ${{ env.App_Version }} --architecture x86_64 -C linux_root .
+
+    - name: Upload Linux Packages to Release
+      if: matrix.os == 'ubuntu-latest'
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          ./*.deb
+          ./*.rpm
