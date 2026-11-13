@@ -22,7 +22,7 @@ public class Bulletin
     public string PsalmTitle { get; set; } = "";
     public (string V, string[] Lines)[] Psalm { get; set; } = Array.Empty<(string V, string[] Lines)>();
     public string Announcements { get; set; } = "";  // rich text (HTML), one per paragraph
-    public string Acknowledgements { get; set; } = ""; // rich text (HTML): thank-yous for this Sunday
+    public string Acknowledgements { get; set; } = ""; // rich text (HTML): thank-yous
 
     // null → pick randomly at render time
     public string? CoverImagePath { get; set; }

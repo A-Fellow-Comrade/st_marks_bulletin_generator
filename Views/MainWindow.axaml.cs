@@ -40,6 +40,7 @@ public partial class MainWindow : Window
 
     private readonly BulletinStore _store;
     private readonly HymnCorrections _corrections;
+    private readonly ChurchSettingsStore _churchStore;   // the church's own wording (shared folder)
     private readonly DispatcherTimer _saveTimer;
 
     // True while a Sunday is being loaded into the form, so loading it isn't
@@ -82,11 +83,12 @@ public partial class MainWindow : Window
     // Only here so Avalonia's XAML loader and previewer can find the window (they
     // need a public constructor without parameters). The app never uses it.
     public MainWindow() => throw new InvalidOperationException(
-        "MainWindow needs the bulletin store: use MainWindow(BulletinStore, HymnCorrections, AppSettings).");
+        "MainWindow needs the bulletin store: use MainWindow(BulletinStore, HymnCorrections, ChurchSettingsStore, AppSettings).");
 
-    public MainWindow(BulletinStore store, HymnCorrections corrections, AppSettings settings)
+    public MainWindow(BulletinStore store, HymnCorrections corrections, ChurchSettingsStore churchStore, AppSettings settings)
     {
         _settings = settings;
+        _churchStore = churchStore;
 
         // Permanent per-user folder, so rebuilding or cleaning the project
         // can't erase corrected hymn titles. On Windows this is
@@ -160,7 +162,7 @@ public partial class MainWindow : Window
         RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
     }
 
-    // The thank-yous belong to one Sunday, so they are never carried over to another.
+    // Empties the Acknowledgements box (used for a brand-new, blank form).
     private void ClearAcknowledgements()
     {
         AcknowledgementsBox.Editor.LoadHtml("");
@@ -403,9 +405,13 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(folder);
             var path = Path.Combine(folder, $"bulletin_{DateTime.Now:yyyy-MM-dd_HHmm}.pdf");
 
-            new BulletinDocument(bulletin, _repo).GeneratePdf(path);
+            // The church's wording is read fresh each time, so a change made on the
+            // other computer shows up in the next PDF.
+            var church = _churchStore.Load(out var churchProblem);
+            new BulletinDocument(bulletin, _repo, church).GeneratePdf(path);
 
             StatusText.Text = $"Saved: {path}";
+            if (churchProblem != null) StatusText.Text += "\n" + churchProblem;
             OpenFile(path);
         }
         catch (Exception ex)
@@ -499,7 +505,6 @@ public partial class MainWindow : Window
                 if (source != null)
                 {
                     ApplyRecord(source);
-                    ClearAcknowledgements();      // thank-yous are for one Sunday only
                     _copiedFrom = previous;
                     psalmVersionHint = source.PsalmVersion;
                 }

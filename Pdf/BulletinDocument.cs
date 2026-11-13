@@ -24,12 +24,19 @@ public class BulletinDocument : IDocument
 
     private readonly Bulletin _b;
     private readonly HymnRepository _hymns;
+    private readonly ChurchSettings _church;
 
-    public BulletinDocument(Bulletin bulletin, HymnRepository hymns)
+    // `church` is the wording that is the same every week (see ChurchSettings).
+    // Without it, the standard wording is used.
+    public BulletinDocument(Bulletin bulletin, HymnRepository hymns, ChurchSettings? church = null)
     {
         _b = bulletin;
         _hymns = hymns;
+        _church = church ?? new ChurchSettings();
     }
+
+    // A setting that was saved blank is left off the page.
+    private static bool Has(string? text) => !string.IsNullOrWhiteSpace(text);
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
@@ -91,11 +98,11 @@ public class BulletinDocument : IDocument
 
                     col.Item().LineHorizontal(1);
 
-                    col.Item().PaddingTop(4).Text("Welcome to St. Mark Lutheran Church.").AlignCenter();
-                    col.Item().Text(
-                        "The order for this service is found in the Lutheran Service Book " +
-                        $"(in the hymnal rack) on page {_b.SettingPage}, {_b.SettingName}.")
-                        .AlignCenter();
+                    if (Has(_church.WelcomeLine))
+                        col.Item().PaddingTop(4).Text(_church.WelcomeLine).AlignCenter();
+                    if (Has(_church.OrderOfServiceText))
+                        col.Item().Text(_church.OrderOfServiceFor(_b.SettingPage?.ToString() ?? "", _b.SettingName))
+                            .AlignCenter();
 
                     col.Item().Height(10);
 
@@ -124,17 +131,12 @@ public class BulletinDocument : IDocument
 
                     col.Item().Height(10);
 
-                    col.Item().PaddingTop(8).Text("HOLY COMMUNION").AlignCenter().Bold();
-                    col.Item().PaddingLeft(6).Text(
-                        "In Holy Communion we receive the true body and blood of our Lord for the " +
-                        "forgiveness of sins. It is for those who have been baptized. If you do not " +
-                        "have a church home, your church is not a Missouri Synod Church, or you are " +
-                        "unsure and would like to commune with us, please see Pastor before the " +
-                        "service. You may, instead, come forward for a blessing; please cross your " +
-                        "arms over your chest as you kneel at the rail.").AlignCenter();
-                    col.Item().PaddingLeft(6).Text(
-                        "We strongly encourage the use of the common chalice as our Lord instructed. " +
-                        "See Pastor before the service if a gluten-free wafer is needed.").AlignCenter();
+                    if (Has(_church.CommunionHeading))
+                        col.Item().PaddingTop(8).Text(_church.CommunionHeading).AlignCenter().Bold();
+                    if (Has(_church.CommunionParagraph1))
+                        col.Item().PaddingLeft(6).Text(_church.CommunionParagraph1).AlignCenter();
+                    if (Has(_church.CommunionParagraph2))
+                        col.Item().PaddingLeft(6).Text(_church.CommunionParagraph2).AlignCenter();
                 });
 
                 // ---- RIGHT: Psalm
@@ -203,17 +205,18 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                 {
                     col.Spacing(4);
 
-                    col.Item().AlignCenter().Text("Welcome to St. Mark's").Italic();
-                    col.Item().Text(
-                        todayIs + "Please use the Record of " +
-                        "Fellowship books located at the center end of your pew. Sign in then pass it " +
-                        "on. If this is your first time at St. Mark, also sign our guest book in the " +
-                        "narthex so we have a record of your visit.");
+                    if (Has(_church.BackWelcomeHeading))
+                        col.Item().AlignCenter().Text(_church.BackWelcomeHeading).Italic();
+
+                    var backWelcome = (todayIs + (_church.BackWelcomeText ?? "")).Trim();
+                    if (backWelcome.Length > 0)
+                        col.Item().Text(backWelcome);
 
                     // Announcements from the form, one bullet per line.
                     if (!string.IsNullOrWhiteSpace(announcementsHtml))
                     {
-                        col.Item().PaddingTop(2).AlignCenter().Text("Item of Interest").Italic();
+                        if (Has(_church.AnnouncementsHeading))
+                            col.Item().PaddingTop(2).AlignCenter().Text(_church.AnnouncementsHeading).Italic();
 
                         var htmlWithAsterisks = Regex.Replace(
                             announcementsHtml,
@@ -231,18 +234,32 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                         });
                     }
 
-                    // Contact box
-                    col.Item().PaddingTop(16).Border(1).BorderColor(Colors.Black).Padding(4).Column(b =>
+                    // Contact box (a line that is blank in Settings is left out; so is the whole box if all are)
+                    var contactLines = new[]
                     {
-                        b.Spacing(1);
-                        b.Item().AlignCenter().Text("Church office: Phone 585-334-4795").FontSize(9.5f);
-                        b.Item().AlignCenter().Text("Office email: saintmarksoffice@icloud.com").FontSize(9.5f);
-                        b.Item().AlignCenter().Text("OFFICE HOURS ARE BY APPOINTMENT").Italic().FontSize(9.5f);
-                        b.Item().AlignCenter().Text("Feel free to contact John Butterazzi, elder at 585-615-3051").FontSize(9.5f);
-                        b.Item().AlignCenter().Text("or Katie Stanton our deaconess at 585-334-2245").FontSize(9.5f);
-                        b.Item().AlignCenter().Text("Prayer cards may be placed in the prayer box in the narthex or given to the presiding minister prior to the service.")
-                            .Italic().FontSize(9).FontColor(Colors.Grey.Darken3);
-                    });
+                        _church.ContactPhone, _church.ContactEmail, _church.OfficeHours,
+                        _church.ContactElder, _church.ContactDeaconess, _church.PrayerCardNote,
+                    };
+                    if (contactLines.Any(Has))
+                    {
+                        col.Item().PaddingTop(16).Border(1).BorderColor(Colors.Black).Padding(4).Column(b =>
+                        {
+                            b.Spacing(1);
+                            if (Has(_church.ContactPhone))
+                                b.Item().AlignCenter().Text(_church.ContactPhone).FontSize(9.5f);
+                            if (Has(_church.ContactEmail))
+                                b.Item().AlignCenter().Text(_church.ContactEmail).FontSize(9.5f);
+                            if (Has(_church.OfficeHours))
+                                b.Item().AlignCenter().Text(_church.OfficeHours).Italic().FontSize(9.5f);
+                            if (Has(_church.ContactElder))
+                                b.Item().AlignCenter().Text(_church.ContactElder).FontSize(9.5f);
+                            if (Has(_church.ContactDeaconess))
+                                b.Item().AlignCenter().Text(_church.ContactDeaconess).FontSize(9.5f);
+                            if (Has(_church.PrayerCardNote))
+                                b.Item().AlignCenter().Text(_church.PrayerCardNote)
+                                    .Italic().FontSize(9).FontColor(Colors.Grey.Darken3);
+                        });
+                    }
 
                     // Thank-yous: the Acknowledgements box from the form, centered.
                     // Nothing prints (and no "more people" line) when the box is empty.
@@ -256,23 +273,37 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                             handler.SetHtml(HtmlText.CenterParagraphs(acknowledgementsHtml));
                         });
 
-                        col.Item().PaddingTop(12).AlignCenter().Text("~More people are needed to help with these tasks.~").Italic();
+                        if (Has(_church.MorePeopleLine))
+                            col.Item().PaddingTop(12).AlignCenter().Text(_church.MorePeopleLine).Italic();
                     }
                 });
 
                 // ---- RIGHT: Front cover ----
                 row.RelativeItem().Element(Panel).Column(col =>
                 {
-                    col.Item().PaddingTop(12).AlignCenter().Text("St. Mark Evangelical-Lutheran Church").FontSize(15).AlignCenter();
-                    col.Item().AlignCenter().Text("of West Henrietta, New York").FontSize(15);
+                    if (Has(_church.ChurchName))
+                        col.Item().PaddingTop(12).AlignCenter().Text(_church.ChurchName).FontSize(15).AlignCenter();
+                    if (Has(_church.ChurchTown))
+                        col.Item().AlignCenter().Text(_church.ChurchTown).FontSize(15);
 
-                    col.Item().PaddingTop(4).AlignCenter().Text(t =>
+                    if (Has(_church.YearLine))
                     {
-                        t.DefaultTextStyle(s => s.Italic().FontSize(10));
-                        t.Span($"Our {DateTime.Now.Year - 1901}");
-                        t.Span("th").Superscript();
-                        t.Span(" year of Proclaiming the Gospel");
-                    });
+                        col.Item().PaddingTop(4).AlignCenter().Text(t =>
+                        {
+                            t.DefaultTextStyle(s => s.Italic().FontSize(10));
+                            var parts = _church.YearLineParts(DateTime.Now.Year - _church.FoundedYear);
+                            if (parts != null)
+                            {
+                                t.Span(parts.Value.Before + parts.Value.Number);
+                                t.Span(parts.Value.Suffix).Superscript();
+                                t.Span(parts.Value.After);
+                            }
+                            else
+                            {
+                                t.Span(_church.YearLine);
+                            }
+                        });
+                    }
 
                     col.Item().PaddingTop(14).AlignCenter().Height(3.2f, Unit.Inch)
                        .Image(CoverImage).FitArea();
@@ -280,8 +311,10 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                     col.Item().PaddingTop(30).AlignCenter().Text("DIVINE SERVICE").FontSize(16);
                     col.Item().AlignCenter().Text(DateLine()).FontSize(11);
 
-                    col.Item().PaddingTop(14).AlignCenter().Text("Lutheran Church-Missouri Synod").FontSize(11);
-                    col.Item().AlignCenter().Text("saintmarkslutheran.org").FontSize(11);
+                    if (Has(_church.Synod))
+                        col.Item().PaddingTop(14).AlignCenter().Text(_church.Synod).FontSize(11);
+                    if (Has(_church.Website))
+                        col.Item().AlignCenter().Text(_church.Website).FontSize(11);
                 });
             });
         });

@@ -31,6 +31,7 @@ public partial class CalendarWindow : Window
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
     private HymnCorrections? _corrections;
+    private ChurchSettingsStore? _churchStore;  // the church's own wording, kept in the shared folder
     private MainWindow? _editor;               // the bulletin form, when it is open
     private DateOnly _month;                   // first day of the month being shown
     private DateOnly _selected;                // the Sunday that is selected
@@ -86,6 +87,7 @@ public partial class CalendarWindow : Window
         _editor = null;
         _store = null;
         _corrections = null;
+        _churchStore = null;
 
         var folder = _settings.SharedFolder;
         if (string.IsNullOrWhiteSpace(folder))
@@ -124,6 +126,7 @@ public partial class CalendarWindow : Window
                 _corrections = new HymnCorrections(
                     Path.Combine(AppSettings.DataFolder, "hymn_corrections_local.tsv"),
                     Path.Combine(folder, "hymn_corrections.tsv"));
+                _churchStore = new ChurchSettingsStore(Path.Combine(folder, "church_settings.json"));
                 ShowFolderMessage(
                     $"Bulletins are kept in:\n{folder}\n" +
                     "(Only needed when setting up a second computer: press \"Choose folder...\" " +
@@ -134,6 +137,7 @@ public partial class CalendarWindow : Window
             {
                 _store = null;
                 _corrections = null;
+                _churchStore = null;
                 ShowFolderMessage($"Couldn't use the folder {folder}: {ex.Message}", isProblem: true, canRetry: true);
             }
         }
@@ -215,7 +219,7 @@ public partial class CalendarWindow : Window
     //steps one week from the sunday that is selected
     private void PrevSunday_Click(object? sender, RoutedEventArgs e) => Choose(_selected.AddDays(-7));
     private void NextSunday_Click(object? sender, RoutedEventArgs e) => Choose(_selected.AddDays(7));
-    
+   
     //goes back to the sunday that is coming up
     private void ThisSunday_Click(object? sender, RoutedEventArgs e) =>
         Choose(CalendarMath.FirstSundayOnOrAfter(DateOnly.FromDateTime(DateTime.Today)));
@@ -223,19 +227,19 @@ public partial class CalendarWindow : Window
     // Selects a Sunday and shows it in the bulletin form.
     private void Choose(DateOnly sunday)
     {
-        if (_store == null || _corrections == null) return;
+        if (_store == null || _corrections == null || _churchStore == null) return;
 
         _selected = sunday;
         _month = new DateOnly(sunday.Year, sunday.Month, 1);
         Render();
-        OpenEditor(sunday, _store, _corrections);
+        OpenEditor(sunday, _store, _corrections, _churchStore);
     }
 
-    private void OpenEditor(DateOnly sunday, BulletinStore store, HymnCorrections corrections)
+    private void OpenEditor(DateOnly sunday, BulletinStore store, HymnCorrections corrections, ChurchSettingsStore churchStore)
     {
         if (_editor == null)
         {
-            _editor = new MainWindow(store, corrections, _settings);
+            _editor = new MainWindow(store, corrections, churchStore, _settings);
             _editor.BulletinSaved += Render;               // keeps the gold marks up to date
             _editor.Closed += (_, _) => _editor = null;
             _editor.ShowSunday(sunday);

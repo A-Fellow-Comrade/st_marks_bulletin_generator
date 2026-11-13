@@ -27,7 +27,7 @@ public class SavedBulletin
     public string PsalmVerses { get; set; } = "";
     public bool PsalmIncludeOptional { get; set; }
     public string Announcements { get; set; } = "";
-    public string Acknowledgements { get; set; } = ""; //thank-yous for this Sunday only; blank in older files
+    public string Acknowledgements { get; set; } = ""; //thank-yous; copied to the next Sunday like announcements; blank in older files
     public string SavedAt { get; set; } = ""; //"yyyy-MM-dd HH:mm:ss"
     public string SavedBy { get; set; } = ""; //computer name
 }
