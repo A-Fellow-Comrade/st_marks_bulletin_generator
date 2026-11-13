@@ -150,9 +150,14 @@ public partial class MainWindow : Window
         UpdateThemeToggle();
     }
 
+    // The button offers the mode you would switch to: a sun and "Light" while the
+    // app is dark, a moon and "Dark" while it is light.
     private void UpdateThemeToggle()
     {
-        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
+        bool dark = _settings.Theme == "Dark";
+        ThemeLabel.Text = dark ? "Light" : "Dark";
+        ThemeSunIcon.IsVisible = dark;
+        ThemeMoonIcon.IsVisible = !dark;
     }
 
     // Shows or hides each rich-text box's "Type here..." note.

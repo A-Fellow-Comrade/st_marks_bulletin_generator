@@ -107,8 +107,14 @@
                                Foreground="#C0A060" FontSize="11"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
                     <Button x:Name="ThemeToggle" Classes="theme-toggle"
-                            Content="☀  Light" Click="ThemeToggle_Click"
-                            HorizontalAlignment="Right"/>
+                            Click="ThemeToggle_Click"
+                            HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon x:Name="ThemeSunIcon" Data="{StaticResource IconSun}" Width="14" Height="14"/>
+                            <PathIcon x:Name="ThemeMoonIcon" Data="{StaticResource IconMoon}" Width="14" Height="14" IsVisible="False"/>
+                            <TextBlock x:Name="ThemeLabel" Text="Light" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

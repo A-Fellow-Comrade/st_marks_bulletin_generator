@@ -24,6 +24,7 @@ public static class ChurchSettingsFields
     // SettingsWindow.AllReadOnly.
     public static readonly HashSet<string> ReadOnlyKeys = new()
     {
+        "YearLine",     // worked out from "Year founded", so its wording stays fixed
     };
 
     public static bool IsReadOnly(SettingField field) => ReadOnlyKeys.Contains(field.Key);
@@ -45,12 +46,12 @@ public static class ChurchSettingsFields
             s => s.ChurchName, (s, v) => s.ChurchName = v),
         Text("ChurchTown", "FRONT COVER", "Town line", null, 1,
             s => s.ChurchTown, (s, v) => s.ChurchTown = v),
-        Text("YearLine", "FRONT COVER", "Years of the church", "{year} is replaced by the church's age with its ending, like 125th.", 1,
+        Text("YearLine", "FRONT COVER", "Years of the church", "Fixed wording. {year} becomes the church's age, like 125th, worked out from the year founded below.", 1,
             s => s.YearLine, (s, v) => s.YearLine = v),
         new SettingField
         {
             Key = "FoundedYear", Section = "FRONT COVER", Label = "Year founded",
-            Hint = "Used to work out the church's age for the line above.",
+            Hint = "The church's age on the front cover is worked out from this.",
             Get = s => s.FoundedYear.ToString(CultureInfo.InvariantCulture),
             Set = (s, v) =>
             {

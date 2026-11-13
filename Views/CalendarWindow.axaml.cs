@@ -208,8 +208,15 @@ public partial class CalendarWindow : Window
         Render();
     }
 
-    private void UpdateThemeToggle() =>
-        ThemeToggle.Content = _settings.Theme == "Dark" ? "☀  Light" : "🌙  Dark";
+    // The button offers the mode you would switch to: a sun and "Light" while the
+    // app is dark, a moon and "Dark" while it is light.
+    private void UpdateThemeToggle()
+    {
+        bool dark = _settings.Theme == "Dark";
+        ThemeLabel.Text = dark ? "Light" : "Dark";
+        ThemeSunIcon.IsVisible = dark;
+        ThemeMoonIcon.IsVisible = !dark;
+    }
 
     // ───────────────────────────── months and Sundays ─────────────────────────────
 

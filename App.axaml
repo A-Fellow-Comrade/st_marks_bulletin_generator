@@ -54,5 +54,12 @@
         <SolidColorBrush x:Key="DarkTextBrush"         Color="{StaticResource DarkText}"/>
         <SolidColorBrush x:Key="DarkLabelBrush"        Color="{StaticResource DarkLabel}"/>
         <SolidColorBrush x:Key="DarkMutedBrush"        Color="{StaticResource DarkMuted}"/>
+
+        <!-- ──────── Icons (drawn in the text colour of the button they are in) ──────── -->
+        <StreamGeometry x:Key="IconSun">M 12 7.2 A 4.8 4.8 0 1 0 12 16.8 A 4.8 4.8 0 1 0 12 7.2 Z M 12.95 4.4 L 12.95 1.4 L 11.05 1.4 L 11.05 4.4 Z M 18.05 7.3 L 20.17 5.18 L 18.82 3.83 L 16.7 5.95 Z M 19.6 12.95 L 22.6 12.95 L 22.6 11.05 L 19.6 11.05 Z M 16.7 18.05 L 18.82 20.17 L 20.17 18.82 L 18.05 16.7 Z M 11.05 19.6 L 11.05 22.6 L 12.95 22.6 L 12.95 19.6 Z M 5.95 16.7 L 3.83 18.82 L 5.18 20.17 L 7.3 18.05 Z M 4.4 11.05 L 1.4 11.05 L 1.4 12.95 L 4.4 12.95 Z M 7.3 5.95 L 5.18 3.83 L 3.83 5.18 L 5.95 7.3 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconMoon">M 21 12.79 A 9 9 0 1 1 11.21 3 A 7 7 0 0 0 21 12.79 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconGear">M 9.81 4.93 L 10.27 1.95 L 13.73 1.95 L 14.19 4.93 L 15.45 5.45 L 17.89 3.67 L 20.33 6.11 L 18.55 8.55 L 19.07 9.81 L 22.05 10.27 L 22.05 13.73 L 19.07 14.19 L 18.55 15.45 L 20.33 17.89 L 17.89 20.33 L 15.45 18.55 L 14.19 19.07 L 13.73 22.05 L 10.27 22.05 L 9.81 19.07 L 8.55 18.55 L 6.11 20.33 L 3.67 17.89 L 5.45 15.45 L 4.93 14.19 L 1.95 13.73 L 1.95 10.27 L 4.93 9.81 L 5.45 8.55 L 3.67 6.11 L 6.11 3.67 L 8.55 5.45 Z M 12 8.6 A 3.4 3.4 0 1 0 12 15.4 A 3.4 3.4 0 1 0 12 8.6 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconChevronLeft">M 15.2 3.6 L 17.3 5.7 L 11 12 L 17.3 18.3 L 15.2 20.4 L 6.8 12 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconChevronRight">M 8.8 3.6 L 6.7 5.7 L 13 12 L 6.7 18.3 L 8.8 20.4 L 17.2 12 Z</StreamGeometry>
     </Application.Resources>
 </Application>
