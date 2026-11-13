@@ -22,10 +22,7 @@ public static class ChurchSettingsFields
     // To make a setting read-only (shown, but not editable), add its Key here,
     // for example: "ChurchName", "Website". To lock the whole window, see
     // SettingsWindow.AllReadOnly.
-    public static readonly HashSet<string> ReadOnlyKeys = new()
-    {
-        "YearLine",     // worked out from "Year founded", so its wording stays fixed
-    };
+    public static readonly HashSet<string> ReadOnlyKeys = new();
 
     public static bool IsReadOnly(SettingField field) => ReadOnlyKeys.Contains(field.Key);
 
