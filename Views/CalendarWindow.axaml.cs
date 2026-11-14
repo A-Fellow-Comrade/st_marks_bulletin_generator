@@ -335,12 +335,12 @@ public partial class CalendarWindow : Window
         // lets clicks through, so the whole cell still works as one button.
         var edge = new Border
         {
-            Width = 4,
-            CornerRadius = new CornerRadius(2),
+            Width = 3,
+            CornerRadius = new CornerRadius(1.5),
             Background = SeasonBrushes.For(season.Color),
             HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Stretch,
-            Margin = new Thickness(6, 8, 0, 8),
+            Margin = new Thickness(6, 11, 0, 11),
             IsHitTestVisible = false,
         };
 

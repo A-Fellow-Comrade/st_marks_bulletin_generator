@@ -164,7 +164,7 @@
             <!-- Selected Sunday info -->
             <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                     CornerRadius="6" ClipToBounds="True">
-                <Grid ColumnDefinitions="6,*">
+                <Grid ColumnDefinitions="4,*">
                     <!-- The color of the church year for this Sunday -->
                     <Border x:Name="SelectedEdge" Grid.Column="0" Background="{DynamicResource GoldBrush}"/>
                     <StackPanel Grid.Column="1" Spacing="3" Margin="14,10">
@@ -205,42 +205,6 @@
                     </StackPanel>
                 </Button>
             </Grid>
-
-            <!-- What the colors of the church year mean -->
-            <Border Classes="card" Margin="0" Padding="14,10">
-                <StackPanel Spacing="6">
-                    <TextBlock Classes="section-title" Text="The colors of the church year"/>
-                    <Border Classes="rule"/>
-                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
-                        <Border Grid.Row="0" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonWhiteBrush}"/>
-                        <StackPanel Grid.Row="0" Grid.Column="1">
-                            <TextBlock Text="White, shown as gold" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
-                            <TextBlock Text="Joy and the festivals of Christ: Christmas, the Epiphany, Easter, Holy Trinity, All Saints' Day and the last Sunday of the church year."
-                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
-                        </StackPanel>
-                        <Border Grid.Row="1" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonGreenBrush}"/>
-                        <StackPanel Grid.Row="1" Grid.Column="1">
-                            <TextBlock Text="Green" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
-                            <TextBlock Text="Growth in the faith: the ordinary Sundays after the Epiphany and after Pentecost."
-                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
-                        </StackPanel>
-                        <Border Grid.Row="2" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonVioletBrush}"/>
-                        <StackPanel Grid.Row="2" Grid.Column="1">
-                            <TextBlock Text="Violet" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
-                            <TextBlock Text="Preparation and repentance: Advent and Lent."
-                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
-                        </StackPanel>
-                        <Border Grid.Row="3" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonRedBrush}"/>
-                        <StackPanel Grid.Row="3" Grid.Column="1">
-                            <TextBlock Text="Red" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
-                            <TextBlock Text="The Holy Spirit and the Church's witness: Pentecost, Reformation Day and the Sunday of the Passion."
-                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock Text="Each Sunday in the calendar has an edge in its color. Point at a Sunday to see its season."
-                               FontSize="11" FontStyle="Italic" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
-                </StackPanel>
-            </Border>
 
             <!-- Legend -->
             <StackPanel Spacing="6" Margin="0,2,0,0">

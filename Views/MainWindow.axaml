@@ -107,7 +107,7 @@
         <!-- Gilt double rule under the header -->
         <StackPanel DockPanel.Dock="Top" Spacing="2">
             <!-- The first line takes the color of the church year for the Sunday being edited -->
-            <Border x:Name="SeasonStripe" Height="4" Background="{DynamicResource GoldBrush}"/>
+            <Border x:Name="SeasonStripe" Height="3" Background="{DynamicResource GoldBrush}"/>
             <Border Height="1" Background="{DynamicResource GoldBrush}"/>
         </StackPanel>
 
