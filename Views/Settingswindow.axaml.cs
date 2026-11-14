@@ -91,8 +91,12 @@ public partial class SettingsWindow : Window
         var heading = new TextBlock { Text = title };
         heading.Classes.Add("section-title");
 
+        var rule = new Border();
+        rule.Classes.Add("rule");
+
         var stack = new StackPanel();
         stack.Children.Add(heading);
+        stack.Children.Add(rule);
 
         var border = new Border { Child = stack };
         border.Classes.Add("card");

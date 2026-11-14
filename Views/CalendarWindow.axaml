@@ -21,27 +21,27 @@
             <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
         </Style>
         <Style Selector="Button.today">
-            <Setter Property="Background"    Value="{DynamicResource BrandBurgundyBrush}"/>
+            <Setter Property="Background"    Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"    Value="White"/>
             <Setter Property="Padding"       Value="10,6"/>
             <Setter Property="CornerRadius"  Value="4"/>
             <Setter Property="FontSize"      Value="12"/>
         </Style>
         <Style Selector="Button.today:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#7A2340"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
         </Style>
 
         <!-- Theme toggle (visible on the dark header bar) -->
         <Style Selector="Button.theme-toggle">
             <Setter Property="Background"  Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="Padding"     Value="8,4"/>
             <Setter Property="FontSize"    Value="12"/>
         </Style>
         <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource GoldBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource BrandBurgundyBrush}"/>
         </Style>
     </Window.Styles>
@@ -49,33 +49,45 @@
     <DockPanel>
 
         <!-- Header (pinned) -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="18,14">
-            <StackPanel Spacing="2">
-                <TextBlock Text="St. Mark Bulletin Generator"
-                           Foreground="White" FontSize="17" FontWeight="SemiBold"/>
-                <TextBlock Text="Select a Sunday to open its bulletin"
-                           Foreground="#C0A060" FontSize="12"/>
-                <StackPanel Orientation="Horizontal" Spacing="8"
-                            HorizontalAlignment="Right" Margin="0,8,0,0">
-                    <Button x:Name="SettingsButton" Classes="theme-toggle"
-                            Click="Settings_Click"
-                            ToolTip.Tip="The wording printed on every bulletin: church name, contact details and so on">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <PathIcon Data="{StaticResource IconGear}" Width="14" Height="14"/>
-                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ThemeToggle" Classes="theme-toggle"
-                            Click="ThemeToggle_Click">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <PathIcon x:Name="ThemeSunIcon" Data="{StaticResource IconSun}" Width="14" Height="14"/>
-                            <PathIcon x:Name="ThemeMoonIcon" Data="{StaticResource IconMoon}" Width="14" Height="14" IsVisible="False"/>
-                            <TextBlock x:Name="ThemeLabel" Text="Light" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="18,14">
+            <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
+                          Foreground="#E8C97A" VerticalAlignment="Top" Margin="0,2,14,0"/>
+                <StackPanel Grid.Column="1" Spacing="2">
+                    <TextBlock Text="St. Mark Bulletin Generator"
+                               FontFamily="{DynamicResource HeadingFont}"
+                               Foreground="White" FontSize="21"/>
+                    <TextBlock Text="Select a Sunday to open its bulletin"
+                               FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
+                               Foreground="#E8C97A" FontSize="13"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                HorizontalAlignment="Right" Margin="0,8,0,0">
+                        <Button x:Name="SettingsButton" Classes="theme-toggle"
+                                Click="Settings_Click"
+                                ToolTip.Tip="The wording printed on every bulletin: church name, contact details and so on">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconGear}" Width="14" Height="14"/>
+                                <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="ThemeToggle" Classes="theme-toggle"
+                                Click="ThemeToggle_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon x:Name="ThemeSunIcon" Data="{StaticResource IconSun}" Width="14" Height="14"/>
+                                <PathIcon x:Name="ThemeMoonIcon" Data="{StaticResource IconMoon}" Width="14" Height="14" IsVisible="False"/>
+                                <TextBlock x:Name="ThemeLabel" Text="Light" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
+
+        <!-- Gilt double rule under the header -->
+        <StackPanel DockPanel.Dock="Top" Spacing="2">
+            <Border Height="3" Background="{DynamicResource GoldBrush}"/>
+            <Border Height="1" Background="{DynamicResource GoldBrush}"/>
+        </StackPanel>
 
         <!-- Scrollable body -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
@@ -118,7 +130,7 @@
                     <!-- Day-of-week headers -->
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,4">
                         <TextBlock Grid.Column="0" Text="Sun" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource BrandBurgundyBrush}" HorizontalAlignment="Center" FontSize="12"/>
+                                   Foreground="{DynamicResource RubricBrush}" HorizontalAlignment="Center" FontSize="12"/>
                         <TextBlock Grid.Column="1" Text="Mon" Foreground="{DynamicResource MutedBrush}"
                                    HorizontalAlignment="Center" FontSize="12"/>
                         <TextBlock Grid.Column="2" Text="Tue" Foreground="{DynamicResource MutedBrush}"

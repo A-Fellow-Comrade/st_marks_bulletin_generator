@@ -3,7 +3,39 @@
              x:Class="st_mark_bulletin_generator.App"
              RequestedThemeVariant="Light">
     <Application.Styles>
-        <FluentTheme />
+        <!-- Buttons, check boxes and focus rings use burgundy (gold-rose in dark mode) instead of Fluent's blue -->
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#5C1A2E"/>
+                <ColorPaletteResources x:Key="Dark" Accent="#B04A68"/>
+            </FluentTheme.Palettes>
+        </FluentTheme>
+
+        <!-- Shared look of the cards in the bulletin form and the settings window -->
+        <Style Selector="Border.card">
+            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"   Value="4"/>
+            <Setter Property="Padding"        Value="18,14"/>
+            <Setter Property="Margin"         Value="0,0,0,12"/>
+        </Style>
+
+        <!-- Rubric: the small red italic heading at the top of a card, like the red instructions in a hymnal -->
+        <Style Selector="TextBlock.section-title">
+            <Setter Property="FontFamily"     Value="{DynamicResource HeadingFont}"/>
+            <Setter Property="FontStyle"      Value="Italic"/>
+            <Setter Property="FontSize"       Value="15"/>
+            <Setter Property="Foreground"     Value="{DynamicResource RubricBrush}"/>
+            <Setter Property="Margin"         Value="0,0,0,4"/>
+        </Style>
+
+        <!-- The thin line under a rubric -->
+        <Style Selector="Border.rule">
+            <Setter Property="Height"         Value="1"/>
+            <Setter Property="Background"     Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Margin"         Value="0,0,0,8"/>
+        </Style>
     </Application.Styles>
     <Application.Resources>
         <!-- Brand colours (same in both modes) -->
@@ -17,15 +49,25 @@
         <SolidColorBrush x:Key="SavedMarkBrush" Color="#66FFB300"/>
         <SolidColorBrush x:Key="SelectedMarkBrush" Color="{StaticResource BrandBurgundy}"/>
 
-        <!-- ──────── Light surface palette ──────── -->
-        <Color x:Key="LightSurface">#FAF7F4</Color>
-        <Color x:Key="LightCard">#FFFFFF</Color>
-        <Color x:Key="LightBorder">#E0D8D0</Color>
-        <Color x:Key="LightInputBackground">#FDFBF9</Color>
-        <Color x:Key="LightInputBorder">#D0C8C0</Color>
+        <!-- Heading typeface: Georgia on every Windows and Mac computer (Cambria / Times New Roman as back-ups) -->
+        <FontFamily x:Key="HeadingFont">Georgia,Cambria,Times New Roman</FontFamily>
+
+        <!--
+            Colours that change between light and dark mode.
+            Each name below has a light version ("<Name>") and a dark version ("Dark<Name>");
+            App.axaml.cs swaps them when the theme is switched (see ThemedBrushes there).
+            Light = parchment, ivory, burgundy and gold.  Dark = candlelit: wine-black, parchment text, gold.
+        -->
+
+        <!-- ──────── Light: parchment ──────── -->
+        <Color x:Key="LightSurface">#F6F0E1</Color>
+        <Color x:Key="LightCard">#FFFDF7</Color>
+        <Color x:Key="LightBorder">#E3D7BA</Color>
+        <Color x:Key="LightInputBackground">#FFFEFA</Color>
+        <Color x:Key="LightInputBorder">#CDBF9E</Color>
         <Color x:Key="LightText">#3A2A1A</Color>
-        <Color x:Key="LightLabel">#5A4A3A</Color>
-        <Color x:Key="LightMuted">#7A6A5A</Color>
+        <Color x:Key="LightLabel">#5A4632</Color>
+        <Color x:Key="LightMuted">#7A6A55</Color>
 
         <SolidColorBrush x:Key="SurfaceBrush"      Color="{StaticResource LightSurface}"/>
         <SolidColorBrush x:Key="CardBrush"         Color="{StaticResource LightCard}"/>
@@ -35,16 +77,22 @@
         <SolidColorBrush x:Key="TextBrush"         Color="{StaticResource LightText}"/>
         <SolidColorBrush x:Key="LabelBrush"        Color="{StaticResource LightLabel}"/>
         <SolidColorBrush x:Key="MutedBrush"        Color="{StaticResource LightMuted}"/>
+        <!-- Rubric red (for small instruction-style labels), gold rules, header bar, main buttons -->
+        <SolidColorBrush x:Key="RubricBrush"       Color="#9B2226"/>
+        <SolidColorBrush x:Key="GoldBrush"         Color="#B8860B"/>
+        <SolidColorBrush x:Key="HeaderBrush"       Color="#5C1A2E"/>
+        <SolidColorBrush x:Key="PrimaryBrush"      Color="#5C1A2E"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#7A2340"/>
 
-        <!-- ──────── Dark surface palette ──────── -->
-        <Color x:Key="DarkSurface">#1E1A18</Color>
-        <Color x:Key="DarkCard">#2A2420</Color>
-        <Color x:Key="DarkBorder">#4A3E38</Color>
-        <Color x:Key="DarkInputBackground">#3A2E28</Color>
-        <Color x:Key="DarkInputBorder">#5A4A3E</Color>
-        <Color x:Key="DarkText">#E8E0D8</Color>
-        <Color x:Key="DarkLabel">#D8C8B8</Color>
-        <Color x:Key="DarkMuted">#B8A898</Color>
+        <!-- ──────── Dark: candlelit ──────── -->
+        <Color x:Key="DarkSurface">#1B1416</Color>
+        <Color x:Key="DarkCard">#2A1F22</Color>
+        <Color x:Key="DarkBorder">#4A3A3F</Color>
+        <Color x:Key="DarkInputBackground">#35272B</Color>
+        <Color x:Key="DarkInputBorder">#5C4A50</Color>
+        <Color x:Key="DarkText">#EDE3CC</Color>
+        <Color x:Key="DarkLabel">#D9CDB2</Color>
+        <Color x:Key="DarkMuted">#B3A58A</Color>
 
         <SolidColorBrush x:Key="DarkSurfaceBrush"      Color="{StaticResource DarkSurface}"/>
         <SolidColorBrush x:Key="DarkCardBrush"         Color="{StaticResource DarkCard}"/>
@@ -54,6 +102,11 @@
         <SolidColorBrush x:Key="DarkTextBrush"         Color="{StaticResource DarkText}"/>
         <SolidColorBrush x:Key="DarkLabelBrush"        Color="{StaticResource DarkLabel}"/>
         <SolidColorBrush x:Key="DarkMutedBrush"        Color="{StaticResource DarkMuted}"/>
+        <SolidColorBrush x:Key="DarkRubricBrush"       Color="#E39A8B"/>
+        <SolidColorBrush x:Key="DarkGoldBrush"         Color="#D4A94A"/>
+        <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#7A2340"/>
+        <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#8A2B4B"/>
+        <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#A13459"/>
 
         <!-- ──────── Icons (drawn in the text colour of the button they are in) ──────── -->
         <StreamGeometry x:Key="IconSun">M 12 7.2 A 4.8 4.8 0 1 0 12 16.8 A 4.8 4.8 0 1 0 12 7.2 Z M 12.95 4.4 L 12.95 1.4 L 11.05 1.4 L 11.05 4.4 Z M 18.05 7.3 L 20.17 5.18 L 18.82 3.83 L 16.7 5.95 Z M 19.6 12.95 L 22.6 12.95 L 22.6 11.05 L 19.6 11.05 Z M 16.7 18.05 L 18.82 20.17 L 20.17 18.82 L 18.05 16.7 Z M 11.05 19.6 L 11.05 22.6 L 12.95 22.6 L 12.95 19.6 Z M 5.95 16.7 L 3.83 18.82 L 5.18 20.17 L 7.3 18.05 Z M 4.4 11.05 L 1.4 11.05 L 1.4 12.95 L 4.4 12.95 Z M 7.3 5.95 L 5.18 3.83 L 3.83 5.18 L 5.95 7.3 Z</StreamGeometry>
@@ -61,5 +114,8 @@
         <StreamGeometry x:Key="IconGear">M 9.81 4.93 L 10.27 1.95 L 13.73 1.95 L 14.19 4.93 L 15.45 5.45 L 17.89 3.67 L 20.33 6.11 L 18.55 8.55 L 19.07 9.81 L 22.05 10.27 L 22.05 13.73 L 19.07 14.19 L 18.55 15.45 L 20.33 17.89 L 17.89 20.33 L 15.45 18.55 L 14.19 19.07 L 13.73 22.05 L 10.27 22.05 L 9.81 19.07 L 8.55 18.55 L 6.11 20.33 L 3.67 17.89 L 5.45 15.45 L 4.93 14.19 L 1.95 13.73 L 1.95 10.27 L 4.93 9.81 L 5.45 8.55 L 3.67 6.11 L 6.11 3.67 L 8.55 5.45 Z M 12 8.6 A 3.4 3.4 0 1 0 12 15.4 A 3.4 3.4 0 1 0 12 8.6 Z</StreamGeometry>
         <StreamGeometry x:Key="IconChevronLeft">M 15.2 3.6 L 17.3 5.7 L 11 12 L 17.3 18.3 L 15.2 20.4 L 6.8 12 Z</StreamGeometry>
         <StreamGeometry x:Key="IconChevronRight">M 8.8 3.6 L 6.7 5.7 L 13 12 L 6.7 18.3 L 8.8 20.4 L 17.2 12 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconCross">M 6 0 L 10 0 L 10 6 L 16 6 L 16 10 L 10 10 L 10 24 L 6 24 L 6 10 L 0 10 L 0 6 L 6 6 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconWarning">M 12 2.6 L 22.6 21 L 1.4 21 Z M 11 9 L 11 15 L 13 15 L 13 9 Z M 12 16.4 A 1.3 1.3 0 1 0 12 19 A 1.3 1.3 0 1 0 12 16.4 Z</StreamGeometry>
+        <StreamGeometry x:Key="IconImage">M 2 4 L 22 4 L 22 20 L 2 20 Z M 4 6 L 4 18 L 20 18 L 20 6 Z M 5.6 16.4 L 10 10 L 13 14 L 15 11.6 L 18.4 16.4 Z M 16 7.6 A 1.7 1.7 0 1 0 16 11 A 1.7 1.7 0 1 0 16 7.6 Z</StreamGeometry>
     </Application.Resources>
 </Application>
