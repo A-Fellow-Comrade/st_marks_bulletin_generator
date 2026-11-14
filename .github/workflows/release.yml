@@ -30,13 +30,19 @@ jobs:
     env:
       Project_Path: ./st_mark_bulletin_generator.csproj
       Configuration: Release
-      App_Version: 1.0.0 # Used for Linux packages and Mac Info.plist
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - name: Set App Version from Release Tag
+      shell: bash
+      run: |
+        RAW_TAG="${{ github.event.release.tag_name }}"
+        CLEAN_VERSION="${RAW_TAG#v}"
+        echo "App_Version=$CLEAN_VERSION" >> $GITHUB_ENV
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -58,13 +64,13 @@ jobs:
     # --- WINDOWS ---
     - name: Build Windows Installer (Inno Setup)
       if: matrix.os == 'windows-latest'
-      run: iscc installer.iss
+      run: iscc -f"st_mark_bulletin_generator-${{ env.App_Version }}-${{ matrix.rid }}" installer.iss
 
     - name: Upload Windows Setup to Release
       if: matrix.os == 'windows-latest'
       uses: softprops/action-gh-release@v2
       with:
-        files: ./installer_output/setup.exe
+        files: ./installer_output/st_mark_bulletin_generator-${{ env.App_Version }}-${{ matrix.rid }}.exe
 
     # --- macOS ---
     - name: Package macOS App and DMG
@@ -73,9 +79,10 @@ jobs:
         APP_NAME="St Mark Bulletin Generator.app"
         mkdir -p "$APP_NAME/Contents/MacOS"
         
-        # Move binary into the .app bundle and make it executable
-        cp ./publish_output/st_mark_bulletin_generator "$APP_NAME/Contents/MacOS/"
+        # Move binary into the .app bundle and free up the publish_output copy
+        mv ./publish_output/st_mark_bulletin_generator "$APP_NAME/Contents/MacOS/"
         chmod +x "$APP_NAME/Contents/MacOS/st_mark_bulletin_generator"
+        rm -rf ./publish_output
         
         # Generate Info.plist so macOS recognizes it as a native graphical app
         cat <<EOF > "$APP_NAME/Contents/Info.plist"
@@ -99,9 +106,17 @@ jobs:
         </plist>
         EOF
         
-        # Create a Disk Image (.dmg) containing the .app bundle
-        hdiutil create -volname "St Mark Bulletin Generator" -srcfolder "$APP_NAME" -ov -format UDZO st_mark_bulletin_generator-osx-arm64.dmg
-
+        # Calculate app size in MB and add a 50MB buffer so hdiutil doesn't under-allocate
+        APP_SIZE_MB=$(du -sm "$APP_NAME" | awk '{print $1}')
+        DMG_SIZE_MB=$((APP_SIZE_MB + 50))
+        
+        # Create a compressed Disk Image (.dmg) containing the .app bundle
+        hdiutil create -volname "St Mark Bulletin Generator" \
+          -srcfolder "$APP_NAME" \
+          -size "${DMG_SIZE_MB}m" \
+          -fs HFS+ \
+          -ov -format UDZO \
+          st_mark_bulletin_generator-osx-arm64.dmg
     - name: Upload macOS DMG to Release
       if: matrix.os == 'macos-latest'
       uses: softprops/action-gh-release@v2
