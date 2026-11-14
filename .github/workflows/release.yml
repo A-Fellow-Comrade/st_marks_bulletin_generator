@@ -78,18 +78,23 @@ jobs:
       run: |
         APP_NAME="St Mark Bulletin Generator.app"
         mkdir -p "$APP_NAME/Contents/MacOS"
+        mkdir -p "$APP_NAME/Contents/Resources" # 1. Create Resources folder
         
-        # Move binary into the .app bundle and free up the publish_output copy
+        # 2. Copy the macOS icon into the Resources folder
+        cp ./icon/icon.icns "$APP_NAME/Contents/Resources/icon.icns"
+        
         mv ./publish_output/st_mark_bulletin_generator "$APP_NAME/Contents/MacOS/"
         chmod +x "$APP_NAME/Contents/MacOS/st_mark_bulletin_generator"
         rm -rf ./publish_output
         
-        # Generate Info.plist so macOS recognizes it as a native graphical app
+        # 3. Add the CFBundleIconFile key to Info.plist
         cat <<EOF > "$APP_NAME/Contents/Info.plist"
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
         <plist version="1.0">
         <dict>
+            <key>CFBundleIconFile</key>
+            <string>icon.icns</string>
             <key>CFBundleExecutable</key>
             <string>st_mark_bulletin_generator</string>
             <key>CFBundleIdentifier</key>
@@ -106,11 +111,9 @@ jobs:
         </plist>
         EOF
         
-        # Calculate app size in MB and add a 50MB buffer so hdiutil doesn't under-allocate
         APP_SIZE_MB=$(du -sm "$APP_NAME" | awk '{print $1}')
         DMG_SIZE_MB=$((APP_SIZE_MB + 50))
         
-        # Create a compressed Disk Image (.dmg) containing the .app bundle
         hdiutil create -volname "St Mark Bulletin Generator" \
           -srcfolder "$APP_NAME" \
           -size "${DMG_SIZE_MB}m" \
@@ -136,6 +139,9 @@ jobs:
         mkdir -p linux_root/opt/st_mark_bulletin_generator
         mkdir -p linux_root/usr/local/bin
         mkdir -p linux_root/usr/share/applications
+        mkdir -p linux_root/usr/share/pixmaps
+
+        cp ./icon/icon.png linux_root/usr/share/pixmaps/st-mark-bulletin-generator.png
         
         # Copy binaries to /opt/
         cp -r ./publish_output/* linux_root/opt/st_mark_bulletin_generator/
@@ -149,6 +155,7 @@ jobs:
         [Desktop Entry]
         Name=St Mark Bulletin Generator
         Exec=/opt/st_mark_bulletin_generator/st_mark_bulletin_generator
+        Icon=st-mark-bulletin-generator
         Type=Application
         Categories=Office;Utility;
         Terminal=false

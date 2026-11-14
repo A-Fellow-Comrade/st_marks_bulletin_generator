@@ -1,6 +1,7 @@
 [Setup]
 AppName=St Mark Bulletin Generator
 AppVersion=1.0
+SetupIconFile=icon\icon.ico
 ; Where the app installs by default (Program Files)
 DefaultDirName={autopf}\StMarkBulletinGenerator
 ; Output settings for the generated setup.exe
