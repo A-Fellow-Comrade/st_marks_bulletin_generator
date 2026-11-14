@@ -85,7 +85,7 @@
                                Foreground="White" FontSize="21"/>
                     <TextBlock x:Name="SundayLabel"
                                FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
-                               Foreground="#E8C97A" FontSize="14"/>
+                               Foreground="#E8C97A" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4">
                     <TextBlock x:Name="SaveNote"
@@ -106,7 +106,8 @@
 
         <!-- Gilt double rule under the header -->
         <StackPanel DockPanel.Dock="Top" Spacing="2">
-            <Border Height="3" Background="{DynamicResource GoldBrush}"/>
+            <!-- The first line takes the color of the church year for the Sunday being edited -->
+            <Border x:Name="SeasonStripe" Height="4" Background="{DynamicResource GoldBrush}"/>
             <Border Height="1" Background="{DynamicResource GoldBrush}"/>
         </StackPanel>
 

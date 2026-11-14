@@ -40,6 +40,7 @@ public partial class MainWindow : Window
 
     private readonly BulletinStore _store;
     private readonly HymnCorrections _corrections;
+    private LiturgicalColor? _seasonColor;                 // church-year color of the Sunday shown
     private readonly ChurchSettingsStore _churchStore;   // the church's own wording (shared folder)
     private readonly DispatcherTimer _saveTimer;
 
@@ -124,6 +125,8 @@ public partial class MainWindow : Window
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
             RichBox.ApplyTheme(AcknowledgementsBox);
+            // the stripe was set by hand, so it needs setting again in the new theme
+            if (_seasonColor is LiturgicalColor color) SeasonStripe.Background = SeasonBrushes.For(color);
         };
 
         PsalmVersionBox.ItemsSource = _versions;
@@ -237,7 +240,11 @@ public partial class MainWindow : Window
             StatusText.Text = $"Couldn't update the shared hymn corrections ({problem}).";
 
         SwitchTo(date);
-        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy");
+        // The color of the church year: written in the subtitle and shown as the header stripe.
+        var season = ChurchYear.For(date);
+        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy") + "  ·  " + season.Name + " (" + season.ColorWord + ")";
+        _seasonColor = season.Color;
+        SeasonStripe.Background = SeasonBrushes.For(season.Color);
         Title = "St. Mark Bulletin: " + Pretty(date, "MMM d, yyyy");
     }
 

@@ -83,6 +83,11 @@
         <SolidColorBrush x:Key="HeaderBrush"       Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryBrush"      Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#7A2340"/>
+        <!-- The colors of the church year (white is shown as gold so it stands out on parchment) -->
+        <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#B38B1A"/>
+        <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#3E7A48"/>
+        <SolidColorBrush x:Key="SeasonVioletBrush" Color="#5B3A8C"/>
+        <SolidColorBrush x:Key="SeasonRedBrush"    Color="#A32D2D"/>
 
         <!-- ──────── Dark: candlelit ──────── -->
         <Color x:Key="DarkSurface">#1B1416</Color>
@@ -107,6 +112,10 @@
         <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#7A2340"/>
         <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#8A2B4B"/>
         <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#A13459"/>
+        <SolidColorBrush x:Key="DarkSeasonWhiteBrush"  Color="#E2C46A"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#67AE74"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#9275C9"/>
+        <SolidColorBrush x:Key="DarkSeasonRedBrush"    Color="#D9605C"/>
 
         <!-- ──────── Icons (drawn in the text colour of the button they are in) ──────── -->
         <StreamGeometry x:Key="IconSun">M 12 7.2 A 4.8 4.8 0 1 0 12 16.8 A 4.8 4.8 0 1 0 12 7.2 Z M 12.95 4.4 L 12.95 1.4 L 11.05 1.4 L 11.05 4.4 Z M 18.05 7.3 L 20.17 5.18 L 18.82 3.83 L 16.7 5.95 Z M 19.6 12.95 L 22.6 12.95 L 22.6 11.05 L 19.6 11.05 Z M 16.7 18.05 L 18.82 20.17 L 20.17 18.82 L 18.05 16.7 Z M 11.05 19.6 L 11.05 22.6 L 12.95 22.6 L 12.95 19.6 Z M 5.95 16.7 L 3.83 18.82 L 5.18 20.17 L 7.3 18.05 Z M 4.4 11.05 L 1.4 11.05 L 1.4 12.95 L 4.4 12.95 Z M 7.3 5.95 L 5.18 3.83 L 3.83 5.18 L 5.95 7.3 Z</StreamGeometry>

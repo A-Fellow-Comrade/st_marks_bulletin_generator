@@ -13,7 +13,8 @@ using st_mark_bulletin_generator.Models;
 namespace st_mark_bulletin_generator.Views;
 
 // The main window: a month calendar where only Sundays can be clicked.
-// Sundays that have a saved bulletin are gold. Clicking a Sunday opens (or
+// Sundays that have a saved bulletin are gold, and each Sunday has an edge in the color
+// of its place in the church year. Clicking a Sunday opens (or
 // re-uses) the bulletin form for that Sunday.
 //
 // It also looks after the bulletin folder. On the first launch it simply uses
@@ -23,8 +24,6 @@ namespace st_mark_bulletin_generator.Views;
 // later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
-    private static readonly IBrush SavedBrush    = new SolidColorBrush(Color.Parse("#66FFB300"));
-    private static readonly IBrush SelectedBrush = new SolidColorBrush(Color.Parse("#5C1A2E"));
     private static readonly IBrush SelectedFg    = Brushes.White;
     private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
 
@@ -268,6 +267,13 @@ public partial class CalendarWindow : Window
         }
     }
 
+    // A color of the current theme (the theme swaps these when light or dark is chosen).
+    private static IBrush ThemeBrush(string key) => (IBrush)Application.Current!.Resources[key]!;
+
+    // The wash on Sundays that have a saved bulletin: the theme's gold, see-through.
+    private static IBrush SavedWash() =>
+        new SolidColorBrush(((ISolidColorBrush)ThemeBrush("GoldBrush")).Color, 0.35);
+
     private HashSet<DateOnly> SavedSundays()
     {
         try { return _store == null ? new HashSet<DateOnly>() : new HashSet<DateOnly>(_store.ListDates()); }
@@ -305,6 +311,8 @@ public partial class CalendarWindow : Window
 
     private Control MakeSundayButton(DateOnly date, HashSet<DateOnly> saved)
     {
+        var season = ChurchYear.For(date);
+
         var button = new Button
         {
             Content = date.Day.ToString(CultureInfo.InvariantCulture),
@@ -312,16 +320,33 @@ public partial class CalendarWindow : Window
             HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(2),
             Padding = new Thickness(0, 8),
-            Opacity = date.Month == _month.Month ? 1.0 : 0.55,
         };
-        if (saved.Contains(date)) button.Background = SavedBrush;
+        if (saved.Contains(date)) button.Background = SavedWash();
         if (date == _selected)
         {
-            button.Background = SelectedBrush;
+            button.Background = ThemeBrush("PrimaryBrush");
             button.Foreground = SelectedFg;
         }
         button.Click += (_, _) => Choose(date);
-        return button;
+        ToolTip.SetTip(button, $"{season.Name} ({season.ColorWord})");
+
+        // The edge in the color of the church year. It sits on top of the button but
+        // lets clicks through, so the whole cell still works as one button.
+        var edge = new Border
+        {
+            Width = 4,
+            CornerRadius = new CornerRadius(2),
+            Background = SeasonBrushes.For(season.Color),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Margin = new Thickness(6, 8, 0, 8),
+            IsHitTestVisible = false,
+        };
+
+        var cell = new Grid { Opacity = date.Month == _month.Month ? 1.0 : 0.55 };
+        cell.Children.Add(button);
+        cell.Children.Add(edge);
+        return cell;
     }
 
     private static Control MakeGreyDay(DateOnly date) => new TextBlock
@@ -363,5 +388,10 @@ public partial class CalendarWindow : Window
         SelectedInfo.Text = name.Length > 0
             ? $"{char.ToUpperInvariant(name[0])}{name[1..]}. {status}."
             : $"{status}.";
+
+        // The color of the church year, written out as well as shown.
+        var season = ChurchYear.For(_selected);
+        SelectedSeason.Text = $"{season.Name} · {season.ColorWord}";
+        SelectedEdge.Background = SeasonBrushes.For(season.Color);
     }
 }

@@ -154,13 +154,21 @@
 
             <!-- Selected Sunday info -->
             <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    CornerRadius="6" Padding="14,10">
-                <StackPanel Spacing="3">
-                    <TextBlock x:Name="SelectedTitle" FontWeight="SemiBold"
-                               FontSize="13" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"/>
-                    <TextBlock x:Name="SelectedInfo" Foreground="{DynamicResource MutedBrush}"
-                               FontSize="12" TextWrapping="Wrap"/>
-                </StackPanel>
+                    CornerRadius="6" ClipToBounds="True">
+                <Grid ColumnDefinitions="6,*">
+                    <!-- The color of the church year for this Sunday -->
+                    <Border x:Name="SelectedEdge" Grid.Column="0" Background="{DynamicResource GoldBrush}"/>
+                    <StackPanel Grid.Column="1" Spacing="3" Margin="14,10">
+                        <TextBlock x:Name="SelectedTitle"
+                                   FontFamily="{DynamicResource HeadingFont}" FontSize="16"
+                                   Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="SelectedSeason"
+                                   FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic" FontSize="13"
+                                   Foreground="{DynamicResource RubricBrush}" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="SelectedInfo" Foreground="{DynamicResource MutedBrush}"
+                                   FontSize="12" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
             </Border>
 
             <!-- Quick navigation buttons -->
@@ -190,15 +198,33 @@
             </Grid>
 
             <!-- Legend -->
-            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,2,0,0">
-                <Border Width="14" Height="14" CornerRadius="3"
-                        Background="#66FFB300" VerticalAlignment="Center"/>
-                <TextBlock Text="Saved bulletin" Foreground="{DynamicResource MutedBrush}" FontSize="11"
-                           VerticalAlignment="Center"/>
-                <Border Width="14" Height="14" CornerRadius="3"
-                        Background="#5C1A2E" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
-                           VerticalAlignment="Center"/>
+            <StackPanel Spacing="6" Margin="0,2,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Width="14" Height="14" CornerRadius="3"
+                            Background="{DynamicResource GoldBrush}" Opacity="0.35" VerticalAlignment="Center"/>
+                    <TextBlock Text="Saved bulletin" Foreground="{DynamicResource MutedBrush}" FontSize="11"
+                               VerticalAlignment="Center"/>
+                    <Border Width="14" Height="14" CornerRadius="3"
+                            Background="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Church year:" Foreground="{DynamicResource MutedBrush}" FontSize="11"
+                               VerticalAlignment="Center"/>
+                    <Border Width="4" Height="14" CornerRadius="2"
+                            Background="{DynamicResource SeasonWhiteBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="White" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
+                            Background="{DynamicResource SeasonGreenBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Green" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
+                            Background="{DynamicResource SeasonVioletBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Violet" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
+                            Background="{DynamicResource SeasonRedBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Red" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
 
         </StackPanel>
