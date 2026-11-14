@@ -83,6 +83,10 @@
         <SolidColorBrush x:Key="HeaderBrush"       Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryBrush"      Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#7A2340"/>
+        <!-- Warning notes (the yellow boxes) -->
+        <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF3CD"/>
+        <SolidColorBrush x:Key="WarningBorderBrush"     Color="#F0C040"/>
+        <SolidColorBrush x:Key="WarningTextBrush"       Color="#5A4000"/>
         <!-- The colors of the church year (white is shown as gold so it stands out on parchment) -->
         <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#B38B1A"/>
         <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#3E7A48"/>
@@ -112,6 +116,9 @@
         <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#7A2340"/>
         <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#8A2B4B"/>
         <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#A13459"/>
+        <SolidColorBrush x:Key="DarkWarningBackgroundBrush" Color="#3A2E14"/>
+        <SolidColorBrush x:Key="DarkWarningBorderBrush"     Color="#8A6A1E"/>
+        <SolidColorBrush x:Key="DarkWarningTextBrush"       Color="#F3DFA8"/>
         <SolidColorBrush x:Key="DarkSeasonWhiteBrush"  Color="#E2C46A"/>
         <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#67AE74"/>
         <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#9275C9"/>

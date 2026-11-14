@@ -31,6 +31,16 @@
             <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
         </Style>
 
+        <!-- The folder box: plain, or a yellow warning when the folder can't be used -->
+        <Style Selector="Border#FolderBorder">
+            <Setter Property="Background"  Value="{DynamicResource CardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        </Style>
+        <Style Selector="Border#FolderBorder.problem">
+            <Setter Property="Background"  Value="{DynamicResource WarningBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource WarningBorderBrush}"/>
+        </Style>
+
         <!-- Theme toggle (visible on the dark header bar) -->
         <Style Selector="Button.theme-toggle">
             <Setter Property="Background"  Value="Transparent"/>
@@ -95,8 +105,7 @@
             <StackPanel Margin="16,14,16,16" Spacing="10">
 
             <!-- Folder info card -->
-            <Border x:Name="FolderBorder" CornerRadius="6" Padding="14,10"
-                    Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <Border x:Name="FolderBorder" CornerRadius="6" Padding="14,10" BorderThickness="1">
                 <StackPanel Spacing="8">
                     <TextBlock x:Name="FolderText" FontSize="12" TextWrapping="Wrap"
                                Foreground="{DynamicResource LabelBrush}"/>
@@ -197,6 +206,42 @@
                 </Button>
             </Grid>
 
+            <!-- What the colors of the church year mean -->
+            <Border Classes="card" Margin="0" Padding="14,10">
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="section-title" Text="The colors of the church year"/>
+                    <Border Classes="rule"/>
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                        <Border Grid.Row="0" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonWhiteBrush}"/>
+                        <StackPanel Grid.Row="0" Grid.Column="1">
+                            <TextBlock Text="White, shown as gold" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
+                            <TextBlock Text="Joy and the festivals of Christ: Christmas, the Epiphany, Easter, Holy Trinity, All Saints' Day and the last Sunday of the church year."
+                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
+                        </StackPanel>
+                        <Border Grid.Row="1" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonGreenBrush}"/>
+                        <StackPanel Grid.Row="1" Grid.Column="1">
+                            <TextBlock Text="Green" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
+                            <TextBlock Text="Growth in the faith: the ordinary Sundays after the Epiphany and after Pentecost."
+                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
+                        </StackPanel>
+                        <Border Grid.Row="2" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonVioletBrush}"/>
+                        <StackPanel Grid.Row="2" Grid.Column="1">
+                            <TextBlock Text="Violet" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
+                            <TextBlock Text="Preparation and repentance: Advent and Lent."
+                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
+                        </StackPanel>
+                        <Border Grid.Row="3" Grid.Column="0" Width="5" CornerRadius="2" Background="{DynamicResource SeasonRedBrush}"/>
+                        <StackPanel Grid.Row="3" Grid.Column="1">
+                            <TextBlock Text="Red" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextBrush}"/>
+                            <TextBlock Text="The Holy Spirit and the Church's witness: Pentecost, Reformation Day and the Sunday of the Passion."
+                                       FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="Each Sunday in the calendar has an edge in its color. Point at a Sunday to see its season."
+                               FontSize="11" FontStyle="Italic" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}"/>
+                </StackPanel>
+            </Border>
+
             <!-- Legend -->
             <StackPanel Spacing="6" Margin="0,2,0,0">
                 <StackPanel Orientation="Horizontal" Spacing="10">
@@ -208,22 +253,6 @@
                             Background="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                     <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
                                VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Church year:" Foreground="{DynamicResource MutedBrush}" FontSize="11"
-                               VerticalAlignment="Center"/>
-                    <Border Width="4" Height="14" CornerRadius="2"
-                            Background="{DynamicResource SeasonWhiteBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="White" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
-                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
-                            Background="{DynamicResource SeasonGreenBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="Green" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
-                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
-                            Background="{DynamicResource SeasonVioletBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="Violet" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
-                    <Border Width="4" Height="14" CornerRadius="2" Margin="6,0,0,0"
-                            Background="{DynamicResource SeasonRedBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="Red" Foreground="{DynamicResource MutedBrush}" FontSize="11" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
 

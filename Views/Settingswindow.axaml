@@ -28,7 +28,7 @@
             <Setter Property="Foreground" Value="{DynamicResource LabelBrush}"/>
         </Style>
         <Style Selector="TextBlock#StatusText.error">
-            <Setter Property="Foreground" Value="#D9534F"/>
+            <Setter Property="Foreground" Value="{DynamicResource RubricBrush}"/>
         </Style>
 
         <!-- All text boxes -->
@@ -112,12 +112,12 @@
 
                 <!-- Shown when the settings file couldn't be read -->
                 <Border x:Name="ProblemBorder" IsVisible="False"
-                        Background="#FFF3CD" BorderBrush="#F0C040" BorderThickness="1"
+                        Background="{DynamicResource WarningBackgroundBrush}" BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
                         CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" VerticalAlignment="Center" Foreground="#8A6000"/>
+                        <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" VerticalAlignment="Center" Foreground="{DynamicResource WarningTextBrush}"/>
                         <TextBlock x:Name="ProblemText" TextWrapping="Wrap"
-                                   Foreground="#5A4000" VerticalAlignment="Center"/>
+                                   Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 

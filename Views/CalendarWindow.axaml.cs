@@ -25,7 +25,6 @@ namespace st_mark_bulletin_generator.Views;
 public partial class CalendarWindow : Window
 {
     private static readonly IBrush SelectedFg    = Brushes.White;
-    private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
 
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
@@ -147,8 +146,10 @@ public partial class CalendarWindow : Window
     private void ShowFolderMessage(string text, bool isProblem, bool canRetry)
     {
         FolderText.Text = text;
-        FolderBorder.Background = isProblem ? ProblemBrush : null;
-        FolderBorder.BorderBrush = isProblem ? new SolidColorBrush(Color.Parse("#F0C040")) : new SolidColorBrush(Color.Parse("#E0D8D0"));
+        // The yellow warning look comes from the "problem" style in the XAML, which follows light and dark mode.
+        bool hasClass = FolderBorder.Classes.Contains("problem");
+        if (isProblem && !hasClass) FolderBorder.Classes.Add("problem");
+        else if (!isProblem && hasClass) FolderBorder.Classes.Remove("problem");
         RetryButton.IsVisible = canRetry;
     }
 
@@ -328,7 +329,7 @@ public partial class CalendarWindow : Window
             button.Foreground = SelectedFg;
         }
         button.Click += (_, _) => Choose(date);
-        ToolTip.SetTip(button, $"{season.Name} ({season.ColorWord})");
+        ToolTip.SetTip(button, $"{season.Name}\n{season.ColorWord[0].ToString().ToUpperInvariant()}{season.ColorWord[1..]}, for {season.ColorMeaning}");
 
         // The edge in the color of the church year. It sits on top of the button but
         // lets clicks through, so the whole cell still works as one button.
@@ -391,7 +392,7 @@ public partial class CalendarWindow : Window
 
         // The color of the church year, written out as well as shown.
         var season = ChurchYear.For(_selected);
-        SelectedSeason.Text = $"{season.Name} · {season.ColorWord}";
+        SelectedSeason.Text = $"{season.Name} · {season.ColorWord}, for {season.ColorMeaning}";
         SelectedEdge.Background = SeasonBrushes.For(season.Color);
     }
 }

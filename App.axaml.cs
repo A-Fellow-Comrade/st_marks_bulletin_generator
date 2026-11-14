@@ -19,6 +19,7 @@ public partial class App : Application
         "TextBrush", "LabelBrush", "MutedBrush",
         "RubricBrush", "GoldBrush", "HeaderBrush", "PrimaryBrush", "PrimaryHoverBrush",
         "SeasonWhiteBrush", "SeasonGreenBrush", "SeasonVioletBrush", "SeasonRedBrush",
+        "WarningBackgroundBrush", "WarningBorderBrush", "WarningTextBrush",
     };
 
     // Captured once at startup so switching back to light still works after
