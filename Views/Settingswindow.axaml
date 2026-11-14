@@ -8,25 +8,6 @@
         Background="{DynamicResource SurfaceBrush}">
 
     <Window.Styles>
-        <!-- Section card -->
-        <Style Selector="Border.card">
-            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
-            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius"   Value="6"/>
-            <Setter Property="Padding"        Value="16,12"/>
-            <Setter Property="Margin"         Value="0,0,0,10"/>
-        </Style>
-
-        <!-- Section heading inside a card -->
-        <Style Selector="TextBlock.section-title">
-            <Setter Property="FontSize"       Value="10"/>
-            <Setter Property="FontWeight"     Value="SemiBold"/>
-            <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
-            <Setter Property="Margin"         Value="0,0,0,2"/>
-            <Setter Property="LetterSpacing"  Value="1.5"/>
-        </Style>
-
         <!-- A setting's name, above its box -->
         <Style Selector="TextBlock.field">
             <Setter Property="Foreground"     Value="{DynamicResource LabelBrush}"/>
@@ -47,7 +28,7 @@
             <Setter Property="Foreground" Value="{DynamicResource LabelBrush}"/>
         </Style>
         <Style Selector="TextBlock#StatusText.error">
-            <Setter Property="Foreground" Value="#D9534F"/>
+            <Setter Property="Foreground" Value="{DynamicResource RubricBrush}"/>
         </Style>
 
         <!-- All text boxes -->
@@ -70,28 +51,39 @@
 
         <!-- Save button -->
         <Style Selector="Button.save">
-            <Setter Property="Background"  Value="{DynamicResource BrandBurgundyBrush}"/>
+            <Setter Property="Background"  Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="FontWeight"  Value="SemiBold"/>
             <Setter Property="Padding"     Value="22,8"/>
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="Button.save:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#7A2340"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
         </Style>
     </Window.Styles>
 
     <DockPanel>
 
         <!-- ══════════════ HEADER (pinned) ══════════════ -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="20,16">
-            <StackPanel Spacing="2">
-                <TextBlock Text="Church settings"
-                           Foreground="White" FontSize="18" FontWeight="SemiBold"/>
-                <TextBlock Text="Wording printed on every bulletin. Changes appear in the next PDF made on any computer using this folder."
-                           Foreground="#E8C97A" FontSize="12" TextWrapping="Wrap"/>
-            </StackPanel>
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="20,16">
+            <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
+                          Foreground="#E8C97A" VerticalAlignment="Top" Margin="0,2,14,0"/>
+                <StackPanel Grid.Column="1" Spacing="2">
+                    <TextBlock Text="Church settings"
+                               FontFamily="{DynamicResource HeadingFont}"
+                               Foreground="White" FontSize="21"/>
+                    <TextBlock Text="Wording printed on every bulletin. Changes appear in the next PDF made on any computer using this folder."
+                               Foreground="#E8C97A" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
         </Border>
+
+        <!-- Gilt double rule under the header -->
+        <StackPanel DockPanel.Dock="Top" Spacing="2">
+            <Border Height="3" Background="{DynamicResource GoldBrush}"/>
+            <Border Height="1" Background="{DynamicResource GoldBrush}"/>
+        </StackPanel>
 
         <!-- ══════════════ BUTTONS (pinned) ══════════════ -->
         <Border DockPanel.Dock="Bottom"
@@ -120,12 +112,12 @@
 
                 <!-- Shown when the settings file couldn't be read -->
                 <Border x:Name="ProblemBorder" IsVisible="False"
-                        Background="#FFF3CD" BorderBrush="#F0C040" BorderThickness="1"
+                        Background="{DynamicResource WarningBackgroundBrush}" BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
                         CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="⚠" FontSize="14" VerticalAlignment="Center" Foreground="#8A6000"/>
+                        <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" VerticalAlignment="Center" Foreground="{DynamicResource WarningTextBrush}"/>
                         <TextBlock x:Name="ProblemText" TextWrapping="Wrap"
-                                   Foreground="#5A4000" VerticalAlignment="Center"/>
+                                   Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 

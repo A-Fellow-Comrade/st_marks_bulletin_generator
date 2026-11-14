@@ -9,25 +9,6 @@
         Background="{DynamicResource SurfaceBrush}">
 
     <Window.Styles>
-        <!-- Section card -->
-        <Style Selector="Border.card">
-            <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
-            <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius"   Value="6"/>
-            <Setter Property="Padding"        Value="16,12"/>
-            <Setter Property="Margin"         Value="0,0,0,10"/>
-        </Style>
-
-        <!-- Section heading inside a card -->
-        <Style Selector="TextBlock.section-title">
-            <Setter Property="FontSize"       Value="10"/>
-            <Setter Property="FontWeight"     Value="SemiBold"/>
-            <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
-            <Setter Property="Margin"         Value="0,0,0,10"/>
-            <Setter Property="LetterSpacing"  Value="1.5"/>
-        </Style>
-
         <!-- Form labels -->
         <Style Selector="TextBlock.label">
             <Setter Property="Foreground"       Value="{DynamicResource LabelBrush}"/>
@@ -53,7 +34,7 @@
 
         <!-- Primary action button (Generate PDF) -->
         <Style Selector="Button.primary">
-            <Setter Property="Background"              Value="{DynamicResource BrandBurgundyBrush}"/>
+            <Setter Property="Background"              Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"              Value="White"/>
             <Setter Property="FontSize"                Value="14"/>
             <Setter Property="FontWeight"              Value="SemiBold"/>
@@ -63,7 +44,7 @@
             <Setter Property="CornerRadius"            Value="6"/>
         </Style>
         <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#7A2340"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
         </Style>
 
         <!-- Secondary buttons -->
@@ -79,14 +60,14 @@
         <!-- Theme toggle (visible on the dark header bar) -->
         <Style Selector="Button.theme-toggle">
             <Setter Property="Background"  Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="Padding"     Value="8,4"/>
             <Setter Property="FontSize"    Value="12"/>
         </Style>
         <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource BrandGoldBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource GoldBrush}"/>
             <Setter Property="Foreground" Value="{DynamicResource BrandBurgundyBrush}"/>
         </Style>
     </Window.Styles>
@@ -94,15 +75,19 @@
     <DockPanel>
 
         <!-- ══════════════ HEADER (pinned) ══════════════ -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource BrandBurgundyBrush}" Padding="20,16">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="2">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="20,16">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
+                          Foreground="#E8C97A" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
-                               Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                               FontFamily="{DynamicResource HeadingFont}"
+                               Foreground="White" FontSize="21"/>
                     <TextBlock x:Name="SundayLabel"
-                               Foreground="#E8C97A" FontSize="13"/>
+                               FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
+                               Foreground="#E8C97A" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4">
                     <TextBlock x:Name="SaveNote"
                                Foreground="#C0A060" FontSize="11"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
@@ -119,6 +104,13 @@
             </Grid>
         </Border>
 
+        <!-- Gilt double rule under the header -->
+        <StackPanel DockPanel.Dock="Top" Spacing="2">
+            <!-- The first line takes the color of the church year for the Sunday being edited -->
+            <Border x:Name="SeasonStripe" Height="4" Background="{DynamicResource GoldBrush}"/>
+            <Border Height="1" Background="{DynamicResource GoldBrush}"/>
+        </StackPanel>
+
         <!-- ══════════════ SCROLLABLE BODY ══════════════ -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
@@ -126,13 +118,13 @@
 
             <!-- Conflict / sync banner -->
             <Border x:Name="BannerBorder" IsVisible="False"
-                    Background="#FFF3CD" BorderBrush="#F0C040" BorderThickness="1"
+                    Background="{DynamicResource WarningBackgroundBrush}" BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
                     CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
                 <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="⚠" FontSize="14" VerticalAlignment="Center" Foreground="#8A6000"/>
+                        <PathIcon Data="{StaticResource IconWarning}" Width="16" Height="16" VerticalAlignment="Center" Foreground="{DynamicResource WarningTextBrush}"/>
                         <TextBlock x:Name="BannerText" TextWrapping="Wrap"
-                                   Foreground="#5A4000" VerticalAlignment="Center"/>
+                                   Foreground="{DynamicResource WarningTextBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel x:Name="ConflictButtons" Orientation="Horizontal" Spacing="8" IsVisible="False">
                         <Button Classes="secondary" Content="Keep mine"        Click="KeepMine_Click"/>
@@ -144,7 +136,8 @@
             <!-- ── CARD: Service Info ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="SERVICE INFORMATION"/>
+                    <TextBlock Classes="section-title" Text="Service information"/>
+                    <Border Classes="rule"/>
                     <Grid ColumnDefinitions="130,*" RowDefinitions="Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Service time"/>
@@ -167,7 +160,8 @@
             <!-- ── CARD: Worship Details ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="WORSHIP DETAILS"/>
+                    <TextBlock Classes="section-title" Text="Worship details"/>
+                    <Border Classes="rule"/>
                     <Grid ColumnDefinitions="130,160,*" RowDefinitions="Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Service setting"/>
@@ -198,7 +192,8 @@
             <!-- ── CARD: Hymns & Music ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="HYMNS &amp; MUSIC"/>
+                    <TextBlock Classes="section-title" Text="Hymns &amp; music"/>
+                    <Border Classes="rule"/>
                     <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Organ prelude"/>
@@ -234,7 +229,8 @@
             <!-- ── CARD: Psalm ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="PSALM"/>
+                    <TextBlock Classes="section-title" Text="Psalm"/>
+                    <Border Classes="rule"/>
                     <Grid ColumnDefinitions="130,100,Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8">
                        
                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Psalm"/>
@@ -274,13 +270,14 @@
             <!-- ── CARD: Announcements ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="ANNOUNCEMENTS"/>
+                    <TextBlock Classes="section-title" Text="Announcements"/>
+                    <Border Classes="rule"/>
                     <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
                         <Grid>
                             <rte:RichEditorView x:Name="AnnouncementsBox" Height="200" ShowStatusBar="False"/>
                             <Border x:Name="AnnouncementsPlaceholder"
                                     Background="{DynamicResource InputBackgroundBrush}"
-                                    BorderBrush="{DynamicResource BrandGoldBrush}"
+                                    BorderBrush="{DynamicResource GoldBrush}"
                                     BorderThickness="1"
                                     CornerRadius="6"
                                     Padding="12,8"
@@ -301,13 +298,14 @@
             <!-- ── CARD: Acknowledgements ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="ACKNOWLEDGEMENTS"/>
+                    <TextBlock Classes="section-title" Text="Acknowledgements"/>
+                    <Border Classes="rule"/>
                     <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
                         <Grid>
                             <rte:RichEditorView x:Name="AcknowledgementsBox" Height="140" ShowStatusBar="False"/>
                             <Border x:Name="AcknowledgementsPlaceholder"
                                     Background="{DynamicResource InputBackgroundBrush}"
-                                    BorderBrush="{DynamicResource BrandGoldBrush}"
+                                    BorderBrush="{DynamicResource GoldBrush}"
                                     BorderThickness="1"
                                     CornerRadius="6"
                                     Padding="12,8"
@@ -329,10 +327,15 @@
             <!-- ── CARD: Cover Image ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="COVER IMAGE"/>
+                    <TextBlock Classes="section-title" Text="Cover image"/>
+                    <Border Classes="rule"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                        <Button Classes="secondary" x:Name="PickImageButton"
-                                Content="🖼  Choose image…" Click="PickImage_Click"/>
+                        <Button Classes="secondary" x:Name="PickImageButton" Click="PickImage_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Data="{StaticResource IconImage}" Width="16" Height="16"/>
+                                <TextBlock Text="Choose image…" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <TextBlock x:Name="PickImageLabel" Text="Random"
                                    VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontStyle="Italic"/>
                     </StackPanel>
