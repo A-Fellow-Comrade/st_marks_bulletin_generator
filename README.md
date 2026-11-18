@@ -24,6 +24,7 @@ The pastor fills out a short form each week, and the application automatically g
   - [Light and Dark Themes](#light-and-dark-themes)
 - [USB Flash Drive Setup](#usb-flash-drive-setup)
 - [Data Storage](#data-storage)
+- [Psalm Text Data](#psalm-text-data)
 - [Hymn Database](#hymn-database)
 - [Project Structure](#project-structure)
 - [Technical Details](#technical-details)
@@ -360,6 +361,36 @@ Documents\StMarkBulletins\bulletin_yyyy-MM-dd_HHmm.pdf
 ```
 
 Each saved Sunday retains the hymn titles as they were printed. Service setting and creed page numbers are looked up each time a PDF is generated rather than being stored with the bulletin.
+
+---
+
+## Psalm Text Data
+
+The application reads the psalm texts from CSV files in:
+
+```text
+lectionary/Data/
+```
+
+The bundled files are `Psalm_ESV.csv`, `Psalm_KJV.csv`, and `Psalm_NKJV.csv`. The filename determines the translation shown in the form: `Psalm_<VERSION>.csv`. To add a translation, place a correspondingly named CSV in this directory and rebuild the application; the project copies these CSV files alongside the app.
+
+Each CSV has a `Ref,Text` header and one row per verse. `Ref` uses the format `PSALM:<chapter>:<verse>` (for example, `PSALM:23:1`); `Text` contains the verse text. CSV quoting must be preserved for commas, quotation marks, or line breaks inside a verse. The app discovers available translations from the filenames and uses these reference keys to load the selected verses.
+
+### Psalm Downloader
+
+`lectionary/Data/Downloader/` contains the Python utility used to build psalm CSVs:
+
+- `PsalmDownloader.py` requests each verse from BibleGateway and appends it to a CSV.
+- `bg_scraper.py` fetches and cleans the passage text.
+- `csv_builder.py` writes the `Ref,Text` rows.
+
+The downloader currently targets KJV only. From the downloader directory, it can be run with:
+
+```bash
+python PsalmDownloader.py
+```
+
+It requires Python packages `requests`, `beautifulsoup4`, and `tqdm`. The output is written to the current working directory. **Before using that output in the app, check its filename and location:** the current script names it `Psalms_KJV.csv`, while the app expects `lectionary/Data/Psalm_KJV.csv`. Rename or copy it to the expected path, and ensure the data is obtained and used in accordance with the source site's terms and the translation's permissions. This script is a development utility; the app uses the bundled CSV files and does not download psalm text at runtime.
 
 ---
 
