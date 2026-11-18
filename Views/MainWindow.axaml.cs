@@ -40,6 +40,7 @@ public partial class MainWindow : Window
 
     private readonly BulletinStore _store;
     private readonly HymnCorrections _corrections;
+    private LiturgicalColor? _seasonColor;                 // church-year color of the Sunday shown
     private readonly ChurchSettingsStore _churchStore;   // the church's own wording (shared folder)
     private readonly DispatcherTimer _saveTimer;
 
@@ -118,12 +119,20 @@ public partial class MainWindow : Window
         // Reflect the remembered theme on the toggle button.
         UpdateThemeToggle();
 
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("MainWindow must run inside the application.");
+
         // If the other window switches theme, keep this button's label in sync.
-        ((App)Application.Current).ThemeChanged += _ =>
+        app.ThemeChanged += _ =>
         {
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
             RichBox.ApplyTheme(AcknowledgementsBox);
+            if (_seasonColor is LiturgicalColor color)
+            {
+                SeasonStripe.Background = SeasonBrushes.For(color);
+                UpdateSeasonTheme(color);
+            }
         };
 
         PsalmVersionBox.ItemsSource = _versions;
@@ -145,7 +154,8 @@ public partial class MainWindow : Window
         _settings.Theme = next;
         _settings.Save();
 
-        var app = (App)Application.Current;
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("MainWindow must run inside the application.");
         app.ApplyTheme(next);
         UpdateThemeToggle();
     }
@@ -237,8 +247,22 @@ public partial class MainWindow : Window
             StatusText.Text = $"Couldn't update the shared hymn corrections ({problem}).";
 
         SwitchTo(date);
-        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy");
+        var season = ChurchYear.For(date);
+        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy") + "  ·  " + season.Name;
+        _seasonColor = season.Color;
+        SeasonStripe.Background = SeasonBrushes.For(season.Color);
+        UpdateSeasonTheme(season.Color);
         Title = "St. Mark Bulletin: " + Pretty(date, "MMM d, yyyy");
+    }
+
+    private void UpdateSeasonTheme(LiturgicalColor color)
+    {
+        var seasonBrush = SeasonBrushes.For(color);
+        Resources["HeaderBrush"] = seasonBrush;
+        Resources["PrimaryBrush"] = seasonBrush;
+        Resources["PrimaryHoverBrush"] = SeasonBrushes.HoverFor(color);
+        Resources["GoldBrush"] = SeasonBrushes.MarkerFor(color);
+        Resources["SeasonForegroundBrush"] = SeasonBrushes.ForegroundFor(color);
     }
 
     private string? SelectedSetting =>
@@ -263,16 +287,16 @@ public partial class MainWindow : Window
         if (text.Length == 0)
         {
             title.Text = "";
-            title.Watermark = "";
+            title.PlaceholderText = "";
         }
         else if (!int.TryParse(text, out var number)){
             title.Text = "";
-            title.Watermark = "Enter a number";
+            title.PlaceholderText = "Enter a number";
         }
         else{
             var hymn = _repo.GetByNumber(number);
             title.Text = hymn?.Title ?? "";
-            title.Watermark = hymn == null ? "Not in database; Type a title to add it." : "";
+            title.PlaceholderText = hymn == null ? "Not in database; Type a title to add it." : "";
         }
     }
 

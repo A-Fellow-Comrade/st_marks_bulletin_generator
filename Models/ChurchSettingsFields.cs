@@ -22,7 +22,10 @@ public static class ChurchSettingsFields
     // To make a setting read-only (shown, but not editable), add its Key here,
     // for example: "ChurchName", "Website". To lock the whole window, see
     // SettingsWindow.AllReadOnly.
-    public static readonly HashSet<string> ReadOnlyKeys = new();
+    public static readonly HashSet<string> ReadOnlyKeys = new()
+    {
+        "YearLine",     // worked out from "Year founded", so its wording stays fixed
+    };
 
     public static bool IsReadOnly(SettingField field) => ReadOnlyKeys.Contains(field.Key);
 
@@ -39,15 +42,15 @@ public static class ChurchSettingsFields
     public static readonly IReadOnlyList<SettingField> All = new[]
     {
         // ── front cover ──
-        Text("ChurchName", "FRONT COVER", "Church name", null, 1,
+        Text("ChurchName", "Front cover", "Church name", null, 1,
             s => s.ChurchName, (s, v) => s.ChurchName = v),
-        Text("ChurchTown", "FRONT COVER", "Town line", null, 1,
+        Text("ChurchTown", "Front cover", "Town line", null, 1,
             s => s.ChurchTown, (s, v) => s.ChurchTown = v),
-        Text("YearLine", "FRONT COVER", "Years of the church", "Fixed wording. {year} becomes the church's age, like 125th, worked out from the year founded below.", 1,
+        Text("YearLine", "Front cover", "Years of the church", "Fixed wording. {year} becomes the church's age, like 125th, worked out from the year founded below.", 1,
             s => s.YearLine, (s, v) => s.YearLine = v),
         new SettingField
         {
-            Key = "FoundedYear", Section = "FRONT COVER", Label = "Year founded",
+            Key = "FoundedYear", Section = "Front cover", Label = "Year founded",
             Hint = "The church's age on the front cover is worked out from this.",
             Get = s => s.FoundedYear.ToString(CultureInfo.InvariantCulture),
             Set = (s, v) =>
@@ -59,45 +62,45 @@ public static class ChurchSettingsFields
                 return null;
             },
         },
-        Text("Synod", "FRONT COVER", "Synod", null, 1,
+        Text("Synod", "Front cover", "Synod", null, 1,
             s => s.Synod, (s, v) => s.Synod = v),
-        Text("Website", "FRONT COVER", "Website", null, 1,
+        Text("Website", "Front cover", "Website", null, 1,
             s => s.Website, (s, v) => s.Website = v),
 
         // ── inside, left page ──
-        Text("WelcomeLine", "INSIDE LEFT PAGE", "Welcome line", null, 1,
+        Text("WelcomeLine", "Inside left page", "Welcome line", null, 1,
             s => s.WelcomeLine, (s, v) => s.WelcomeLine = v),
-        Text("OrderOfServiceText", "INSIDE LEFT PAGE", "Order of service", "{page} and {setting} are replaced by the page number and setting chosen on each bulletin.", 3,
+        Text("OrderOfServiceText", "Inside left page", "Order of service", "{page} and {setting} are replaced by the page number and setting chosen on each bulletin.", 3,
             s => s.OrderOfServiceText, (s, v) => s.OrderOfServiceText = v),
-        Text("CommunionHeading", "INSIDE LEFT PAGE", "Holy Communion heading", null, 1,
+        Text("CommunionHeading", "Inside left page", "Holy Communion heading", null, 1,
             s => s.CommunionHeading, (s, v) => s.CommunionHeading = v),
-        Text("CommunionParagraph1", "INSIDE LEFT PAGE", "Holy Communion, first paragraph", null, 6,
+        Text("CommunionParagraph1", "Inside left page", "Holy Communion, first paragraph", null, 6,
             s => s.CommunionParagraph1, (s, v) => s.CommunionParagraph1 = v),
-        Text("CommunionParagraph2", "INSIDE LEFT PAGE", "Holy Communion, second paragraph", null, 3,
+        Text("CommunionParagraph2", "Inside left page", "Holy Communion, second paragraph", null, 3,
             s => s.CommunionParagraph2, (s, v) => s.CommunionParagraph2 = v),
 
         // ── back cover ──
-        Text("BackWelcomeHeading", "BACK COVER", "Welcome heading", null, 1,
+        Text("BackWelcomeHeading", "Back cover", "Welcome heading", null, 1,
             s => s.BackWelcomeHeading, (s, v) => s.BackWelcomeHeading = v),
-        Text("BackWelcomeText", "BACK COVER", "Welcome text", "Printed after \u201CToday is the \u2026 Sunday.\u201D, which the program fills in for you.", 4,
+        Text("BackWelcomeText", "Back cover", "Welcome text", "Printed after \u201CToday is the \u2026 Sunday.\u201D, which the program fills in for you.", 4,
             s => s.BackWelcomeText, (s, v) => s.BackWelcomeText = v),
-        Text("AnnouncementsHeading", "BACK COVER", "Announcements heading", null, 1,
+        Text("AnnouncementsHeading", "Back cover", "Announcements heading", null, 1,
             s => s.AnnouncementsHeading, (s, v) => s.AnnouncementsHeading = v),
-        Text("MorePeopleLine", "BACK COVER", "Line under the acknowledgements", "Printed only when there are acknowledgements.", 1,
+        Text("MorePeopleLine", "Back cover", "Line under the acknowledgements", "Printed only when there are acknowledgements.", 1,
             s => s.MorePeopleLine, (s, v) => s.MorePeopleLine = v),
 
         // ── contact box ──
-        Text("ContactPhone", "CONTACT BOX", "Phone line", "Leave a line empty to leave it out. If every line is empty, the box disappears.", 1,
+        Text("ContactPhone", "Contact box", "Phone line", "Leave a line empty to leave it out. If every line is empty, the box disappears.", 1,
             s => s.ContactPhone, (s, v) => s.ContactPhone = v),
-        Text("ContactEmail", "CONTACT BOX", "Email line", null, 1,
+        Text("ContactEmail", "Contact box", "Email line", null, 1,
             s => s.ContactEmail, (s, v) => s.ContactEmail = v),
-        Text("OfficeHours", "CONTACT BOX", "Office hours line", null, 1,
+        Text("OfficeHours", "Contact box", "Office hours line", null, 1,
             s => s.OfficeHours, (s, v) => s.OfficeHours = v),
-        Text("ContactElder", "CONTACT BOX", "Elder line", null, 1,
+        Text("ContactElder", "Contact box", "Elder line", null, 1,
             s => s.ContactElder, (s, v) => s.ContactElder = v),
-        Text("ContactDeaconess", "CONTACT BOX", "Deaconess line", null, 1,
+        Text("ContactDeaconess", "Contact box", "Deaconess line", null, 1,
             s => s.ContactDeaconess, (s, v) => s.ContactDeaconess = v),
-        Text("PrayerCardNote", "CONTACT BOX", "Prayer card note", null, 3,
+        Text("PrayerCardNote", "Contact box", "Prayer card note", null, 3,
             s => s.PrayerCardNote, (s, v) => s.PrayerCardNote = v),
     };
 }

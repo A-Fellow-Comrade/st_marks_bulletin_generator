@@ -91,8 +91,12 @@ public partial class SettingsWindow : Window
         var heading = new TextBlock { Text = title };
         heading.Classes.Add("section-title");
 
+        var rule = new Border();
+        rule.Classes.Add("rule");
+
         var stack = new StackPanel();
         stack.Children.Add(heading);
+        stack.Children.Add(rule);
 
         var border = new Border { Child = stack };
         border.Classes.Add("card");
@@ -104,8 +108,9 @@ public partial class SettingsWindow : Window
     private void ShowMessage(string text, bool isProblem)
     {
         StatusText.Text = text;
-        if (isProblem) StatusText.Classes.Add("error");
-        else StatusText.Classes.Remove("error");
+        bool hasClass = StatusText.Classes.Contains("error");
+        if (isProblem && !hasClass) StatusText.Classes.Add("error");
+        else if (!isProblem && hasClass) StatusText.Classes.Remove("error");
     }
 
     private void Save_Click(object? sender, RoutedEventArgs e)

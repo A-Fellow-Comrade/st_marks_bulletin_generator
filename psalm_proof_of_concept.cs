@@ -2,8 +2,8 @@
 using LiturgyTools;
 
 namespace psalmtest {
-    public class psalmtest {
-        public void psalmtestmethod() {
+    public class PsalmTest {
+        public void PsalmTestMethod() {
             LiturgicalData myData = LiturgicalData.Load();
             var calendar = new LiturgicalCalendar(2026, myData);
             var date = new DateOnly(2026, 10, 11);

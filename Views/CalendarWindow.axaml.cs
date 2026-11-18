@@ -13,7 +13,8 @@ using st_mark_bulletin_generator.Models;
 namespace st_mark_bulletin_generator.Views;
 
 // The main window: a month calendar where only Sundays can be clicked.
-// Sundays that have a saved bulletin are gold. Clicking a Sunday opens (or
+// Sundays use a background in their church-year color, and a black underline marks
+// saved bulletins. Clicking a Sunday opens (or
 // re-uses) the bulletin form for that Sunday.
 //
 // It also looks after the bulletin folder. On the first launch it simply uses
@@ -23,11 +24,6 @@ namespace st_mark_bulletin_generator.Views;
 // later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
-    private static readonly IBrush SavedBrush    = new SolidColorBrush(Color.Parse("#66FFB300"));
-    private static readonly IBrush SelectedBrush = new SolidColorBrush(Color.Parse("#5C1A2E"));
-    private static readonly IBrush SelectedFg    = Brushes.White;
-    private static readonly IBrush ProblemBrush  = new SolidColorBrush(Color.Parse("#FFF3CD"));
-
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
     private HymnCorrections? _corrections;
@@ -49,9 +45,12 @@ public partial class CalendarWindow : Window
         Connect();
 
         UpdateThemeToggle();
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("CalendarWindow must run inside the application.");
+
         // If the bulletin form switches theme, refresh this window and keep the
         // toggle label in sync.
-        ((App)Application.Current).ThemeChanged += _ =>
+        app.ThemeChanged += _ =>
         {
             UpdateThemeToggle();
             Render();
@@ -148,8 +147,10 @@ public partial class CalendarWindow : Window
     private void ShowFolderMessage(string text, bool isProblem, bool canRetry)
     {
         FolderText.Text = text;
-        FolderBorder.Background = isProblem ? ProblemBrush : null;
-        FolderBorder.BorderBrush = isProblem ? new SolidColorBrush(Color.Parse("#F0C040")) : new SolidColorBrush(Color.Parse("#E0D8D0"));
+        // The yellow warning look comes from the "problem" style in the XAML, which follows light and dark mode.
+        bool hasClass = FolderBorder.Classes.Contains("problem");
+        if (isProblem && !hasClass) FolderBorder.Classes.Add("problem");
+        else if (!isProblem && hasClass) FolderBorder.Classes.Remove("problem");
         RetryButton.IsVisible = canRetry;
     }
 
@@ -202,7 +203,8 @@ public partial class CalendarWindow : Window
         _settings.Theme = next;
         _settings.Save();
 
-        var app = (App)Application.Current;
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("CalendarWindow must run inside the application.");
         app.ApplyTheme(next);
         UpdateThemeToggle();
         Render();
@@ -268,6 +270,9 @@ public partial class CalendarWindow : Window
         }
     }
 
+    // A color of the current theme (the theme swaps these when light or dark is chosen).
+    private static IBrush ThemeBrush(string key) => (IBrush)Application.Current!.Resources[key]!;
+
     private HashSet<DateOnly> SavedSundays()
     {
         try { return _store == null ? new HashSet<DateOnly>() : new HashSet<DateOnly>(_store.ListDates()); }
@@ -305,23 +310,58 @@ public partial class CalendarWindow : Window
 
     private Control MakeSundayButton(DateOnly date, HashSet<DateOnly> saved)
     {
+        var season = ChurchYear.For(date);
+        bool hasBulletin = saved.Contains(date);
+        var content = new StackPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 1,
+        };
+        content.Children.Add(new TextBlock
+        {
+            Text = date.Day.ToString(CultureInfo.InvariantCulture),
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
+        if (hasBulletin)
+        {
+            content.Children.Add(new Border
+            {
+                Height = 2,
+                Width = 18,
+                Background = ThemeBrush("SavedBulletinUnderlineBrush"),
+            });
+        }
+
         var button = new Button
         {
-            Content = date.Day.ToString(CultureInfo.InvariantCulture),
+            Content = content,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(2),
             Padding = new Thickness(0, 8),
-            Opacity = date.Month == _month.Month ? 1.0 : 0.55,
+            CornerRadius = new CornerRadius(8),
+            Background = SeasonBrushes.CalendarFor(season.Color),
+            Foreground = SeasonBrushes.CalendarForeground(),
+            BorderThickness = new Thickness(0),
         };
-        if (saved.Contains(date)) button.Background = SavedBrush;
         if (date == _selected)
         {
-            button.Background = SelectedBrush;
-            button.Foreground = SelectedFg;
+            button.BorderBrush = SeasonBrushes.CalendarForeground();
+            button.BorderThickness = new Thickness(2);
+            button.FontWeight = Avalonia.Media.FontWeight.SemiBold;
         }
         button.Click += (_, _) => Choose(date);
-        return button;
+        var dateDescription = date.ToString("dddd, MMMM d, yyyy", CultureInfo.InvariantCulture);
+        ToolTip.SetTip(button,
+            $"{dateDescription} - {season.Name}" +
+            (hasBulletin ? " - Bulletin saved" : ""));
+
+        return new Grid
+        {
+            Opacity = date.Month == _month.Month ? 1.0 : 0.75,
+            Children = { button },
+        };
     }
 
     private static Control MakeGreyDay(DateOnly date) => new TextBlock
@@ -330,7 +370,7 @@ public partial class CalendarWindow : Window
         HorizontalAlignment = HorizontalAlignment.Center,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new Thickness(0, 8),
-        Opacity = 0.25,
+        Foreground = ThemeBrush("MutedBrush"),
     };
 
     // The lectionary a Sunday uses: its own saved bulletin's, otherwise the nearest
@@ -363,5 +403,9 @@ public partial class CalendarWindow : Window
         SelectedInfo.Text = name.Length > 0
             ? $"{char.ToUpperInvariant(name[0])}{name[1..]}. {status}."
             : $"{status}.";
+
+        var season = ChurchYear.For(_selected);
+        SelectedSeason.Text = season.Name;
+        SelectedEdge.Background = SeasonBrushes.CalendarMarkerFor(season.Color);
     }
 }
