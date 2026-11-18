@@ -3,7 +3,7 @@
         xmlns:rte="using:AvaloniaRichEditor.Controls"
         x:Class="st_mark_bulletin_generator.Views.MainWindow"
         Title="St. Mark Bulletin Generator"
-        Width="700" Height="820" MinHeight="500"
+        Width="760" Height="860" MinWidth="580" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         CanResize="True"
         Background="{DynamicResource SurfaceBrush}">
@@ -22,7 +22,8 @@
             <Setter Property="Background"     Value="{DynamicResource InputBackgroundBrush}"/>
             <Setter Property="BorderBrush"    Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"         Value="0,3"/>
-            <Setter Property="CornerRadius"   Value="4"/>
+            <Setter Property="CornerRadius"   Value="7"/>
+            <Setter Property="Padding"        Value="10,7"/>
         </Style>
 
         <!-- All combo boxes -->
@@ -30,6 +31,7 @@
             <Setter Property="Background"  Value="{DynamicResource InputBackgroundBrush}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"      Value="0,3"/>
+            <Setter Property="CornerRadius" Value="7"/>
         </Style>
 
         <!-- Primary action button (Generate PDF) -->
@@ -41,7 +43,7 @@
             <Setter Property="Padding"                 Value="0,14"/>
             <Setter Property="HorizontalAlignment"     Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="CornerRadius"            Value="6"/>
+            <Setter Property="CornerRadius"            Value="9"/>
         </Style>
         <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
@@ -54,7 +56,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"     Value="10,6"/>
-            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="CornerRadius" Value="8"/>
         </Style>
 
         <!-- Theme toggle (visible on the dark header bar) -->
@@ -75,14 +77,14 @@
     <DockPanel>
 
         <!-- ══════════════ HEADER (pinned) ══════════════ -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="20,16">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
                           Foreground="#E8C97A" VerticalAlignment="Center" Margin="0,0,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
                                FontFamily="{DynamicResource HeadingFont}"
-                               Foreground="White" FontSize="21"/>
+                               Foreground="White" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock x:Name="SundayLabel"
                                FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
                                Foreground="#E8C97A" FontSize="14" TextWrapping="Wrap"/>
@@ -107,14 +109,14 @@
         <!-- Gilt double rule under the header -->
         <StackPanel DockPanel.Dock="Top" Spacing="2">
             <!-- The first line takes the color of the church year for the Sunday being edited -->
-            <Border x:Name="SeasonStripe" Height="3" Background="{DynamicResource GoldBrush}"/>
+            <Border x:Name="SeasonStripe" Height="4" Background="{DynamicResource GoldBrush}"/>
             <Border Height="1" Background="{DynamicResource GoldBrush}"/>
         </StackPanel>
 
         <!-- ══════════════ SCROLLABLE BODY ══════════════ -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16,14,16,16" Spacing="0">
+            <StackPanel Margin="22,18,22,22" Spacing="0">
 
             <!-- Conflict / sync banner -->
             <Border x:Name="BannerBorder" IsVisible="False"

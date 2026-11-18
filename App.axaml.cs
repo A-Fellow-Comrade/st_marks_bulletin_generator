@@ -10,15 +10,12 @@ namespace st_mark_bulletin_generator;
 
 public partial class App : Application
 {
-    // The colours that differ between light and dark mode. App.axaml defines each one
-    // twice: "<Name>" for light and "Dark<Name>" for dark. To add another themed colour,
-    // define both in App.axaml and add its name here.
+    // Theme-switched brushes. Each has a light and dark resource in App.axaml.
     private static readonly string[] ThemedBrushes =
     {
         "SurfaceBrush", "CardBrush", "BorderBrush", "InputBackgroundBrush", "InputBorderBrush",
         "TextBrush", "LabelBrush", "MutedBrush",
         "RubricBrush", "GoldBrush", "HeaderBrush", "PrimaryBrush", "PrimaryHoverBrush",
-        "SeasonWhiteBrush", "SeasonGreenBrush", "SeasonVioletBrush", "SeasonRedBrush",
         "WarningBackgroundBrush", "WarningBorderBrush", "WarningTextBrush",
     };
 

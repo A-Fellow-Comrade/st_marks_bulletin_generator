@@ -16,25 +16,24 @@
             <Setter Property="Background"     Value="{DynamicResource CardBrush}"/>
             <Setter Property="BorderBrush"    Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius"   Value="4"/>
-            <Setter Property="Padding"        Value="18,14"/>
-            <Setter Property="Margin"         Value="0,0,0,12"/>
+            <Setter Property="CornerRadius"   Value="12"/>
+            <Setter Property="Padding"        Value="20,16"/>
+            <Setter Property="Margin"         Value="0,0,0,14"/>
         </Style>
 
-        <!-- Rubric: the small red italic heading at the top of a card, like the red instructions in a hymnal -->
         <Style Selector="TextBlock.section-title">
             <Setter Property="FontFamily"     Value="{DynamicResource HeadingFont}"/>
-            <Setter Property="FontStyle"      Value="Italic"/>
-            <Setter Property="FontSize"       Value="15"/>
-            <Setter Property="Foreground"     Value="{DynamicResource RubricBrush}"/>
-            <Setter Property="Margin"         Value="0,0,0,4"/>
+            <Setter Property="FontSize"       Value="16"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Foreground"     Value="{DynamicResource TextBrush}"/>
+            <Setter Property="Margin"         Value="0,0,0,6"/>
         </Style>
 
-        <!-- The thin line under a rubric -->
         <Style Selector="Border.rule">
-            <Setter Property="Height"         Value="1"/>
-            <Setter Property="Background"     Value="{DynamicResource BorderBrush}"/>
-            <Setter Property="Margin"         Value="0,0,0,8"/>
+            <Setter Property="Height"         Value="2"/>
+            <Setter Property="Background"     Value="{DynamicResource GoldBrush}"/>
+            <Setter Property="Opacity"        Value="0.55"/>
+            <Setter Property="Margin"         Value="0,0,0,10"/>
         </Style>
     </Application.Styles>
     <Application.Resources>
@@ -60,14 +59,14 @@
         -->
 
         <!-- ──────── Light: parchment ──────── -->
-        <Color x:Key="LightSurface">#F6F0E1</Color>
-        <Color x:Key="LightCard">#FFFDF7</Color>
-        <Color x:Key="LightBorder">#E3D7BA</Color>
-        <Color x:Key="LightInputBackground">#FFFEFA</Color>
-        <Color x:Key="LightInputBorder">#CDBF9E</Color>
-        <Color x:Key="LightText">#3A2A1A</Color>
-        <Color x:Key="LightLabel">#5A4632</Color>
-        <Color x:Key="LightMuted">#7A6A55</Color>
+        <Color x:Key="LightSurface">#F7F5F1</Color>
+        <Color x:Key="LightCard">#FFFEFC</Color>
+        <Color x:Key="LightBorder">#E7E1D8</Color>
+        <Color x:Key="LightInputBackground">#FFFFFF</Color>
+        <Color x:Key="LightInputBorder">#CDC4B8</Color>
+        <Color x:Key="LightText">#302A28</Color>
+        <Color x:Key="LightLabel">#554A45</Color>
+        <Color x:Key="LightMuted">#786D67</Color>
 
         <SolidColorBrush x:Key="SurfaceBrush"      Color="{StaticResource LightSurface}"/>
         <SolidColorBrush x:Key="CardBrush"         Color="{StaticResource LightCard}"/>
@@ -89,10 +88,10 @@
         <SolidColorBrush x:Key="WarningTextBrush"       Color="#5A4000"/>
         <!-- The colors of the church year, kept soft so they sit quietly in the parchment look:
              antique gold (for white), sage, mauve and brick -->
-        <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#C4A962"/>
-        <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#7F9A6E"/>
-        <SolidColorBrush x:Key="SeasonVioletBrush" Color="#8B6E92"/>
-        <SolidColorBrush x:Key="SeasonRedBrush"    Color="#B5655D"/>
+        <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#2E7D32"/>
+        <SolidColorBrush x:Key="SeasonVioletBrush" Color="#6A1B9A"/>
+        <SolidColorBrush x:Key="SeasonRedBrush"    Color="#C62828"/>
 
         <!-- ──────── Dark: candlelit ──────── -->
         <Color x:Key="DarkSurface">#1B1416</Color>
@@ -120,11 +119,6 @@
         <SolidColorBrush x:Key="DarkWarningBackgroundBrush" Color="#3A2E14"/>
         <SolidColorBrush x:Key="DarkWarningBorderBrush"     Color="#8A6A1E"/>
         <SolidColorBrush x:Key="DarkWarningTextBrush"       Color="#F3DFA8"/>
-        <SolidColorBrush x:Key="DarkSeasonWhiteBrush"  Color="#CDB67E"/>
-        <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#86A67A"/>
-        <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#A38CAE"/>
-        <SolidColorBrush x:Key="DarkSeasonRedBrush"    Color="#C4807A"/>
-
         <!-- ──────── Icons (drawn in the text colour of the button they are in) ──────── -->
         <StreamGeometry x:Key="IconSun">M 12 7.2 A 4.8 4.8 0 1 0 12 16.8 A 4.8 4.8 0 1 0 12 7.2 Z M 12.95 4.4 L 12.95 1.4 L 11.05 1.4 L 11.05 4.4 Z M 18.05 7.3 L 20.17 5.18 L 18.82 3.83 L 16.7 5.95 Z M 19.6 12.95 L 22.6 12.95 L 22.6 11.05 L 19.6 11.05 Z M 16.7 18.05 L 18.82 20.17 L 20.17 18.82 L 18.05 16.7 Z M 11.05 19.6 L 11.05 22.6 L 12.95 22.6 L 12.95 19.6 Z M 5.95 16.7 L 3.83 18.82 L 5.18 20.17 L 7.3 18.05 Z M 4.4 11.05 L 1.4 11.05 L 1.4 12.95 L 4.4 12.95 Z M 7.3 5.95 L 5.18 3.83 L 3.83 5.18 L 5.95 7.3 Z</StreamGeometry>
         <StreamGeometry x:Key="IconMoon">M 21 12.79 A 9 9 0 1 1 11.21 3 A 7 7 0 0 0 21 12.79 Z</StreamGeometry>

@@ -4,21 +4,7 @@ namespace st_mark_bulletin_generator.Liturgical;
 public enum LiturgicalColor { White, Green, Violet, Red }
 
 // What kind of day a date is, in the church year: its name and its color.
-public readonly record struct ChurchYearDay(string Name, LiturgicalColor Color)
-{
-    // "white", "green", "violet" or "red", for putting in a sentence.
-    public string ColorWord => Color.ToString().ToLowerInvariant();
-
-    // What the color stands for, as a phrase: "green, for growth in the faith".
-    public string ColorMeaning => Color switch
-    {
-        LiturgicalColor.White => "joy and the festivals of Christ",
-        LiturgicalColor.Green => "growth in the faith",
-        LiturgicalColor.Violet => "preparation and repentance",
-        LiturgicalColor.Red => "the Holy Spirit and the Church's witness",
-        _ => "",
-    };
-}
+public readonly record struct ChurchYearDay(string Name, LiturgicalColor Color);
 
 // Works out the season and color for any date from the date of Easter and of Advent.
 // It is meant for Sundays (that is what the calendar and the bulletin form use); the

@@ -329,7 +329,7 @@ public partial class CalendarWindow : Window
             button.Foreground = SelectedFg;
         }
         button.Click += (_, _) => Choose(date);
-        ToolTip.SetTip(button, $"{season.Name}\n{season.ColorWord[0].ToString().ToUpperInvariant()}{season.ColorWord[1..]}, for {season.ColorMeaning}");
+        ToolTip.SetTip(button, season.Name);
 
         // The edge in the color of the church year. It sits on top of the button but
         // lets clicks through, so the whole cell still works as one button.
@@ -338,6 +338,8 @@ public partial class CalendarWindow : Window
             Width = 3,
             CornerRadius = new CornerRadius(1.5),
             Background = SeasonBrushes.For(season.Color),
+            BorderBrush = ThemeBrush("BorderBrush"),
+            BorderThickness = new Thickness(1),
             HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Stretch,
             Margin = new Thickness(6, 11, 0, 11),
@@ -390,9 +392,8 @@ public partial class CalendarWindow : Window
             ? $"{char.ToUpperInvariant(name[0])}{name[1..]}. {status}."
             : $"{status}.";
 
-        // The color of the church year, written out as well as shown.
         var season = ChurchYear.For(_selected);
-        SelectedSeason.Text = $"{season.Name} · {season.ColorWord}, for {season.ColorMeaning}";
+        SelectedSeason.Text = season.Name;
         SelectedEdge.Background = SeasonBrushes.For(season.Color);
     }
 }

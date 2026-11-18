@@ -13,9 +13,9 @@
             <Setter Property="BorderBrush"   Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"    Value="{DynamicResource TextBrush}"/>
-            <Setter Property="Padding"       Value="10,6"/>
-            <Setter Property="CornerRadius"  Value="4"/>
-            <Setter Property="FontSize"      Value="12"/>
+            <Setter Property="Padding"       Value="12,8"/>
+            <Setter Property="CornerRadius"  Value="8"/>
+            <Setter Property="FontSize"      Value="13"/>
         </Style>
         <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
@@ -23,9 +23,9 @@
         <Style Selector="Button.today">
             <Setter Property="Background"    Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"    Value="White"/>
-            <Setter Property="Padding"       Value="10,6"/>
-            <Setter Property="CornerRadius"  Value="4"/>
-            <Setter Property="FontSize"      Value="12"/>
+            <Setter Property="Padding"       Value="12,8"/>
+            <Setter Property="CornerRadius"  Value="8"/>
+            <Setter Property="FontSize"      Value="13"/>
         </Style>
         <Style Selector="Button.today:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
@@ -59,14 +59,14 @@
     <DockPanel>
 
         <!-- Header (pinned) -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="18,14">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
                           Foreground="#E8C97A" VerticalAlignment="Top" Margin="0,2,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
                                FontFamily="{DynamicResource HeadingFont}"
-                               Foreground="White" FontSize="21"/>
+                               Foreground="White" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock Text="Select a Sunday to open its bulletin"
                                FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
                                Foreground="#E8C97A" FontSize="13"/>
@@ -102,7 +102,7 @@
         <!-- Scrollable body -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16,14,16,16" Spacing="10">
+            <StackPanel Margin="22,18,22,22" Spacing="14">
 
             <!-- Folder info card -->
             <Border x:Name="FolderBorder" CornerRadius="6" Padding="14,10" BorderThickness="1">
@@ -118,13 +118,13 @@
             </Border>
 
             <!-- Month navigation -->
-            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2,0,0">
                 <Button Grid.Column="0" Classes="nav" Padding="12,6" Click="PrevMonth_Click"
                         ToolTip.Tip="Previous month">
                     <PathIcon Data="{StaticResource IconChevronLeft}" Width="14" Height="14"/>
                 </Button>
                 <TextBlock Grid.Column="1" x:Name="MonthTitle"
-                           FontSize="17" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
+                           FontFamily="{DynamicResource HeadingFont}" FontSize="21" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Button Grid.Column="2" Classes="nav" Padding="12,6" Click="NextMonth_Click"
                         ToolTip.Tip="Next month">
@@ -134,7 +134,7 @@
 
             <!-- Calendar card -->
             <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    CornerRadius="6" Padding="10">
+                    CornerRadius="12" Padding="14">
                 <StackPanel Spacing="4">
                     <!-- Day-of-week headers -->
                     <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,4">
@@ -163,8 +163,8 @@
 
             <!-- Selected Sunday info -->
             <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    CornerRadius="6" ClipToBounds="True">
-                <Grid ColumnDefinitions="4,*">
+                    CornerRadius="12" ClipToBounds="True">
+                <Grid ColumnDefinitions="5,*">
                     <!-- The color of the church year for this Sunday -->
                     <Border x:Name="SelectedEdge" Grid.Column="0" Background="{DynamicResource GoldBrush}"/>
                     <StackPanel Grid.Column="1" Spacing="3" Margin="14,10">
@@ -172,7 +172,7 @@
                                    FontFamily="{DynamicResource HeadingFont}" FontSize="16"
                                    Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"/>
                         <TextBlock x:Name="SelectedSeason"
-                                   FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic" FontSize="13"
+                                   FontFamily="{DynamicResource HeadingFont}" FontSize="14" FontWeight="SemiBold"
                                    Foreground="{DynamicResource RubricBrush}" TextWrapping="Wrap"/>
                         <TextBlock x:Name="SelectedInfo" Foreground="{DynamicResource MutedBrush}"
                                    FontSize="12" TextWrapping="Wrap"/>
@@ -205,20 +205,6 @@
                     </StackPanel>
                 </Button>
             </Grid>
-
-            <!-- Legend -->
-            <StackPanel Spacing="6" Margin="0,2,0,0">
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Border Width="14" Height="14" CornerRadius="3"
-                            Background="{DynamicResource GoldBrush}" Opacity="0.35" VerticalAlignment="Center"/>
-                    <TextBlock Text="Saved bulletin" Foreground="{DynamicResource MutedBrush}" FontSize="11"
-                               VerticalAlignment="Center"/>
-                    <Border Width="14" Height="14" CornerRadius="3"
-                            Background="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                    <TextBlock Text="Selected Sunday" Foreground="{DynamicResource MutedBrush}" FontSize="11"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
-            </StackPanel>
 
         </StackPanel>
         </ScrollViewer>

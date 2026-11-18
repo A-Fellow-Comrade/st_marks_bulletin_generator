@@ -45,8 +45,8 @@
             <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
-            <Setter Property="Padding"     Value="12,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding"     Value="14,9"/>
+            <Setter Property="CornerRadius" Value="8"/>
         </Style>
 
         <!-- Save button -->
@@ -54,8 +54,8 @@
             <Setter Property="Background"  Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="FontWeight"  Value="SemiBold"/>
-            <Setter Property="Padding"     Value="22,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding"     Value="22,9"/>
+            <Setter Property="CornerRadius" Value="8"/>
         </Style>
         <Style Selector="Button.save:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}"/>
@@ -65,14 +65,14 @@
     <DockPanel>
 
         <!-- ══════════════ HEADER (pinned) ══════════════ -->
-        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="20,16">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
                           Foreground="#E8C97A" VerticalAlignment="Top" Margin="0,2,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="Church settings"
                                FontFamily="{DynamicResource HeadingFont}"
-                               Foreground="White" FontSize="21"/>
+                               Foreground="White" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock Text="Wording printed on every bulletin. Changes appear in the next PDF made on any computer using this folder."
                                Foreground="#E8C97A" FontSize="12" TextWrapping="Wrap"/>
                 </StackPanel>
@@ -89,7 +89,7 @@
         <Border DockPanel.Dock="Bottom"
                 Background="{DynamicResource CardBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
-                Padding="16,10">
+                Padding="20,14">
             <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Grid.Column="0" x:Name="StatusText"
                            FontSize="12" TextWrapping="Wrap"
@@ -108,7 +108,7 @@
         <!-- ══════════════ SCROLLABLE BODY ══════════════ -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="FieldsPanel" Margin="16,14,16,16" Spacing="0">
+            <StackPanel x:Name="FieldsPanel" Margin="22,18,22,22" Spacing="0">
 
                 <!-- Shown when the settings file couldn't be read -->
                 <Border x:Name="ProblemBorder" IsVisible="False"

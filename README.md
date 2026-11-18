@@ -93,8 +93,6 @@ dotnet run
 The calendar is the application's main window.
 
 - Only Sundays are selectable.
-- Sundays with saved bulletins are highlighted in gold.
-- The currently selected Sunday is highlighted in burgundy.
 - **Previous** and **Next** navigate one Sunday at a time.
 - **This Sunday** jumps to the coming Sunday.
 - The arrows beside the month name navigate between months.
@@ -104,21 +102,10 @@ The calendar is the application's main window.
 
 ### Church-Year Colors
 
-Each Sunday is automatically assigned a color based on its place in the church year. The color appears along the Sunday in the calendar and as a stripe beneath the bulletin form header.
+Church-year color assignments are calculated in `Liturgical/ChurchYear.cs` and use the same palette in the calendar and bulletin form.
 
-| Color | Meaning | Used For |
-|---|---|---|
-| White (displayed as gold) | Joy and the festivals of Christ | Christmas, Epiphany, Baptism of Our Lord, Transfiguration, Easter, Holy Trinity, All Saints' Day (when on a Sunday), and the Last Sunday of the Church Year |
-| Green | Growth in the faith | Sundays after the Epiphany and after Pentecost |
-| Violet | Preparation and repentance | Advent and Lent |
-| Red | The Holy Spirit and the Church's witness | Pentecost, Reformation Day (when on a Sunday), and the Sunday of the Passion |
+|---
 
-The following liturgical conventions are used in `Liturgical/ChurchYear.cs`:
-
-- Advent is violet (blue is also permitted).
-- The Sunday of the Passion is red (violet is also permitted).
-- Sundays between the Epiphany and Lent are green.
-- Saints' days and transferred observances are not assigned colors.
 
 ### Bulletin Form
 

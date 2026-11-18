@@ -240,9 +240,8 @@ public partial class MainWindow : Window
             StatusText.Text = $"Couldn't update the shared hymn corrections ({problem}).";
 
         SwitchTo(date);
-        // The color of the church year: written in the subtitle and shown as the header stripe.
         var season = ChurchYear.For(date);
-        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy") + "  ·  " + season.Name + " (" + season.ColorWord + ")";
+        SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy") + "  ·  " + season.Name;
         _seasonColor = season.Color;
         SeasonStripe.Background = SeasonBrushes.For(season.Color);
         Title = "St. Mark Bulletin: " + Pretty(date, "MMM d, yyyy");
