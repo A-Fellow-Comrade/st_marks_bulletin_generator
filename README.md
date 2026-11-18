@@ -6,7 +6,7 @@ Developed for **St. Mark Evangelical-Lutheran Church (Lutheran Church–Missouri
 
 The pastor fills out a short form each week, and the application automatically generates a print-ready PDF church bulletin.
 
-> **Status: Work in Progress — Under Development. Do Not Use.**
+> **Status: Work in Progress — Under Development. Provided only as-is. Stable enough for weekly use.**
 
 ---
 
@@ -73,6 +73,7 @@ Linux has not been tested.
 Open a terminal in the project directory and run:
 
 ```powershell
+dotnet restore
 dotnet run
 ```
 
@@ -103,8 +104,6 @@ The calendar is the application's main window.
 ### Church-Year Colors
 
 Church-year color assignments are calculated in `Liturgical/ChurchYear.cs` and use the same palette in the calendar and bulletin form.
-
-|---
 
 
 ### Bulletin Form
