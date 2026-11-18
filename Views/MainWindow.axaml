@@ -35,6 +35,10 @@
             <Setter Property="CornerRadius" Value="7"/>
             <Setter Property="MinHeight"    Value="40"/>
         </Style>
+        <Style Selector="TextBox:pointerover, ComboBox:pointerover">
+            <Setter Property="BorderBrush"    Value="{DynamicResource GoldBrush}"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+        </Style>
 
         <!-- Primary action button (Generate PDF) -->
         <Style Selector="Button.primary">

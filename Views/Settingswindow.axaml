@@ -40,6 +40,10 @@
             <Setter Property="Padding"        Value="10,8"/>
             <Setter Property="MinHeight"      Value="40"/>
         </Style>
+        <Style Selector="TextBox:pointerover">
+            <Setter Property="BorderBrush"    Value="{DynamicResource GoldBrush}"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+        </Style>
 
         <!-- Secondary buttons -->
         <Style Selector="Button.secondary">
