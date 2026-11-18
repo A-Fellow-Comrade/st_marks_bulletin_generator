@@ -47,6 +47,7 @@
         <!-- Calendar mark colours (same in both modes) -->
         <SolidColorBrush x:Key="SavedMarkBrush" Color="#66FFB300"/>
         <SolidColorBrush x:Key="SelectedMarkBrush" Color="{StaticResource BrandBurgundy}"/>
+        <SolidColorBrush x:Key="SeasonDarkTextBrush" Color="#302A28"/>
 
         <!-- Heading typeface: Georgia on every Windows and Mac computer (Cambria / Times New Roman as back-ups) -->
         <FontFamily x:Key="HeadingFont">Georgia,Cambria,Times New Roman</FontFamily>
@@ -82,16 +83,33 @@
         <SolidColorBrush x:Key="HeaderBrush"       Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryBrush"      Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#7A2340"/>
+        <SolidColorBrush x:Key="SeasonForegroundBrush" Color="#302A28"/>
         <!-- Warning notes (the yellow boxes) -->
         <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF3CD"/>
         <SolidColorBrush x:Key="WarningBorderBrush"     Color="#F0C040"/>
         <SolidColorBrush x:Key="WarningTextBrush"       Color="#5A4000"/>
-        <!-- The colors of the church year, kept soft so they sit quietly in the parchment look:
-             antique gold (for white), sage, mauve and brick -->
-        <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#2E7D32"/>
-        <SolidColorBrush x:Key="SeasonVioletBrush" Color="#6A1B9A"/>
-        <SolidColorBrush x:Key="SeasonRedBrush"    Color="#C62828"/>
+        <!-- Muted church-year fills and clearer markers for the calendar. -->
+        <SolidColorBrush x:Key="SeasonWhiteBrush"  Color="#E9E1CE"/>
+        <SolidColorBrush x:Key="SeasonGreenBrush"  Color="#C9DEC5"/>
+        <SolidColorBrush x:Key="SeasonVioletBrush" Color="#D8C8E4"/>
+        <SolidColorBrush x:Key="SeasonRedBrush"    Color="#E8C4BE"/>
+        <SolidColorBrush x:Key="SeasonWhiteMarkBrush"  Color="#A99569"/>
+        <SolidColorBrush x:Key="SeasonGreenMarkBrush"  Color="#799A72"/>
+        <SolidColorBrush x:Key="SeasonVioletMarkBrush" Color="#9277A6"/>
+        <SolidColorBrush x:Key="SeasonRedMarkBrush"    Color="#B6756B"/>
+        <SolidColorBrush x:Key="SeasonWhiteHoverBrush"  Color="#DED2B6"/>
+        <SolidColorBrush x:Key="SeasonGreenHoverBrush"  Color="#B5D2AF"/>
+        <SolidColorBrush x:Key="SeasonVioletHoverBrush" Color="#C9B6D7"/>
+        <SolidColorBrush x:Key="SeasonRedHoverBrush"    Color="#DDAEA7"/>
+        <SolidColorBrush x:Key="CalendarSeasonWhiteBrush"  Color="#E9E1CE"/>
+        <SolidColorBrush x:Key="CalendarSeasonGreenBrush"  Color="#C9DEC5"/>
+        <SolidColorBrush x:Key="CalendarSeasonVioletBrush" Color="#D8C8E4"/>
+        <SolidColorBrush x:Key="CalendarSeasonRedBrush"    Color="#E8C4BE"/>
+        <SolidColorBrush x:Key="CalendarSeasonWhiteMarkBrush"  Color="#A99569"/>
+        <SolidColorBrush x:Key="CalendarSeasonGreenMarkBrush"  Color="#799A72"/>
+        <SolidColorBrush x:Key="CalendarSeasonVioletMarkBrush" Color="#9277A6"/>
+        <SolidColorBrush x:Key="CalendarSeasonRedMarkBrush"    Color="#B6756B"/>
+        <SolidColorBrush x:Key="SavedBulletinUnderlineBrush" Color="#000000"/>
 
         <!-- ──────── Dark: candlelit ──────── -->
         <Color x:Key="DarkSurface">#1B1416</Color>
@@ -116,6 +134,28 @@
         <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#7A2340"/>
         <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#8A2B4B"/>
         <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#A13459"/>
+        <SolidColorBrush x:Key="DarkSeasonForegroundBrush" Color="#EDE3CC"/>
+        <SolidColorBrush x:Key="DarkSeasonWhiteBrush"  Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#385441"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#51415D"/>
+        <SolidColorBrush x:Key="DarkSeasonRedBrush"    Color="#624442"/>
+        <SolidColorBrush x:Key="DarkSeasonWhiteMarkBrush"  Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenMarkBrush"  Color="#91B58D"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletMarkBrush" Color="#B49CC4"/>
+        <SolidColorBrush x:Key="DarkSeasonRedMarkBrush"    Color="#CD938A"/>
+        <SolidColorBrush x:Key="DarkSeasonWhiteHoverBrush"  Color="#E6E6E6"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenHoverBrush"  Color="#46684F"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletHoverBrush" Color="#624E70"/>
+        <SolidColorBrush x:Key="DarkSeasonRedHoverBrush"    Color="#75504D"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteBrush"  Color="#554D3F"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonGreenBrush"  Color="#3E5045"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonVioletBrush" Color="#4C4655"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonRedBrush"    Color="#584746"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteMarkBrush"  Color="#BCAF91"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonGreenMarkBrush"  Color="#92A795"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonVioletMarkBrush" Color="#A9A1B2"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonRedMarkBrush"    Color="#B59A96"/>
+        <SolidColorBrush x:Key="DarkSavedBulletinUnderlineBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="DarkWarningBackgroundBrush" Color="#3A2E14"/>
         <SolidColorBrush x:Key="DarkWarningBorderBrush"     Color="#8A6A1E"/>
         <SolidColorBrush x:Key="DarkWarningTextBrush"       Color="#F3DFA8"/>

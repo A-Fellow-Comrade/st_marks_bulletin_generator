@@ -37,7 +37,7 @@
         <!-- Primary action button (Generate PDF) -->
         <Style Selector="Button.primary">
             <Setter Property="Background"              Value="{DynamicResource PrimaryBrush}"/>
-            <Setter Property="Foreground"              Value="White"/>
+            <Setter Property="Foreground"              Value="{DynamicResource SeasonForegroundBrush}"/>
             <Setter Property="FontSize"                Value="14"/>
             <Setter Property="FontWeight"              Value="SemiBold"/>
             <Setter Property="Padding"                 Value="0,14"/>
@@ -64,7 +64,7 @@
             <Setter Property="Background"  Value="Transparent"/>
             <Setter Property="BorderBrush" Value="{DynamicResource GoldBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground"  Value="White"/>
+            <Setter Property="Foreground"  Value="{DynamicResource SeasonForegroundBrush}"/>
             <Setter Property="Padding"     Value="8,4"/>
             <Setter Property="FontSize"    Value="12"/>
         </Style>
@@ -80,18 +80,18 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
-                          Foreground="#E8C97A" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                          Foreground="{DynamicResource SeasonForegroundBrush}" VerticalAlignment="Center" Margin="0,0,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
                                FontFamily="{DynamicResource HeadingFont}"
-                               Foreground="White" FontSize="23" FontWeight="SemiBold"/>
+                               Foreground="{DynamicResource SeasonForegroundBrush}" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock x:Name="SundayLabel"
                                FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
-                               Foreground="#E8C97A" FontSize="14" TextWrapping="Wrap"/>
+                               Foreground="{DynamicResource SeasonForegroundBrush}" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4">
                     <TextBlock x:Name="SaveNote"
-                               Foreground="#C0A060" FontSize="11"
+                               Foreground="{DynamicResource SeasonForegroundBrush}" FontSize="11"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
                     <Button x:Name="ThemeToggle" Classes="theme-toggle"
                             Click="ThemeToggle_Click"
@@ -106,12 +106,9 @@
             </Grid>
         </Border>
 
-        <!-- Gilt double rule under the header -->
-        <StackPanel DockPanel.Dock="Top" Spacing="2">
-            <!-- The first line takes the color of the church year for the Sunday being edited -->
-            <Border x:Name="SeasonStripe" Height="4" Background="{DynamicResource GoldBrush}"/>
-            <Border Height="1" Background="{DynamicResource GoldBrush}"/>
-        </StackPanel>
+        <!-- Single rule in the color of the church year for the Sunday being edited -->
+        <Border x:Name="SeasonStripe" DockPanel.Dock="Top" Height="3"
+                Background="{DynamicResource GoldBrush}"/>
 
         <!-- ══════════════ SCROLLABLE BODY ══════════════ -->
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"

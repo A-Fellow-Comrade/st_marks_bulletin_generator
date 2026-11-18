@@ -13,8 +13,8 @@ using st_mark_bulletin_generator.Models;
 namespace st_mark_bulletin_generator.Views;
 
 // The main window: a month calendar where only Sundays can be clicked.
-// Sundays that have a saved bulletin are gold, and each Sunday has an edge in the color
-// of its place in the church year. Clicking a Sunday opens (or
+// Sundays use a background in their church-year color, and a black underline marks
+// saved bulletins. Clicking a Sunday opens (or
 // re-uses) the bulletin form for that Sunday.
 //
 // It also looks after the bulletin folder. On the first launch it simply uses
@@ -24,8 +24,6 @@ namespace st_mark_bulletin_generator.Views;
 // later, the window says so plainly.
 public partial class CalendarWindow : Window
 {
-    private static readonly IBrush SelectedFg    = Brushes.White;
-
     private readonly AppSettings _settings;
     private BulletinStore? _store;             // null until a reachable folder is chosen
     private HymnCorrections? _corrections;
@@ -271,10 +269,6 @@ public partial class CalendarWindow : Window
     // A color of the current theme (the theme swaps these when light or dark is chosen).
     private static IBrush ThemeBrush(string key) => (IBrush)Application.Current!.Resources[key]!;
 
-    // The wash on Sundays that have a saved bulletin: the theme's gold, see-through.
-    private static IBrush SavedWash() =>
-        new SolidColorBrush(((ISolidColorBrush)ThemeBrush("GoldBrush")).Color, 0.35);
-
     private HashSet<DateOnly> SavedSundays()
     {
         try { return _store == null ? new HashSet<DateOnly>() : new HashSet<DateOnly>(_store.ListDates()); }
@@ -313,43 +307,53 @@ public partial class CalendarWindow : Window
     private Control MakeSundayButton(DateOnly date, HashSet<DateOnly> saved)
     {
         var season = ChurchYear.For(date);
+        bool hasBulletin = saved.Contains(date);
+        var content = new StackPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 1,
+        };
+        content.Children.Add(new TextBlock
+        {
+            Text = date.Day.ToString(CultureInfo.InvariantCulture),
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
+        if (hasBulletin)
+        {
+            content.Children.Add(new Border
+            {
+                Height = 2,
+                Width = 18,
+                Background = ThemeBrush("SavedBulletinUnderlineBrush"),
+            });
+        }
 
         var button = new Button
         {
-            Content = date.Day.ToString(CultureInfo.InvariantCulture),
+            Content = content,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(2),
             Padding = new Thickness(0, 8),
+            Background = SeasonBrushes.CalendarFor(season.Color),
+            BorderThickness = new Thickness(0),
         };
-        if (saved.Contains(date)) button.Background = SavedWash();
         if (date == _selected)
         {
-            button.Background = ThemeBrush("PrimaryBrush");
-            button.Foreground = SelectedFg;
+            button.BorderBrush = SeasonBrushes.ForegroundFor(season.Color);
+            button.BorderThickness = new Thickness(2);
+            button.Foreground = SeasonBrushes.ForegroundFor(season.Color);
+            button.FontWeight = Avalonia.Media.FontWeight.SemiBold;
         }
         button.Click += (_, _) => Choose(date);
         ToolTip.SetTip(button, season.Name);
 
-        // The edge in the color of the church year. It sits on top of the button but
-        // lets clicks through, so the whole cell still works as one button.
-        var edge = new Border
+        return new Grid
         {
-            Width = 3,
-            CornerRadius = new CornerRadius(1.5),
-            Background = SeasonBrushes.For(season.Color),
-            BorderBrush = ThemeBrush("BorderBrush"),
-            BorderThickness = new Thickness(1),
-            HorizontalAlignment = HorizontalAlignment.Left,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            Margin = new Thickness(6, 11, 0, 11),
-            IsHitTestVisible = false,
+            Opacity = date.Month == _month.Month ? 1.0 : 0.55,
+            Children = { button },
         };
-
-        var cell = new Grid { Opacity = date.Month == _month.Month ? 1.0 : 0.55 };
-        cell.Children.Add(button);
-        cell.Children.Add(edge);
-        return cell;
     }
 
     private static Control MakeGreyDay(DateOnly date) => new TextBlock
@@ -394,6 +398,6 @@ public partial class CalendarWindow : Window
 
         var season = ChurchYear.For(_selected);
         SelectedSeason.Text = season.Name;
-        SelectedEdge.Background = SeasonBrushes.For(season.Color);
+        SelectedEdge.Background = SeasonBrushes.CalendarMarkerFor(season.Color);
     }
 }

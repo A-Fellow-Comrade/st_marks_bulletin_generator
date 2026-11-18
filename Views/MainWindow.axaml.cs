@@ -125,8 +125,11 @@ public partial class MainWindow : Window
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
             RichBox.ApplyTheme(AcknowledgementsBox);
-            // the stripe was set by hand, so it needs setting again in the new theme
-            if (_seasonColor is LiturgicalColor color) SeasonStripe.Background = SeasonBrushes.For(color);
+            if (_seasonColor is LiturgicalColor color)
+            {
+                SeasonStripe.Background = SeasonBrushes.For(color);
+                UpdateSeasonTheme(color);
+            }
         };
 
         PsalmVersionBox.ItemsSource = _versions;
@@ -244,7 +247,18 @@ public partial class MainWindow : Window
         SundayLabel.Text = Pretty(date, "dddd, MMMM d, yyyy") + "  ·  " + season.Name;
         _seasonColor = season.Color;
         SeasonStripe.Background = SeasonBrushes.For(season.Color);
+        UpdateSeasonTheme(season.Color);
         Title = "St. Mark Bulletin: " + Pretty(date, "MMM d, yyyy");
+    }
+
+    private void UpdateSeasonTheme(LiturgicalColor color)
+    {
+        var seasonBrush = SeasonBrushes.For(color);
+        Resources["HeaderBrush"] = seasonBrush;
+        Resources["PrimaryBrush"] = seasonBrush;
+        Resources["PrimaryHoverBrush"] = SeasonBrushes.HoverFor(color);
+        Resources["GoldBrush"] = SeasonBrushes.MarkerFor(color);
+        Resources["SeasonForegroundBrush"] = SeasonBrushes.ForegroundFor(color);
     }
 
     private string? SelectedSetting =>

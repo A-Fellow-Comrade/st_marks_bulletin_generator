@@ -16,6 +16,14 @@ public partial class App : Application
         "SurfaceBrush", "CardBrush", "BorderBrush", "InputBackgroundBrush", "InputBorderBrush",
         "TextBrush", "LabelBrush", "MutedBrush",
         "RubricBrush", "GoldBrush", "HeaderBrush", "PrimaryBrush", "PrimaryHoverBrush",
+        "SeasonForegroundBrush",
+        "SeasonWhiteBrush", "SeasonGreenBrush", "SeasonVioletBrush", "SeasonRedBrush",
+        "SeasonWhiteMarkBrush", "SeasonGreenMarkBrush", "SeasonVioletMarkBrush", "SeasonRedMarkBrush",
+        "SeasonWhiteHoverBrush", "SeasonGreenHoverBrush", "SeasonVioletHoverBrush", "SeasonRedHoverBrush",
+        "CalendarSeasonWhiteBrush", "CalendarSeasonGreenBrush", "CalendarSeasonVioletBrush", "CalendarSeasonRedBrush",
+        "CalendarSeasonWhiteMarkBrush", "CalendarSeasonGreenMarkBrush",
+        "CalendarSeasonVioletMarkBrush", "CalendarSeasonRedMarkBrush",
+        "SavedBulletinUnderlineBrush",
         "WarningBackgroundBrush", "WarningBorderBrush", "WarningTextBrush",
     };
 
