@@ -90,18 +90,6 @@
                       Padding="10,10,10,0">
             <StackPanel Spacing="8">
 
-                <!-- Random tile -->
-                <Button x:Name="RandomButton" Classes="thumb"
-                        Width="140" Height="126" Margin="6"
-                        HorizontalAlignment="Left" Click="Random_Click">
-                    <StackPanel VerticalAlignment="Center"
-                                HorizontalAlignment="Center" Spacing="6">
-                        <TextBlock Text="🎲" FontSize="32" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Random" HorizontalAlignment="Center"
-                                   FontSize="13" Foreground="{DynamicResource MutedBrush}"/>
-                    </StackPanel>
-                </Button>
-
                 <TextBlock x:Name="EmptyMessage"
                            Text="No saved cover images yet. Upload one to add it to your library."
                            IsVisible="False" FontSize="13" TextWrapping="Wrap"
@@ -109,7 +97,18 @@
                            Foreground="{DynamicResource MutedBrush}"/>
 
                 <!-- Library thumbnails -->
-                <WrapPanel x:Name="ThumbPanel" Orientation="Horizontal"/>
+                <WrapPanel x:Name="ThumbPanel" Orientation="Horizontal">
+                    <Button x:Name="RandomButton" Classes="thumb"
+                            Width="140" Height="126" Margin="6"
+                            HorizontalAlignment="Left" Click="Random_Click">
+                        <StackPanel VerticalAlignment="Center"
+                                    HorizontalAlignment="Center" Spacing="6">
+                            <TextBlock Text="🎲" FontSize="32" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Random" HorizontalAlignment="Center"
+                                       FontSize="13" Foreground="{DynamicResource MutedBrush}"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
 
             </StackPanel>
         </ScrollViewer>

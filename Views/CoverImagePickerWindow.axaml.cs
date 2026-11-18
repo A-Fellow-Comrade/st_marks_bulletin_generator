@@ -46,6 +46,7 @@ public partial class CoverImagePickerWindow : Window
         _thumbnailCards.Clear();
         _activeButton = null;
         RandomButton.Classes.Remove("selected");
+        ThumbPanel.Children.Add(RandomButton);
 
         if (Directory.Exists(_imgsFolder))
         {

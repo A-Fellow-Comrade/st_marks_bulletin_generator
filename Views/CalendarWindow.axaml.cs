@@ -336,6 +336,7 @@ public partial class CalendarWindow : Window
             HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(2),
             Padding = new Thickness(0, 8),
+            CornerRadius = new CornerRadius(8),
             Background = SeasonBrushes.CalendarFor(season.Color),
             Foreground = SeasonBrushes.CalendarForeground(),
             BorderThickness = new Thickness(0),
