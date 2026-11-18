@@ -119,8 +119,11 @@ public partial class MainWindow : Window
         // Reflect the remembered theme on the toggle button.
         UpdateThemeToggle();
 
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("MainWindow must run inside the application.");
+
         // If the other window switches theme, keep this button's label in sync.
-        ((App)Application.Current).ThemeChanged += _ =>
+        app.ThemeChanged += _ =>
         {
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
@@ -151,7 +154,8 @@ public partial class MainWindow : Window
         _settings.Theme = next;
         _settings.Save();
 
-        var app = (App)Application.Current;
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("MainWindow must run inside the application.");
         app.ApplyTheme(next);
         UpdateThemeToggle();
     }

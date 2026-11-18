@@ -82,7 +82,7 @@ public class PsalmParser
             int v = sortedVerses[i];
             string key = $"{book.ToUpper()}:{chapter}:{v}";
             
-            if (!verseData.TryGetValue(key, out string text))
+            if (!verseData.TryGetValue(key, out string? text) || text is null)
             {
                 throw new KeyNotFoundException($"Verse {key} does not exist in the file.");
             }

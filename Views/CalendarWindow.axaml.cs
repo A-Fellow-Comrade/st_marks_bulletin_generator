@@ -45,9 +45,12 @@ public partial class CalendarWindow : Window
         Connect();
 
         UpdateThemeToggle();
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("CalendarWindow must run inside the application.");
+
         // If the bulletin form switches theme, refresh this window and keep the
         // toggle label in sync.
-        ((App)Application.Current).ThemeChanged += _ =>
+        app.ThemeChanged += _ =>
         {
             UpdateThemeToggle();
             Render();
@@ -200,7 +203,8 @@ public partial class CalendarWindow : Window
         _settings.Theme = next;
         _settings.Save();
 
-        var app = (App)Application.Current;
+        var app = Application.Current as App
+            ?? throw new InvalidOperationException("CalendarWindow must run inside the application.");
         app.ApplyTheme(next);
         UpdateThemeToggle();
         Render();

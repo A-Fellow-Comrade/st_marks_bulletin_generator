@@ -27,6 +27,9 @@ public partial class CoverImagePickerWindow : Window
     private readonly Dictionary<Button, string> _buttonPaths = new();
     private readonly Dictionary<Button, Grid> _thumbnailCards = new();
 
+    public CoverImagePickerWindow() => throw new InvalidOperationException(
+        "CoverImagePickerWindow needs an image folder: use CoverImagePickerWindow(string, string?).");
+
     public CoverImagePickerWindow(string imgsFolder, string? currentPath)
     {
         _imgsFolder = imgsFolder;
