@@ -15,7 +15,7 @@ public partial class App : Application
     {
         "SurfaceBrush", "CardBrush", "BorderBrush", "InputBackgroundBrush", "InputBorderBrush",
         "TextBrush", "LabelBrush", "MutedBrush",
-        "RubricBrush", "GoldBrush", "HeaderBrush", "PrimaryBrush", "PrimaryHoverBrush",
+        "RubricBrush", "GoldBrush", "HeaderAccentBrush", "HeaderBrush", "PrimaryBrush", "PrimaryHoverBrush",
         "SeasonForegroundBrush",
         "SeasonWhiteBrush", "SeasonGreenBrush", "SeasonVioletBrush", "SeasonRedBrush",
         "SeasonWhiteMarkBrush", "SeasonGreenMarkBrush", "SeasonVioletMarkBrush", "SeasonRedMarkBrush",

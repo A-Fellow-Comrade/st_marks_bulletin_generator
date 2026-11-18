@@ -12,7 +12,7 @@
         <!-- Form labels -->
         <Style Selector="TextBlock.label">
             <Setter Property="Foreground"       Value="{DynamicResource LabelBrush}"/>
-            <Setter Property="FontSize"         Value="12"/>
+            <Setter Property="FontSize"         Value="13"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin"           Value="0,0,12,0"/>
         </Style>
@@ -23,7 +23,8 @@
             <Setter Property="BorderBrush"    Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"         Value="0,3"/>
             <Setter Property="CornerRadius"   Value="7"/>
-            <Setter Property="Padding"        Value="10,7"/>
+            <Setter Property="Padding"        Value="10,8"/>
+            <Setter Property="MinHeight"      Value="40"/>
         </Style>
 
         <!-- All combo boxes -->
@@ -32,6 +33,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"      Value="0,3"/>
             <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="MinHeight"    Value="40"/>
         </Style>
 
         <!-- Primary action button (Generate PDF) -->
@@ -41,6 +43,7 @@
             <Setter Property="FontSize"                Value="14"/>
             <Setter Property="FontWeight"              Value="SemiBold"/>
             <Setter Property="Padding"                 Value="0,14"/>
+            <Setter Property="MinHeight"               Value="46"/>
             <Setter Property="HorizontalAlignment"     Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="CornerRadius"            Value="9"/>
@@ -56,6 +59,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"     Value="10,6"/>
+            <Setter Property="MinHeight"   Value="40"/>
             <Setter Property="CornerRadius" Value="8"/>
         </Style>
 
@@ -66,6 +70,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="{DynamicResource SeasonForegroundBrush}"/>
             <Setter Property="Padding"     Value="8,4"/>
+            <Setter Property="MinHeight"   Value="36"/>
             <Setter Property="FontSize"    Value="12"/>
         </Style>
         <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
@@ -91,7 +96,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4">
                     <TextBlock x:Name="SaveNote"
-                               Foreground="{DynamicResource SeasonForegroundBrush}" FontSize="11"
+                               Foreground="{DynamicResource SeasonForegroundBrush}" FontSize="12"
                                HorizontalAlignment="Right" TextWrapping="Wrap"/>
                     <Button x:Name="ThemeToggle" Classes="theme-toggle"
                             Click="ThemeToggle_Click"
@@ -203,21 +208,21 @@
                                    Tag="OpeningTitle" TextChanged="HymnBox_TextChanged"/>
                         <TextBox   Grid.Row="1" Grid.Column="2" x:Name="OpeningTitle"
                                    Margin="8,3,0,3" Tag="OpeningHymnBox" LostFocus="Title_LostFocus"
-                                   Watermark="Hymn title"/>
+                                   PlaceholderText="Hymn title"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Hymn of the Day #"/>
                         <TextBox   Grid.Row="2" Grid.Column="1" x:Name="DayHymnBox"
                                    Tag="DayTitle" TextChanged="HymnBox_TextChanged"/>
                         <TextBox   Grid.Row="2" Grid.Column="2" x:Name="DayTitle"
                                    Margin="8,3,0,3" Tag="DayHymnBox" LostFocus="Title_LostFocus"
-                                   Watermark="Hymn title"/>
+                                   PlaceholderText="Hymn title"/>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
                         <TextBox   Grid.Row="3" Grid.Column="1" x:Name="ClosingHymnBox"
                                    Tag="ClosingTitle" TextChanged="HymnBox_TextChanged"/>
                         <TextBox   Grid.Row="3" Grid.Column="2" x:Name="ClosingTitle"
                                    Margin="8,3,0,3" Tag="ClosingHymnBox" LostFocus="Title_LostFocus"
-                                   Watermark="Hymn title"/>
+                                   PlaceholderText="Hymn title"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Organ postlude"/>
                         <TextBox   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
@@ -242,7 +247,7 @@
 
                         <TextBox Grid.Row="0" Grid.Column="3"
                                 x:Name="PsalmVersesBox"
-                                Watermark="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
+                                PlaceholderText="Blank = the whole psalm. Examples: 1-9 or 1-5, 8"/>
 
                         <ComboBox Grid.Row="0" Grid.Column="4" x:Name="PsalmVersionBox"
                                 MinWidth="90"/>

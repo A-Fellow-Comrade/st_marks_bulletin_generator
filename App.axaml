@@ -80,6 +80,7 @@
         <!-- Rubric red (for small instruction-style labels), gold rules, header bar, main buttons -->
         <SolidColorBrush x:Key="RubricBrush"       Color="#9B2226"/>
         <SolidColorBrush x:Key="GoldBrush"         Color="#B8860B"/>
+        <SolidColorBrush x:Key="HeaderAccentBrush" Color="#E8C97A"/>
         <SolidColorBrush x:Key="HeaderBrush"       Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryBrush"      Color="#5C1A2E"/>
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#7A2340"/>
@@ -132,6 +133,7 @@
         <SolidColorBrush x:Key="DarkMutedBrush"        Color="{StaticResource DarkMuted}"/>
         <SolidColorBrush x:Key="DarkRubricBrush"       Color="#E0A096"/>
         <SolidColorBrush x:Key="DarkGoldBrush"         Color="#E2C178"/>
+        <SolidColorBrush x:Key="DarkHeaderAccentBrush" Color="#E2C178"/>
         <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#5C1A2E"/>
         <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#875063"/>
         <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#9C5E73"/>

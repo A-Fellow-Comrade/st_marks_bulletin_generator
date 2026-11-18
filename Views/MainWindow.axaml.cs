@@ -283,16 +283,16 @@ public partial class MainWindow : Window
         if (text.Length == 0)
         {
             title.Text = "";
-            title.Watermark = "";
+            title.PlaceholderText = "";
         }
         else if (!int.TryParse(text, out var number)){
             title.Text = "";
-            title.Watermark = "Enter a number";
+            title.PlaceholderText = "Enter a number";
         }
         else{
             var hymn = _repo.GetByNumber(number);
             title.Text = hymn?.Title ?? "";
-            title.Watermark = hymn == null ? "Not in database; Type a title to add it." : "";
+            title.PlaceholderText = hymn == null ? "Not in database; Type a title to add it." : "";
         }
     }
 

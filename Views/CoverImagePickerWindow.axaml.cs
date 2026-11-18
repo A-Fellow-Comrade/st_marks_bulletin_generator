@@ -1,5 +1,5 @@
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -20,11 +20,12 @@ public partial class CoverImagePickerWindow : Window
 
     private readonly string _imgsFolder;
 
-    // Currently highlighted border (RandomBorder or a thumb border)
-    private Border? _activeBorder;
+    // Currently selected tile (RandomButton or a thumbnail button)
+    private Button? _activeButton;
 
-    // thumb border → absolute file path
-    private readonly Dictionary<Border, string> _borderPaths = new();
+    // Thumbnail button → file path and containing card.
+    private readonly Dictionary<Button, string> _buttonPaths = new();
+    private readonly Dictionary<Button, Grid> _thumbnailCards = new();
 
     public CoverImagePickerWindow(string imgsFolder, string? currentPath)
     {
@@ -41,8 +42,10 @@ public partial class CoverImagePickerWindow : Window
     private void RebuildThumbnails(string? selectPath)
     {
         ThumbPanel.Children.Clear();
-        _borderPaths.Clear();
-        _activeBorder = null;
+        _buttonPaths.Clear();
+        _thumbnailCards.Clear();
+        _activeButton = null;
+        RandomButton.Classes.Remove("selected");
 
         if (Directory.Exists(_imgsFolder))
         {
@@ -55,11 +58,12 @@ public partial class CoverImagePickerWindow : Window
             foreach (var file in files)
                 ThumbPanel.Children.Add(MakeThumbCard(file));
         }
+        EmptyMessage.IsVisible = _buttonPaths.Count == 0;
 
         // Restore selection
         if (selectPath != null)
         {
-            var match = _borderPaths.FirstOrDefault(kv => kv.Value == selectPath);
+            var match = _buttonPaths.FirstOrDefault(kv => kv.Value == selectPath);
             if (match.Key != null)
                 Select(match.Key);
             else
@@ -71,29 +75,17 @@ public partial class CoverImagePickerWindow : Window
         }
     }
 
-    /// <summary>Builds one thumbnail card: image + ✕ delete button overlay.</summary>
-    private Border MakeThumbCard(string file)
+    /// <summary>Builds one keyboard-selectable thumbnail with a delete button.</summary>
+    private Grid MakeThumbCard(string file)
     {
-        // The outer border is the click target for selection.
-        var border = new Border
-        {
-            Classes = { "thumb" },
-            Width   = 120,
-            Height  = 108,
-        };
-
-        // Inner Grid lets us layer the image and the delete button.
-        var grid = new Grid();
-
-        // Image (or fallback text)
+        var imagePanel = new StackPanel { Spacing = 2 };
         try
         {
-            var bmp = new Bitmap(file);
-            grid.Children.Add(new Image
+            imagePanel.Children.Add(new Image
             {
-                Source              = bmp,
-                Width               = 110,
-                Height              = 96,
+                Source              = new Bitmap(file),
+                Width               = 128,
+                Height              = 88,
                 Stretch             = Stretch.UniformToFill,
                 VerticalAlignment   = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -101,7 +93,7 @@ public partial class CoverImagePickerWindow : Window
         }
         catch
         {
-            grid.Children.Add(new TextBlock
+            imagePanel.Children.Add(new TextBlock
             {
                 Text                = Path.GetFileName(file),
                 TextWrapping        = TextWrapping.Wrap,
@@ -111,51 +103,77 @@ public partial class CoverImagePickerWindow : Window
             });
         }
 
-        // ✕ delete button – sits in the top-right corner
+        var fileName = Path.GetFileNameWithoutExtension(file);
+        imagePanel.Children.Add(new TextBlock
+        {
+            Text = fileName,
+            FontSize = 12,
+            Foreground = (IBrush)Application.Current!.Resources["MutedBrush"]!,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextAlignment = TextAlignment.Center,
+        });
+
+        var selectButton = new Button
+        {
+            Classes = { "thumb" },
+            Width = 140,
+            Height = 126,
+            Content = imagePanel,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+        };
+        selectButton.Click += (_, _) => Select(selectButton);
+        ToolTip.SetTip(selectButton, fileName);
+
         var delBtn = new Button
         {
             Classes = { "del" },
             Content = "✕",
             Margin  = new Avalonia.Thickness(0, 2, 2, 0),
         };
-        ToolTip.SetTip(delBtn, $"Delete {Path.GetFileName(file)} from library");
-        delBtn.Click += (_, _) => DeleteImage(border, file);
-        grid.Children.Add(delBtn);
+        ToolTip.SetTip(delBtn, $"Delete {fileName} from library");
+        delBtn.Click += (_, _) => DeleteImage(selectButton, file);
 
-        border.Child = grid;
+        var card = new Grid
+        {
+            Width = 140,
+            Height = 126,
+            Margin = new Avalonia.Thickness(6),
+        };
+        card.Children.Add(selectButton);
+        card.Children.Add(delBtn);
 
-        ToolTip.SetTip(border, Path.GetFileName(file));
-        _borderPaths[border] = file;
-        border.PointerPressed += ThumbBorder_PointerPressed;
-
-        return border;
+        _buttonPaths[selectButton] = file;
+        _thumbnailCards[selectButton] = card;
+        return card;
     }
 
     // ── selection helpers ──────────────────────────────────────────────────────
 
     private void SelectRandom()
     {
-        if (_activeBorder != null)
-            _activeBorder.Classes.Remove("selected");
+        if (_activeButton != null)
+            _activeButton.Classes.Remove("selected");
 
-        _activeBorder = RandomBorder;
-        RandomBorder.Classes.Add("selected");
+        _activeButton = RandomButton;
+        RandomButton.Classes.Add("selected");
         SelectedImagePath = null;
     }
 
-    private void Select(Border border)
+    private void Select(Button button)
     {
-        if (_activeBorder != null)
-            _activeBorder.Classes.Remove("selected");
+        if (_activeButton != null)
+            _activeButton.Classes.Remove("selected");
 
-        _activeBorder = border;
-        border.Classes.Add("selected");
-        SelectedImagePath = _borderPaths.TryGetValue(border, out var path) ? path : null;
+        _activeButton = button;
+        button.Classes.Add("selected");
+        SelectedImagePath = _buttonPaths.TryGetValue(button, out var path) ? path : null;
     }
 
     // ── delete ─────────────────────────────────────────────────────────────────
 
-    private async void DeleteImage(Border thumb, string file)
+    private async void DeleteImage(Button thumb, string file)
     {
         var dlg = new Window
         {
@@ -214,8 +232,10 @@ public partial class CoverImagePickerWindow : Window
         }
 
         // Cleanly remove the thumbnail without rebuilding everything.
-        _borderPaths.Remove(thumb);
-        ThumbPanel.Children.Remove(thumb);
+        _buttonPaths.Remove(thumb);
+        ThumbPanel.Children.Remove(_thumbnailCards[thumb]);
+        _thumbnailCards.Remove(thumb);
+        EmptyMessage.IsVisible = _buttonPaths.Count == 0;
     }
 
     // ── upload ─────────────────────────────────────────────────────────────────
@@ -321,13 +341,7 @@ public partial class CoverImagePickerWindow : Window
 
     // ── event handlers ─────────────────────────────────────────────────────────
 
-    private void RandomBorder_PointerPressed(object? sender, PointerPressedEventArgs e)
-        => SelectRandom();
-
-    private void ThumbBorder_PointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (sender is Border b) Select(b);
-    }
+    private void Random_Click(object? sender, RoutedEventArgs e) => SelectRandom();
 
     private void Ok_Click(object? sender, RoutedEventArgs e)     => Close(true);
     private void Cancel_Click(object? sender, RoutedEventArgs e) => Close(false);

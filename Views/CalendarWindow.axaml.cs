@@ -347,11 +347,14 @@ public partial class CalendarWindow : Window
             button.FontWeight = Avalonia.Media.FontWeight.SemiBold;
         }
         button.Click += (_, _) => Choose(date);
-        ToolTip.SetTip(button, season.Name);
+        var dateDescription = date.ToString("dddd, MMMM d, yyyy", CultureInfo.InvariantCulture);
+        ToolTip.SetTip(button,
+            $"{dateDescription} - {season.Name}" +
+            (hasBulletin ? " - Bulletin saved" : ""));
 
         return new Grid
         {
-            Opacity = date.Month == _month.Month ? 1.0 : 0.55,
+            Opacity = date.Month == _month.Month ? 1.0 : 0.75,
             Children = { button },
         };
     }
@@ -362,7 +365,7 @@ public partial class CalendarWindow : Window
         HorizontalAlignment = HorizontalAlignment.Center,
         VerticalAlignment = VerticalAlignment.Center,
         Margin = new Thickness(0, 8),
-        Opacity = 0.25,
+        Foreground = ThemeBrush("MutedBrush"),
     };
 
     // The lectionary a Sunday uses: its own saved bulletin's, otherwise the nearest

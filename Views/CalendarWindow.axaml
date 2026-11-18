@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="st_mark_bulletin_generator.Views.CalendarWindow"
         Title="St. Mark Bulletins"
-        Width="1000" Height="721" MinHeight="500"
+        Width="1000" Height="900" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         CanResize="True"
         Background="{DynamicResource SurfaceBrush}">
@@ -14,6 +14,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"    Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"       Value="12,8"/>
+            <Setter Property="MinHeight"     Value="44"/>
             <Setter Property="CornerRadius"  Value="8"/>
             <Setter Property="FontSize"      Value="13"/>
         </Style>
@@ -24,6 +25,7 @@
             <Setter Property="Background"    Value="{DynamicResource PrimaryBrush}"/>
             <Setter Property="Foreground"    Value="White"/>
             <Setter Property="Padding"       Value="12,8"/>
+            <Setter Property="MinHeight"     Value="44"/>
             <Setter Property="CornerRadius"  Value="8"/>
             <Setter Property="FontSize"      Value="13"/>
         </Style>
@@ -48,6 +50,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="Padding"     Value="8,4"/>
+            <Setter Property="MinHeight"   Value="36"/>
             <Setter Property="FontSize"    Value="12"/>
         </Style>
         <Style Selector="Button.theme-toggle:pointerover /template/ ContentPresenter">
@@ -62,14 +65,14 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
-                          Foreground="{DynamicResource GoldBrush}" VerticalAlignment="Top" Margin="0,2,14,0"/>
+                          Foreground="{DynamicResource HeaderAccentBrush}" VerticalAlignment="Top" Margin="0,2,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="St. Mark Bulletin Generator"
                                FontFamily="{DynamicResource HeadingFont}"
                                Foreground="White" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock Text="Select a Sunday to open its bulletin"
                                FontFamily="{DynamicResource HeadingFont}" FontStyle="Italic"
-                               Foreground="{DynamicResource GoldBrush}" FontSize="13"/>
+                               Foreground="{DynamicResource HeaderAccentBrush}" FontSize="13"/>
                     <StackPanel Orientation="Horizontal" Spacing="8"
                                 HorizontalAlignment="Right" Margin="0,8,0,0">
                         <Button x:Name="SettingsButton" Classes="theme-toggle"

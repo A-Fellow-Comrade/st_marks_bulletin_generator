@@ -11,14 +11,14 @@
         <!-- A setting's name, above its box -->
         <Style Selector="TextBlock.field">
             <Setter Property="Foreground"     Value="{DynamicResource LabelBrush}"/>
-            <Setter Property="FontSize"       Value="12"/>
+            <Setter Property="FontSize"       Value="13"/>
             <Setter Property="Margin"         Value="0,10,0,0"/>
         </Style>
 
         <!-- Small note under a setting's name -->
         <Style Selector="TextBlock.hint">
             <Setter Property="Foreground"     Value="{DynamicResource MutedBrush}"/>
-            <Setter Property="FontSize"       Value="11"/>
+            <Setter Property="FontSize"       Value="12"/>
             <Setter Property="TextWrapping"   Value="Wrap"/>
             <Setter Property="Margin"         Value="0,1,0,0"/>
         </Style>
@@ -36,7 +36,9 @@
             <Setter Property="Background"     Value="{DynamicResource InputBackgroundBrush}"/>
             <Setter Property="BorderBrush"    Value="{DynamicResource InputBorderBrush}"/>
             <Setter Property="Margin"         Value="0,3"/>
-            <Setter Property="CornerRadius"   Value="4"/>
+            <Setter Property="CornerRadius"   Value="7"/>
+            <Setter Property="Padding"        Value="10,8"/>
+            <Setter Property="MinHeight"      Value="40"/>
         </Style>
 
         <!-- Secondary buttons -->
@@ -46,6 +48,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground"  Value="{DynamicResource TextBrush}"/>
             <Setter Property="Padding"     Value="14,9"/>
+            <Setter Property="MinHeight"   Value="40"/>
             <Setter Property="CornerRadius" Value="8"/>
         </Style>
 
@@ -55,6 +58,7 @@
             <Setter Property="Foreground"  Value="White"/>
             <Setter Property="FontWeight"  Value="SemiBold"/>
             <Setter Property="Padding"     Value="22,9"/>
+            <Setter Property="MinHeight"   Value="40"/>
             <Setter Property="CornerRadius" Value="8"/>
         </Style>
         <Style Selector="Button.save:pointerover /template/ ContentPresenter">
@@ -68,22 +72,19 @@
         <Border DockPanel.Dock="Top" Background="{DynamicResource HeaderBrush}" Padding="22,18">
             <Grid ColumnDefinitions="Auto,*">
                 <PathIcon Grid.Column="0" Data="{StaticResource IconCross}" Width="16" Height="24"
-                          Foreground="#E8C97A" VerticalAlignment="Top" Margin="0,2,14,0"/>
+                          Foreground="{DynamicResource HeaderAccentBrush}" VerticalAlignment="Top" Margin="0,2,14,0"/>
                 <StackPanel Grid.Column="1" Spacing="2">
                     <TextBlock Text="Church settings"
                                FontFamily="{DynamicResource HeadingFont}"
                                Foreground="White" FontSize="23" FontWeight="SemiBold"/>
                     <TextBlock Text="Wording printed on every bulletin. Changes appear in the next PDF made on any computer using this folder."
-                               Foreground="#E8C97A" FontSize="12" TextWrapping="Wrap"/>
+                               Foreground="{DynamicResource HeaderAccentBrush}" FontSize="13" TextWrapping="Wrap"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Gilt double rule under the header -->
-        <StackPanel DockPanel.Dock="Top" Spacing="2">
-            <Border Height="3" Background="{DynamicResource GoldBrush}"/>
-            <Border Height="1" Background="{DynamicResource GoldBrush}"/>
-        </StackPanel>
+        <!-- Single gilt rule under the header -->
+        <Border DockPanel.Dock="Top" Height="3" Background="{DynamicResource GoldBrush}"/>
 
         <!-- ══════════════ BUTTONS (pinned) ══════════════ -->
         <Border DockPanel.Dock="Bottom"
