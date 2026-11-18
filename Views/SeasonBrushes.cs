@@ -28,6 +28,9 @@ internal static class SeasonBrushes
         (IBrush)Application.Current!.Resources[
             Key(color).Replace("Season", "CalendarSeason").Replace("Brush", "MarkBrush")]!;
 
+    public static IBrush CalendarForeground() =>
+        (IBrush)Application.Current!.Resources["CalendarSeasonForegroundBrush"]!;
+
     public static IBrush HoverFor(LiturgicalColor color) =>
         (IBrush)Application.Current!.Resources[Key(color).Replace("Brush", "HoverBrush")]!;
 

@@ -337,13 +337,13 @@ public partial class CalendarWindow : Window
             Margin = new Thickness(2),
             Padding = new Thickness(0, 8),
             Background = SeasonBrushes.CalendarFor(season.Color),
+            Foreground = SeasonBrushes.CalendarForeground(),
             BorderThickness = new Thickness(0),
         };
         if (date == _selected)
         {
-            button.BorderBrush = SeasonBrushes.ForegroundFor(season.Color);
+            button.BorderBrush = SeasonBrushes.CalendarForeground();
             button.BorderThickness = new Thickness(2);
-            button.Foreground = SeasonBrushes.ForegroundFor(season.Color);
             button.FontWeight = Avalonia.Media.FontWeight.SemiBold;
         }
         button.Click += (_, _) => Choose(date);

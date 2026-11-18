@@ -7,7 +7,7 @@
         <FluentTheme>
             <FluentTheme.Palettes>
                 <ColorPaletteResources x:Key="Light" Accent="#5C1A2E"/>
-                <ColorPaletteResources x:Key="Dark" Accent="#B04A68"/>
+                <ColorPaletteResources x:Key="Dark" Accent="#B98498"/>
             </FluentTheme.Palettes>
         </FluentTheme>
 
@@ -109,17 +109,18 @@
         <SolidColorBrush x:Key="CalendarSeasonGreenMarkBrush"  Color="#799A72"/>
         <SolidColorBrush x:Key="CalendarSeasonVioletMarkBrush" Color="#9277A6"/>
         <SolidColorBrush x:Key="CalendarSeasonRedMarkBrush"    Color="#B6756B"/>
+        <SolidColorBrush x:Key="CalendarSeasonForegroundBrush" Color="#302A28"/>
         <SolidColorBrush x:Key="SavedBulletinUnderlineBrush" Color="#000000"/>
 
         <!-- ──────── Dark: candlelit ──────── -->
-        <Color x:Key="DarkSurface">#1B1416</Color>
-        <Color x:Key="DarkCard">#2A1F22</Color>
-        <Color x:Key="DarkBorder">#4A3A3F</Color>
-        <Color x:Key="DarkInputBackground">#35272B</Color>
-        <Color x:Key="DarkInputBorder">#5C4A50</Color>
-        <Color x:Key="DarkText">#EDE3CC</Color>
-        <Color x:Key="DarkLabel">#D9CDB2</Color>
-        <Color x:Key="DarkMuted">#B3A58A</Color>
+        <Color x:Key="DarkSurface">#211B1E</Color>
+        <Color x:Key="DarkCard">#30272B</Color>
+        <Color x:Key="DarkBorder">#59464D</Color>
+        <Color x:Key="DarkInputBackground">#3B3035</Color>
+        <Color x:Key="DarkInputBorder">#665158</Color>
+        <Color x:Key="DarkText">#F2E6E3</Color>
+        <Color x:Key="DarkLabel">#DBCAC7</Color>
+        <Color x:Key="DarkMuted">#BBA8A5</Color>
 
         <SolidColorBrush x:Key="DarkSurfaceBrush"      Color="{StaticResource DarkSurface}"/>
         <SolidColorBrush x:Key="DarkCardBrush"         Color="{StaticResource DarkCard}"/>
@@ -129,36 +130,37 @@
         <SolidColorBrush x:Key="DarkTextBrush"         Color="{StaticResource DarkText}"/>
         <SolidColorBrush x:Key="DarkLabelBrush"        Color="{StaticResource DarkLabel}"/>
         <SolidColorBrush x:Key="DarkMutedBrush"        Color="{StaticResource DarkMuted}"/>
-        <SolidColorBrush x:Key="DarkRubricBrush"       Color="#E39A8B"/>
-        <SolidColorBrush x:Key="DarkGoldBrush"         Color="#D4A94A"/>
-        <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#7A2340"/>
-        <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#8A2B4B"/>
-        <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#A13459"/>
-        <SolidColorBrush x:Key="DarkSeasonForegroundBrush" Color="#EDE3CC"/>
+        <SolidColorBrush x:Key="DarkRubricBrush"       Color="#E0A096"/>
+        <SolidColorBrush x:Key="DarkGoldBrush"         Color="#E2C178"/>
+        <SolidColorBrush x:Key="DarkHeaderBrush"       Color="#5C1A2E"/>
+        <SolidColorBrush x:Key="DarkPrimaryBrush"      Color="#875063"/>
+        <SolidColorBrush x:Key="DarkPrimaryHoverBrush" Color="#9C5E73"/>
+        <SolidColorBrush x:Key="DarkSeasonForegroundBrush" Color="#F2E6E3"/>
         <SolidColorBrush x:Key="DarkSeasonWhiteBrush"  Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#385441"/>
-        <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#51415D"/>
-        <SolidColorBrush x:Key="DarkSeasonRedBrush"    Color="#624442"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenBrush"  Color="#3F654C"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletBrush" Color="#59466B"/>
+        <SolidColorBrush x:Key="DarkSeasonRedBrush"    Color="#70484D"/>
         <SolidColorBrush x:Key="DarkSeasonWhiteMarkBrush"  Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="DarkSeasonGreenMarkBrush"  Color="#91B58D"/>
-        <SolidColorBrush x:Key="DarkSeasonVioletMarkBrush" Color="#B49CC4"/>
-        <SolidColorBrush x:Key="DarkSeasonRedMarkBrush"    Color="#CD938A"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenMarkBrush"  Color="#A2D3A3"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletMarkBrush" Color="#C2A5D7"/>
+        <SolidColorBrush x:Key="DarkSeasonRedMarkBrush"    Color="#E5A1A1"/>
         <SolidColorBrush x:Key="DarkSeasonWhiteHoverBrush"  Color="#E6E6E6"/>
-        <SolidColorBrush x:Key="DarkSeasonGreenHoverBrush"  Color="#46684F"/>
-        <SolidColorBrush x:Key="DarkSeasonVioletHoverBrush" Color="#624E70"/>
-        <SolidColorBrush x:Key="DarkSeasonRedHoverBrush"    Color="#75504D"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteBrush"  Color="#554D3F"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonGreenBrush"  Color="#3E5045"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonVioletBrush" Color="#4C4655"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonRedBrush"    Color="#584746"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteMarkBrush"  Color="#BCAF91"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonGreenMarkBrush"  Color="#92A795"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonVioletMarkBrush" Color="#A9A1B2"/>
-        <SolidColorBrush x:Key="DarkCalendarSeasonRedMarkBrush"    Color="#B59A96"/>
+        <SolidColorBrush x:Key="DarkSeasonGreenHoverBrush"  Color="#4D755B"/>
+        <SolidColorBrush x:Key="DarkSeasonVioletHoverBrush" Color="#69547D"/>
+        <SolidColorBrush x:Key="DarkSeasonRedHoverBrush"    Color="#81545B"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteBrush"  Color="#665B46"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonGreenBrush"  Color="#3F654C"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonVioletBrush" Color="#59466B"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonRedBrush"    Color="#70484D"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonWhiteMarkBrush"  Color="#E2C987"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonGreenMarkBrush"  Color="#A2D3A3"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonVioletMarkBrush" Color="#C2A5D7"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonRedMarkBrush"    Color="#E5A1A1"/>
+        <SolidColorBrush x:Key="DarkCalendarSeasonForegroundBrush" Color="#F2E6E3"/>
         <SolidColorBrush x:Key="DarkSavedBulletinUnderlineBrush" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="DarkWarningBackgroundBrush" Color="#3A2E14"/>
-        <SolidColorBrush x:Key="DarkWarningBorderBrush"     Color="#8A6A1E"/>
-        <SolidColorBrush x:Key="DarkWarningTextBrush"       Color="#F3DFA8"/>
+        <SolidColorBrush x:Key="DarkWarningBackgroundBrush" Color="#3D322B"/>
+        <SolidColorBrush x:Key="DarkWarningBorderBrush"     Color="#957846"/>
+        <SolidColorBrush x:Key="DarkWarningTextBrush"       Color="#F3DBA9"/>
         <!-- ──────── Icons (drawn in the text colour of the button they are in) ──────── -->
         <StreamGeometry x:Key="IconSun">M 12 7.2 A 4.8 4.8 0 1 0 12 16.8 A 4.8 4.8 0 1 0 12 7.2 Z M 12.95 4.4 L 12.95 1.4 L 11.05 1.4 L 11.05 4.4 Z M 18.05 7.3 L 20.17 5.18 L 18.82 3.83 L 16.7 5.95 Z M 19.6 12.95 L 22.6 12.95 L 22.6 11.05 L 19.6 11.05 Z M 16.7 18.05 L 18.82 20.17 L 20.17 18.82 L 18.05 16.7 Z M 11.05 19.6 L 11.05 22.6 L 12.95 22.6 L 12.95 19.6 Z M 5.95 16.7 L 3.83 18.82 L 5.18 20.17 L 7.3 18.05 Z M 4.4 11.05 L 1.4 11.05 L 1.4 12.95 L 4.4 12.95 Z M 7.3 5.95 L 5.18 3.83 L 3.83 5.18 L 5.95 7.3 Z</StreamGeometry>
         <StreamGeometry x:Key="IconMoon">M 21 12.79 A 9 9 0 1 1 11.21 3 A 7 7 0 0 0 21 12.79 Z</StreamGeometry>

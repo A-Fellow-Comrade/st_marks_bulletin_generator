@@ -23,6 +23,7 @@ public partial class App : Application
         "CalendarSeasonWhiteBrush", "CalendarSeasonGreenBrush", "CalendarSeasonVioletBrush", "CalendarSeasonRedBrush",
         "CalendarSeasonWhiteMarkBrush", "CalendarSeasonGreenMarkBrush",
         "CalendarSeasonVioletMarkBrush", "CalendarSeasonRedMarkBrush",
+        "CalendarSeasonForegroundBrush",
         "SavedBulletinUnderlineBrush",
         "WarningBackgroundBrush", "WarningBorderBrush", "WarningTextBrush",
     };
