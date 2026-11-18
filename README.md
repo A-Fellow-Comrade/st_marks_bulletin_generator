@@ -548,7 +548,7 @@ It uses the `LiturgyTools` namespace and includes:
 - `Psalm_KJV.csv`
 - `Psalm_NKJV.csv`
 
-This library was developed by a teammate and is only read by the application.
+The liturgical calendar calculations and lectionary library are based on [lutheran-lectionary](https://github.com/abc3-Mac/lutheran-lectionary) by [abc3-Mac](https://github.com/abc3-Mac). The application integrates this work from the `lectionary/` directory.
 
 The application interacts with it through two primary files:
 
