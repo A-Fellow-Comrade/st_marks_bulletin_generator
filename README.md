@@ -605,7 +605,6 @@ Application icons (cross, gear, sun, moon, arrows, warning, and picture) are imp
 - Export functionality.
 - Import functionality.
 - A **Back up now** button.
-- A packaged release with a self-contained build for the pastor's computer.
 
 ### Before Deployment
 
