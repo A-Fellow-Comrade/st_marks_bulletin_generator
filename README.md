@@ -9,7 +9,7 @@ A short form is filled out each week, and the application automatically generate
 Provided only as-is. Stable enough for weekly use.
 
 ---
-> **TLDR; Hop over to the releases tab, download and run. The software should be intuitive enough.**
+> **TLDR; Hop over to the releases tab, download and run. The software should be intuitive enough. Also, we don't have any signing keys, so be advised your OS might get angry at you for trying to install unverified software. **
 ---
 
 ## Table of Contents
