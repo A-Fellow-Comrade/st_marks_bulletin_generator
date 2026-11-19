@@ -73,54 +73,63 @@ jobs:
         files: ./installer_output/st_mark_bulletin_generator-${{ env.App_Version }}-${{ matrix.rid }}.exe
 
     # --- macOS ---
-    - name: Package macOS App and DMG
+    # --- macOS ---
+    - name: Package and Sign macOS App and DMG
       if: matrix.os == 'macos-latest'
       run: |
-          APP_NAME="St Mark Bulletin Generator.app"
-          mkdir -p "$APP_NAME/Contents/MacOS"
-          mkdir -p "$APP_NAME/Contents/Resources"
-          
-          # Copy the macOS icon into the Resources folder
-          cp ./icon/icon.icns "$APP_NAME/Contents/Resources/icon.icns"
-          
-          # MOVE ALL PUBLISHED CONTENTS, NOT JUST THE EXECUTABLE
-          mv ./publish_output/* "$APP_NAME/Contents/MacOS/"
-          chmod +x "$APP_NAME/Contents/MacOS/st_mark_bulletin_generator"
-          rm -rf ./publish_output
-          
-          # Add the CFBundleIconFile key to Info.plist
-          cat <<EOF > "$APP_NAME/Contents/Info.plist"
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleIconFile</key>
-              <string>icon.icns</string>
-              <key>CFBundleExecutable</key>
-              <string>st_mark_bulletin_generator</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.stmark.bulletingenerator</string>
-              <key>CFBundleName</key>
-              <string>St Mark Bulletin Generator</string>
-              <key>CFBundleVersion</key>
-              <string>${{ env.App_Version }}</string>
-              <key>CFBundleShortVersionString</key>
-              <string>${{ env.App_Version }}</string>
-              <key>CFBundlePackageType</key>
-              <string>APPL</string>
-          </dict>
-          </plist>
-          EOF
-          
-          APP_SIZE_MB=$(du -sm "$APP_NAME" | awk '{print $1}')
-          DMG_SIZE_MB=$((APP_SIZE_MB + 50))
-          
-          hdiutil create -volname "St Mark Bulletin Generator" \
-            -srcfolder "$APP_NAME" \
-            -size "${DMG_SIZE_MB}m" \
-            -fs HFS+ \
-            -ov -format UDZO \
-            st_mark_bulletin_generator-osx-arm64.dmg
+        APP_NAME="St Mark Bulletin Generator.app"
+        mkdir -p "$APP_NAME/Contents/MacOS"
+        mkdir -p "$APP_NAME/Contents/Resources"
+        
+        # Copy the macOS icon into the Resources folder
+        cp ./icon/icon.icns "$APP_NAME/Contents/Resources/icon.icns"
+        
+        # Move all published contents into Contents/MacOS
+        mv ./publish_output/* "$APP_NAME/Contents/MacOS/"
+        chmod +x "$APP_NAME/Contents/MacOS/st_mark_bulletin_generator"
+        rm -rf ./publish_output
+        
+        # Create Info.plist (with Retina support enabled)
+        cat <<EOF > "$APP_NAME/Contents/Info.plist"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleIconFile</key>
+            <string>icon.icns</string>
+            <key>CFBundleExecutable</key>
+            <string>st_mark_bulletin_generator</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.stmark.bulletingenerator</string>
+            <key>CFBundleName</key>
+            <string>St Mark Bulletin Generator</string>
+            <key>CFBundleVersion</key>
+            <string>${{ env.App_Version }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ env.App_Version }}</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+        </dict>
+        </plist>
+        EOF
+
+        # Ad-hoc sign all native libraries, the executable, and the .app bundle
+        find "$APP_NAME/Contents/MacOS" -type f \( -name "*.dylib" -o -perm +111 \) -exec codesign --force --sign - {} \;
+        codesign --force --deep --sign - "$APP_NAME"
+        codesign --verify --deep --strict --verbose=2 "$APP_NAME"
+        
+        APP_SIZE_MB=$(du -sm "$APP_NAME" | awk '{print $1}')
+        DMG_SIZE_MB=$((APP_SIZE_MB + 50))
+        
+        hdiutil create -volname "St Mark Bulletin Generator" \
+          -srcfolder "$APP_NAME" \
+          -size "${DMG_SIZE_MB}m" \
+          -fs HFS+ \
+          -ov -format UDZO \
+          st_mark_bulletin_generator-osx-arm64.dmg
+
     - name: Upload macOS DMG to Release
       if: matrix.os == 'macos-latest'
       uses: softprops/action-gh-release@v2

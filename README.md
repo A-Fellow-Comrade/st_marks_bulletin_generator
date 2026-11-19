@@ -75,6 +75,15 @@ Mac has not been tested.
 
 Visit the releases page, download, and run the relevant installer. 
 
+Note: If on MacOS, downloading from the releases page will not work, since we do not have 
+an Apple signing key. Instead, run the following command to download in the terminal:
+
+```bash
+curl -L -o ~/Downloads/st_mark_bulletin_generator-osx-arm64.dmg "https://github.com/A-Fellow-Comrade/st_marks_bulletin_generator/releases/latest/download/st_mark_bulletin_generator-osx-arm64.dmg" && open ~/Downloads/st_mark_bulletin_generator-osx-arm64.dmg
+```
+
+Then you may drag the application into your applications folder.
+
 ## Installation and Running For Developers 
 
 Open a terminal in the project directory and run:
