@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <ApplicationIcon>icon\icon.ico</ApplicationIcon>
+    <!-- Changed to forward slash -->
+    <ApplicationIcon>icon/icon.ico</ApplicationIcon>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AvaloniaNameGeneratorBehavior>Disabled</AvaloniaNameGeneratorBehavior>
@@ -17,10 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\hymns.tsv">
+    <None Update="Data/hymns.tsv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="lectionary\Data\*.json">
+    <!-- Changed to forward slash -->
+    <None Update="lectionary/Data/*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -32,15 +34,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="imgs\*.jpg">
+    <!-- Changed to forward slash -->
+    <None Update="imgs/*.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-  <None Update="lectionary\Data\*.csv">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </None>
-</ItemGroup>
+    <None Update="lectionary/Data/*.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>
