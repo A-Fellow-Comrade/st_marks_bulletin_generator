@@ -6,8 +6,10 @@ Developed for **St. Mark Evangelical-Lutheran Church (Lutheran Church–Missouri
 
 A short form is filled out each week, and the application automatically generates a print-ready PDF church bulletin.
 
-> **Status: Provided only as-is. Stable enough for weekly use.**
+Provided only as-is. Stable enough for weekly use.
 
+---
+> **TLDR; Hop over to the releases tab, download and run. The software should be intuitive enough.**
 ---
 
 ## Table of Contents
@@ -15,7 +17,7 @@ A short form is filled out each week, and the application automatically generate
 - [Overview](#overview)
 - [Features](#features)
 - [Requirements](#requirements)
-- [Installation and Running](#installation-and-running)
+- [Installation and Running](#normal-installation)
 - [Using the Application](#using-the-application)
   - [Calendar](#calendar)
   - [Church-Year Colors](#church-year-colors)
@@ -64,12 +66,16 @@ The Sunday name, appointed psalm, and church-year color are automatically determ
 
 ## Requirements
 
-- Windows (the only operating system currently built and tested).
+- Windows, Linux, or Mac
 - .NET 10 SDK.
 
-Linux has not been tested.
+Mac has not been tested.
 
-## Installation and Running
+## Normal Installation
+
+Visit the releases page, download, and run the relevant installer. 
+
+## Installation and Running For Developers 
 
 Open a terminal in the project directory and run:
 
