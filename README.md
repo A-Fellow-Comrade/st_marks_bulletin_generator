@@ -4,9 +4,9 @@ An automatic church bulletin generator designed to minimize the amount of manual
 
 Developed for **St. Mark Evangelical-Lutheran Church (Lutheran Church–Missouri Synod)** in West Henrietta, New York.
 
-The pastor fills out a short form each week, and the application automatically generates a print-ready PDF church bulletin.
+A short form is filled out each week, and the application automatically generates a print-ready PDF church bulletin.
 
-> **Status: Work in Progress — Under Development. Provided only as-is. Stable enough for weekly use.**
+> **Status: Provided only as-is. Stable enough for weekly use.**
 
 ---
 
