@@ -121,6 +121,21 @@ public class BulletinDocument : IDocument
                     });
 
                     HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay, _b.DayTitle);
+
+                    // The offertory is optional: nothing is printed when its box is empty.
+                    if (HtmlText.HasContent(_b.Offertory))
+                    {
+                        col.Item().Row(r =>
+                        {
+                            r.AutoItem().Text("OFFERTORY ").Bold();
+                            r.RelativeItem().HTML(handler =>
+                            {
+                                handler.SetContainerStyleForHtmlElement("p", c => c.PaddingVertical(0));
+                                handler.SetHtml(_b.Offertory);
+                            });
+                        });
+                    }
+
                     HymnRow(col, "CLOSING HYMN", _b.ClosingHymn, _b.ClosingTitle);
 
                     col.Item().Text(t =>

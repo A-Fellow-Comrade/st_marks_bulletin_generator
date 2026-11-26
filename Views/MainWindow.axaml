@@ -202,7 +202,7 @@
                 <StackPanel>
                     <TextBlock Classes="section-title" Text="Hymns &amp; music"/>
                     <Border Classes="rule"/>
-                    <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Organ prelude"/>
                         <TextBox   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PreludeBox"/>
@@ -221,15 +221,40 @@
                                    Margin="8,3,0,3" Tag="DayHymnBox" LostFocus="Title_LostFocus"
                                    PlaceholderText="Hymn title"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
-                        <TextBox   Grid.Row="3" Grid.Column="1" x:Name="ClosingHymnBox"
+                        <!-- Optional: leave empty and nothing is printed. Bold, italic, underline and color work here too. -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Offertory (optional)"
+                                   TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,14,12,0"/>
+                        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,3"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
+                            <Grid>
+                                <rte:RichEditorView x:Name="OffertoryBox" Height="120" ShowStatusBar="False"/>
+                                <Border x:Name="OffertoryPlaceholder"
+                                        Background="{DynamicResource InputBackgroundBrush}"
+                                        BorderBrush="{DynamicResource GoldBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="12,8"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsHitTestVisible="False">
+                                    <TextBlock Text="Type here...&#10;Optional: leave empty for no offertory."
+                                               Foreground="{DynamicResource MutedBrush}"
+                                               FontStyle="Italic"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
+                        <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ClosingHymnBox"
                                    Tag="ClosingTitle" TextChanged="HymnBox_TextChanged"/>
-                        <TextBox   Grid.Row="3" Grid.Column="2" x:Name="ClosingTitle"
+                        <TextBox   Grid.Row="4" Grid.Column="2" x:Name="ClosingTitle"
                                    Margin="8,3,0,3" Tag="ClosingHymnBox" LostFocus="Title_LostFocus"
                                    PlaceholderText="Hymn title"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Organ postlude"/>
-                        <TextBox   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Classes="label" Text="Organ postlude"/>
+                        <TextBox   Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
                     </Grid>
                 </StackPanel>
             </Border>

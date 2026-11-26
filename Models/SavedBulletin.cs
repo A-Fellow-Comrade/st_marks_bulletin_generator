@@ -21,6 +21,7 @@ public class SavedBulletin
     public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
+    public string Offertory { get; set; } = ""; //optional rich text (HTML); never copied to the next Sunday; blank in older files
     public string Lectionary { get; set; } = ""; //choose lectionary the fields come from
     public string PsalmVersion { get; set; } = "";
     public string PsalmNumber { get; set; } = "";

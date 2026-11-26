@@ -21,6 +21,7 @@ public class Bulletin
     public int? ClosingHymn { get; set; }
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
+    public string Offertory { get; set; } = "";        // rich text (HTML), optional; nothing is printed when empty
     public string PsalmTitle { get; set; } = "";
     public (string V, string[] Lines)[] Psalm { get; set; } = Array.Empty<(string V, string[] Lines)>();
     public string Announcements { get; set; } = "";  // rich text (HTML), one per paragraph

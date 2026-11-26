@@ -112,6 +112,7 @@ public partial class MainWindow : Window
         // The two rich-text boxes (Announcements, Acknowledgements) share their set-up.
         RichBox.Prepare(AnnouncementsBox, AnnouncementsPlaceholder, MarkDirty);
         RichBox.Prepare(AcknowledgementsBox, AcknowledgementsPlaceholder, MarkDirty);
+        RichBox.Prepare(OffertoryBox, OffertoryPlaceholder, MarkDirty);
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
@@ -128,6 +129,7 @@ public partial class MainWindow : Window
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
             RichBox.ApplyTheme(AcknowledgementsBox);
+            RichBox.ApplyTheme(OffertoryBox);
             if (_seasonColor is LiturgicalColor color)
             {
                 SeasonStripe.Background = SeasonBrushes.For(color);
@@ -175,6 +177,14 @@ public partial class MainWindow : Window
     {
         RichBox.UpdatePlaceholder(AnnouncementsBox, AnnouncementsPlaceholder);
         RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
+        RichBox.UpdatePlaceholder(OffertoryBox, OffertoryPlaceholder);
+    }
+
+    // Empties the Offertory box: every Sunday starts without one, so it is never copied forward.
+    private void ClearOffertory()
+    {
+        OffertoryBox.Editor.LoadHtml("");
+        RichBox.UpdatePlaceholder(OffertoryBox, OffertoryPlaceholder);
     }
 
     // Empties the Acknowledgements box (used for a brand-new, blank form).
@@ -453,6 +463,7 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
+            Offertory = OffertoryBox.Editor.ToHtml() ?? "",
             Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
             Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
             CoverImagePath = _selectedCoverImagePath,
@@ -580,6 +591,7 @@ public partial class MainWindow : Window
                 // These belong to the new Sunday, so they are never copied.
                 SundayNameBox.Text = LookUpSundayName(date);
                 ClearCoverName();
+                ClearOffertory();
                 _diskStamp = null;
                 SaveNote.Text = "";
             }
@@ -945,6 +957,7 @@ public partial class MainWindow : Window
         ClosingHymn = ClosingHymnBox.Text?.Trim() ?? "",
         ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
         Postlude = PostludeBox.Text?.Trim() ?? "",
+        Offertory = OffertoryBox.Editor.ToHtml() ?? "",
         Lectionary = LectionaryChoice.ToText(CurrentLectionary),
         PsalmVersion = SelectedVersion ?? "",
         PsalmNumber = PsalmNumberBox.Text?.Trim() ?? "",
@@ -972,6 +985,7 @@ public partial class MainWindow : Window
         SetHymn(DayHymnBox, DayTitle, r.DayHymn, r.DayTitle);
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
+        OffertoryBox.Editor.LoadHtml(r.Offertory ?? "");
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
         AcknowledgementsBox.Editor.LoadHtml(r.Acknowledgements ?? "");
         CoverNameBox.Text = r.CoverSundayName ?? "";
@@ -997,6 +1011,7 @@ public partial class MainWindow : Window
         AnnouncementsBox.Editor.LoadHtml("");
         ClearAcknowledgements();
         ClearCoverName();
+        ClearOffertory();
         UpdatePlaceholders();
     }
 
