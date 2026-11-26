@@ -15,7 +15,6 @@ public sealed class SettingField
     public required Func<ChurchSettings, string, string?> Set { get; init; }
 }
 
-
 // The one list of everything the Settings window can edit, in the order shown.
 public static class ChurchSettingsFields
 {
@@ -29,7 +28,6 @@ public static class ChurchSettingsFields
 
     public static bool IsReadOnly(SettingField field) => ReadOnlyKeys.Contains(field.Key);
 
-
     private static SettingField Text(string key, string section, string label, string? hint, int rows,
         Func<ChurchSettings, string> get, Action<ChurchSettings, string> set) => new()
     {
@@ -37,7 +35,6 @@ public static class ChurchSettingsFields
         Get = get,
         Set = (s, v) => { set(s, v); return null; },
     };
-
 
     public static readonly IReadOnlyList<SettingField> All = new[]
     {
@@ -74,10 +71,10 @@ public static class ChurchSettingsFields
             s => s.OrderOfServiceText, (s, v) => s.OrderOfServiceText = v),
         Text("CommunionHeading", "Inside left page", "Holy Communion heading", null, 1,
             s => s.CommunionHeading, (s, v) => s.CommunionHeading = v),
-        Text("CommunionParagraph1", "Inside left page", "Holy Communion, first paragraph", null, 6,
-            s => s.CommunionParagraph1, (s, v) => s.CommunionParagraph1 = v),
-        Text("CommunionParagraph2", "Inside left page", "Holy Communion, second paragraph", null, 3,
-            s => s.CommunionParagraph2, (s, v) => s.CommunionParagraph2 = v),
+        Text("CommunionText", "Inside left page", "Holy Communion text", "Press Enter to start a new paragraph.", 9,
+            s => s.CommunionText, (s, v) => s.CommunionText = v),
+        Text("CommunionAddition", "Inside left page", "Holy Communion: optional addition", "Optional. Printed after the Holy Communion text on every bulletin. Leave empty to print nothing.", 4,
+            s => s.CommunionAddition, (s, v) => s.CommunionAddition = v),
 
         // ── back cover ──
         Text("BackWelcomeHeading", "Back cover", "Welcome heading", null, 1,

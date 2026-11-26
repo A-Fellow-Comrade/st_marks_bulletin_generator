@@ -133,10 +133,11 @@ public class BulletinDocument : IDocument
 
                     if (Has(_church.CommunionHeading))
                         col.Item().PaddingTop(8).Text(_church.CommunionHeading).AlignCenter().Bold();
-                    if (Has(_church.CommunionParagraph1))
-                        col.Item().PaddingLeft(6).Text(_church.CommunionParagraph1).AlignCenter();
-                    if (Has(_church.CommunionParagraph2))
-                        col.Item().PaddingLeft(6).Text(_church.CommunionParagraph2).AlignCenter();
+                    // The Holy Communion paragraphs and the optional addition, left-aligned.
+                    foreach (var paragraph in ChurchSettings.SplitParagraphs(_church.CommunionText))
+                        col.Item().Text(paragraph).AlignLeft();
+                    foreach (var paragraph in ChurchSettings.SplitParagraphs(_church.CommunionAddition))
+                        col.Item().Text(paragraph).AlignLeft();
                 });
 
                 // ---- RIGHT: Psalm
