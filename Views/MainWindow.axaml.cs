@@ -191,7 +191,7 @@ public partial class MainWindow : Window
         {
             MinisterBox, OrganistBox, PreludeBox, ServiceTimeBox, SundayNameBox,
             OpeningHymnBox, OpeningTitle, DayHymnBox, DayTitle,
-            ClosingHymnBox, ClosingTitle, PostludeBox,
+            ClosingHymnBox, ClosingTitle, PostludeBox, CoverNameBox,
         };
         foreach (var box in boxes)
             box.TextChanged += (_, _) => MarkDirty();
@@ -199,6 +199,7 @@ public partial class MainWindow : Window
         // (the rich-text boxes mark the form dirty through RichBox.Prepare)
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
+        CoverNameCheck.IsCheckedChanged += (_, _) => CoverNameCheck_Changed();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
 
         HookPsalmEvents();
@@ -230,6 +231,38 @@ public partial class MainWindow : Window
         if (problem != null)
             StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
         return name;
+    }
+
+    // The lectionary's own name for a Sunday, as printed on the front cover.
+    private string LookUpCoverName(DateOnly date)
+    {
+        var name = SundayNames.GetTitle(date, CurrentLectionary, out var problem);
+        if (problem != null)
+            StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
+        return name;
+    }
+
+    // Shows the name box only while the tick box is ticked.
+    private void UpdateCoverNameBox() => CoverNameBox.IsVisible = CoverNameCheck.IsChecked == true;
+
+    // The pastor ticks or unticks "Print this Sunday's name on the front cover". Ticking
+    // fills the box with the Sunday's name when it is empty; the name can then be edited.
+    private void CoverNameCheck_Changed()
+    {
+        UpdateCoverNameBox();
+        if (_loading || _currentDate is not DateOnly date) return;
+
+        if (CoverNameCheck.IsChecked == true && string.IsNullOrWhiteSpace(CoverNameBox.Text))
+            CoverNameBox.Text = LookUpCoverName(date);
+        MarkDirty();
+    }
+
+    // Unticked and blank: how every Sunday that has no saved bulletin starts.
+    private void ClearCoverName()
+    {
+        CoverNameCheck.IsChecked = false;
+        CoverNameBox.Text = "";
+        UpdateCoverNameBox();
     }
 
     // Raised after this form saves a Sunday, so the calendar can mark it.
@@ -407,6 +440,7 @@ public partial class MainWindow : Window
             SundayName = SundayNameBox.Text?.Trim() ?? "",
             Minister = MinisterBox.Text?.Trim() ?? "",
             Organist = OrganistBox.Text?.Trim() ?? "",
+            CoverSundayName = CoverNameCheck.IsChecked == true ? (CoverNameBox.Text?.Trim() ?? "") : "",
             SettingName = setting,
             SettingPage = SettingPages.TryGetValue(setting, out var page) ? (int?)page : null,
             Prelude = PreludeBox.Text?.Trim() ?? "",
@@ -545,6 +579,7 @@ public partial class MainWindow : Window
 
                 // These belong to the new Sunday, so they are never copied.
                 SundayNameBox.Text = LookUpSundayName(date);
+                ClearCoverName();
                 _diskStamp = null;
                 SaveNote.Text = "";
             }
@@ -696,6 +731,14 @@ public partial class MainWindow : Window
 
         if (typed.Length == 0 || typed == oldName)
             SundayNameBox.Text = LookUpSundayName(date);
+
+        if (CoverNameCheck.IsChecked == true)
+        {
+            var typedCover = CoverNameBox.Text?.Trim() ?? "";
+            var oldCover = SundayNames.GetTitle(date, before, out _);
+            if (typedCover.Length == 0 || typedCover == oldCover)
+                CoverNameBox.Text = LookUpCoverName(date);
+        }
 
         bool untouched =
             ((PsalmNumberBox.Text?.Trim() ?? "").Length == 0 &&
@@ -909,6 +952,8 @@ public partial class MainWindow : Window
         PsalmIncludeOptional = PsalmOptionalBox.IsChecked == true,
         Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
         Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
+        PrintCoverSundayName = CoverNameCheck.IsChecked == true,
+        CoverSundayName = CoverNameBox.Text?.Trim() ?? "",
         SavedAt = DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture),
         SavedBy = Environment.MachineName,
     };
@@ -929,6 +974,9 @@ public partial class MainWindow : Window
         PostludeBox.Text = r.Postlude ?? "";
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
         AcknowledgementsBox.Editor.LoadHtml(r.Acknowledgements ?? "");
+        CoverNameBox.Text = r.CoverSundayName ?? "";
+        CoverNameCheck.IsChecked = r.PrintCoverSundayName;
+        UpdateCoverNameBox();
         UpdatePlaceholders();
     }
 
@@ -948,6 +996,7 @@ public partial class MainWindow : Window
         PostludeBox.Text = "";
         AnnouncementsBox.Editor.LoadHtml("");
         ClearAcknowledgements();
+        ClearCoverName();
         UpdatePlaceholders();
     }
 

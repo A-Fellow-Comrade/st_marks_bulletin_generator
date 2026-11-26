@@ -28,6 +28,8 @@ public class SavedBulletin
     public bool PsalmIncludeOptional { get; set; }
     public string Announcements { get; set; } = "";
     public string Acknowledgements { get; set; } = ""; //thank-yous; copied to the next Sunday like announcements; blank in older files
+    public bool PrintCoverSundayName { get; set; } //tick box: print the Sunday's name on the front cover; never copied to the next Sunday
+    public string CoverSundayName { get; set; } = ""; //the name shown on the front cover when ticked; never copied to the next Sunday
     public string SavedAt { get; set; } = ""; //"yyyy-MM-dd HH:mm:ss"
     public string SavedBy { get; set; } = ""; //computer name
 }

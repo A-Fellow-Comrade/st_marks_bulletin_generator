@@ -7,6 +7,8 @@ public class Bulletin
     public string SundayName { get; set; } = "";       // "the nineteenth Sunday after Pentecost"
     public string Minister { get; set; } = "";
     public string Organist { get; set; } = "";
+    // Printed on the front cover under the date and time. "" = nothing is printed.
+    public string CoverSundayName { get; set; } = "";
     public string SettingName { get; set; } = "";    // "Setting Three"
     public int? SettingPage { get; set; }            // 184
     public string Prelude { get; set; } = "";

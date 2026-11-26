@@ -280,7 +280,9 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
                 });
 
                 // ---- RIGHT: Front cover ----
-                row.RelativeItem().Element(Panel).Column(col =>
+                // AlignMiddle centers the whole cover (name, picture, date, synod) between the top
+                // and bottom of the panel, so it does not hang from the top edge.
+                row.RelativeItem().Element(Panel).AlignMiddle().Column(col =>
                 {
                     if (Has(_church.ChurchName))
                         col.Item().PaddingTop(12).AlignCenter().Text(_church.ChurchName).FontSize(15).AlignCenter();
@@ -311,6 +313,10 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
 
                     col.Item().PaddingTop(30).AlignCenter().Text("DIVINE SERVICE").FontSize(16);
                     col.Item().AlignCenter().Text(DateLine()).FontSize(11);
+
+                    // The special Sunday name (only when the pastor ticked the box on the form).
+                    if (Has(_b.CoverSundayName))
+                        col.Item().PaddingTop(6).Text(_b.CoverSundayName.Trim()).AlignCenter().FontSize(12).Italic();
 
                     if (Has(_church.Synod))
                         col.Item().PaddingTop(14).AlignCenter().Text(_church.Synod).FontSize(11);

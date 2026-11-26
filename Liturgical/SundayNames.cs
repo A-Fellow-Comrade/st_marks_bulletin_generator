@@ -61,6 +61,33 @@ public static class SundayNames
         }
     }
 
+        // The lectionary library's own name for a Sunday, as it stands (for example
+    // "Last Sunday of the Church Year"), for printing as a title on the front cover.
+    // Returns "" (and explains why in `problem`) if the name can't be worked out.
+    public static string GetTitle(DateOnly date, Lectionary lectionary, out string? problem)
+    {
+        problem = null;
+        if (date.DayOfWeek != DayOfWeek.Sunday) return "";
+
+        try
+        {
+            _calendar ??= new LiturgicalCalendar(AdventYearFor(date), LiturgicalData.Load());
+
+            var result = _calendar.Lookup(date, lectionary);
+            if (result is null)
+            {
+                problem = "the lectionary data has no entry for that date";
+                return "";
+            }
+            return (result.Name ?? "").Trim();
+        }
+        catch (Exception ex)
+        {
+            problem = ex.Message;
+            return "";
+        }
+    }
+    
     // The civil year in which this date's church year began (Advent).
     private static int AdventYearFor(DateOnly date) =>
         date >= CalendarMath.Advent1ForYear(date.Year) ? date.Year : date.Year - 1;

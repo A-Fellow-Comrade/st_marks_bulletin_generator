@@ -331,11 +331,10 @@
                 </StackPanel>
             </Border>
 
-
-            <!-- ── CARD: Cover Image ── -->
+            <!-- ── CARD: Front cover ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="Cover image"/>
+                    <TextBlock Classes="section-title" Text="Front cover"/>
                     <Border Classes="rule"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                         <Button Classes="secondary" x:Name="PickImageButton" Click="PickImage_Click">
@@ -347,6 +346,15 @@
                         <TextBlock x:Name="PickImageLabel" Text="Random"
                                    VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontStyle="Italic"/>
                     </StackPanel>
+
+                    <!-- The special Sunday name: starts unticked every Sunday -->
+                    <CheckBox x:Name="CoverNameCheck" Margin="0,16,0,0"
+                              Content="Print this Sunday's name on the front cover"/>
+                    <TextBlock Margin="28,0,0,0" TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource MutedBrush}"
+                               Text="Prints under the date and time, for example: Last Sunday of the Church Year. This box starts unticked for every new Sunday."/>
+                    <TextBox x:Name="CoverNameBox" IsVisible="False" Margin="28,8,0,0"
+                             PlaceholderText="Type the name to print"/>
                 </StackPanel>
             </Border>
 
