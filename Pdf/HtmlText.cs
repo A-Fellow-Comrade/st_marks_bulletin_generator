@@ -18,6 +18,34 @@ public static class HtmlText
         return text.Trim().Length > 0;
     }
 
+    // Takes out paragraphs and bullet items that hold no visible text (blank lines the pastor
+    // typed), and any list left empty by that. Without this a blank line between two
+    // announcements would print as a lone "*" or bullet. Everything else is left exactly as it is.
+    public static string RemoveEmptyBlocks(string? html)
+    {
+        if (string.IsNullOrWhiteSpace(html)) return "";
+
+        var result = html;
+        for (var pass = 0; pass < 4; pass++)
+        {
+            var before = result;
+
+            result = Regex.Replace(result, @"<(p|li)\b[^>]*>(.*?)</\1\s*>", match =>
+            {
+                var inside = match.Groups[2].Value;
+                var hasPicture = inside.Contains("<img", StringComparison.OrdinalIgnoreCase);
+                return hasPicture || HasContent(inside) ? match.Value : "";
+            }, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+            // A list whose items were all removed.
+            result = Regex.Replace(result, @"<(ul|ol)\b[^>]*>\s*</\1\s*>", "",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+            if (result == before) break;
+        }
+        return string.IsNullOrWhiteSpace(result) ? "" : result;
+    }
+
     // Makes every paragraph centered, whether or not it already has a style.
     public static string CenterParagraphs(string html)
     {

@@ -202,10 +202,13 @@
                 <StackPanel>
                     <TextBlock Classes="section-title" Text="Hymns &amp; music"/>
                     <Border Classes="rule"/>
-                    <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Organ prelude"/>
-                        <TextBox   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PreludeBox"/>
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="PreludeBox" PlaceholderText="Title"/>
+                            <TextBox Grid.Column="1" x:Name="PreludeComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Opening hymn #"/>
                         <TextBox   Grid.Row="1" Grid.Column="1" x:Name="OpeningHymnBox"
@@ -221,15 +224,25 @@
                                    Margin="8,3,0,3" Tag="DayHymnBox" LostFocus="Title_LostFocus"
                                    PlaceholderText="Hymn title"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
-                        <TextBox   Grid.Row="3" Grid.Column="1" x:Name="ClosingHymnBox"
+                        <!-- Optional: leave both boxes empty and no Offertory line is printed. -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Offertory"/>
+                        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="OffertoryTitleBox" PlaceholderText="Title (optional)"/>
+                            <TextBox Grid.Column="1" x:Name="OffertoryComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
+                        <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ClosingHymnBox"
                                    Tag="ClosingTitle" TextChanged="HymnBox_TextChanged"/>
-                        <TextBox   Grid.Row="3" Grid.Column="2" x:Name="ClosingTitle"
+                        <TextBox   Grid.Row="4" Grid.Column="2" x:Name="ClosingTitle"
                                    Margin="8,3,0,3" Tag="ClosingHymnBox" LostFocus="Title_LostFocus"
                                    PlaceholderText="Hymn title"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Organ postlude"/>
-                        <TextBox   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Classes="label" Text="Organ postlude"/>
+                        <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="PostludeBox" PlaceholderText="Title"/>
+                            <TextBox Grid.Column="1" x:Name="PostludeComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -331,11 +344,10 @@
                 </StackPanel>
             </Border>
 
-
-            <!-- ── CARD: Cover Image ── -->
+            <!-- ── CARD: Front cover ── -->
             <Border Classes="card">
                 <StackPanel>
-                    <TextBlock Classes="section-title" Text="Cover image"/>
+                    <TextBlock Classes="section-title" Text="Front cover"/>
                     <Border Classes="rule"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                         <Button Classes="secondary" x:Name="PickImageButton" Click="PickImage_Click">
@@ -347,6 +359,15 @@
                         <TextBlock x:Name="PickImageLabel" Text="Random"
                                    VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontStyle="Italic"/>
                     </StackPanel>
+
+                    <!-- The special Sunday name: starts unticked every Sunday -->
+                    <CheckBox x:Name="CoverNameCheck" Margin="0,16,0,0"
+                              Content="Print this Sunday's name on the front cover"/>
+                    <TextBlock Margin="28,0,0,0" TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource MutedBrush}"
+                               Text="Prints under the date and time, for example: Last Sunday of the Church Year. This box starts unticked for every new Sunday."/>
+                    <TextBox x:Name="CoverNameBox" IsVisible="False" Margin="28,8,0,0"
+                             PlaceholderText="Type the name to print"/>
                 </StackPanel>
             </Border>
 

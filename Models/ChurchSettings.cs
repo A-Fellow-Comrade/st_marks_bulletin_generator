@@ -28,16 +28,19 @@ public class ChurchSettings
         "The order for this service is found in the Lutheran Service Book " +
         "(in the hymnal rack) on page {page}, {setting}.";
     public string CommunionHeading { get; set; } = "HOLY COMMUNION";
-    public string CommunionParagraph1 { get; set; } =
+    // The Holy Communion paragraphs, in one box. Pressing Enter starts a new paragraph.
+    public string CommunionText { get; set; } =
         "In Holy Communion we receive the true body and blood of our Lord for the " +
         "forgiveness of sins. It is for those who have been baptized. If you do not " +
         "have a church home, your church is not a Missouri Synod Church, or you are " +
         "unsure and would like to commune with us, please see Pastor before the " +
         "service. You may, instead, come forward for a blessing; please cross your " +
-        "arms over your chest as you kneel at the rail.";
-    public string CommunionParagraph2 { get; set; } =
+        "arms over your chest as you kneel at the rail." +
+        "\n\n" +
         "We strongly encourage the use of the common chalice as our Lord instructed. " +
         "See Pastor before the service if a gluten-free wafer is needed.";
+    // Optional extra paragraph(s) printed after the Holy Communion text. Empty = nothing printed.
+    public string CommunionAddition { get; set; } = "";
 
     // ── back cover ──
     public string BackWelcomeHeading { get; set; } = "Welcome to St. Mark's";
@@ -59,6 +62,14 @@ public class ChurchSettings
     public string PrayerCardNote { get; set; } =
         "Prayer cards may be placed in the prayer box in the narthex or given to the presiding minister prior to the service.";
 
+    // Splits a box of text into paragraphs: every line break starts a new one, and
+    // blank lines and spaces around a paragraph are dropped.
+    public static string[] SplitParagraphs(string? text) =>
+        (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n')
+            .Split('\n')
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0)
+            .ToArray();
 
     // 1st, 2nd, 3rd, 4th ... 11th, 12th, 13th ... 21st, 101st, 111th
     public static string OrdinalSuffix(int n)

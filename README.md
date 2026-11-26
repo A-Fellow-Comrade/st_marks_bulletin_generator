@@ -41,7 +41,7 @@ The application generates a folded church bulletin consisting of two landscape L
 | Page | Left Panel | Right Panel |
 |---|---|---|
 | 1 | Order of Service | Psalm and Gloria Patri |
-| 2 | Back Cover: Welcome, Announcements, Contact Information, and Acknowledgements | Front Cover: Church Name, Image, Divine Service, and Date |
+| 2 | Back Cover: Welcome, Announcements, Contact Information, and Acknowledgements | Front Cover: Church Name, Image, Divine Service, Date, and an optional special Sunday name (centered top to bottom on the panel) |
 
 Hymn information comes from the Lutheran Service Book (LSB). Only hymn numbers and titles are printed; music and lyrics are not reproduced.
 
@@ -54,7 +54,9 @@ The Sunday name, appointed psalm, and church-year color are automatically determ
 - **Automatic PDF Generation:** Produces a print-ready, two-page folded church bulletin.
 - **Sunday Calendar:** Navigate between Sundays and identify previously saved bulletins.
 - **Automatic Liturgical Information:** Determines the Sunday name, appointed psalm, and church-year color.
+- **Special Sunday Name on the Front Cover:** An optional tick box prints the name of the Sunday (for example, "Last Sunday of the Church Year") under the date and time.
 - **Hymn Lookup:** Automatically fills in hymn titles based on their LSB numbers.
+- **Music Lines with Title and Composer:** The organ prelude, optional offertory, and organ postlude each print the title in italics followed by the composer in parentheses.
 - **Customizable Church Settings:** Edit recurring church wording without modifying the source code.
 - **Rich Text Editing:** Format announcements and acknowledgements using bold, italic, underline, and color.
 - **Automatic Saving:** Saves bulletin changes without requiring manual save operations.
@@ -130,15 +132,33 @@ Selecting a Sunday opens its bulletin form.
 |---|---|
 | Service Information | Service time, Sunday name, presiding minister, and organist |
 | Worship Details | Service setting and creed |
-| Hymns & Music | Organ prelude, opening hymn, hymn of the day, closing hymn, and organ postlude |
+| Hymns & Music | Organ prelude, opening hymn, hymn of the day, optional offertory, closing hymn, and organ postlude. The prelude, offertory, and postlude each have a title box and a composer box |
 | Psalm | Psalm number, verses, Bible translation, optional verses, appointed psalm, and lectionary selection |
 | Announcements | Rich-text announcements printed as bullet points under "Item of Interest" |
 | Acknowledgements | Rich-text thank-you messages printed centered on the back cover |
-| Cover Image | Front-cover image selection or random image selection |
+| Front Cover | Front-cover image selection or random image selection, and the optional special Sunday name |
 
 **Hymn Lookup**
 
 Entering an LSB hymn number automatically fills in its title. The title can be manually corrected if necessary.
+
+**Organ Prelude, Offertory, and Organ Postlude**
+
+Each of these rows has two boxes side by side: the title first, then the composer.
+
+- In the PDF, the label is bold, the title is italic, and the composer follows in parentheses, for example: `ORGAN PRELUDE` *Title* (Composer).
+- The composer can be left blank; the parentheses are then left out.
+- The organ prelude and postlude always print their labels.
+- The offertory is optional. If both of its boxes are empty, the whole Offertory line is left out of the bulletin.
+
+**Special Sunday Name (Front Cover)**
+
+In the **Front cover** card, tick **Print this Sunday's name on the front cover** to print the name of the Sunday under the date and time.
+
+- When ticked, a box appears already filled in from the church calendar (for example, "Last Sunday of the Church Year"). The wording can be edited.
+- The name prints in italics. Leaving the box unticked prints nothing.
+- The tick and the name are saved with that Sunday only. Every new Sunday starts unticked and blank, even when the rest of the form is copied from an earlier Sunday.
+- If the lectionary choice is changed, the name is refreshed automatically unless it was edited by hand.
 
 **Psalm Selection**
 
@@ -150,6 +170,14 @@ The appointed psalm is automatically populated based on the selected Sunday and 
 - Optional verses can be included.
 - The three-year and one-year lectionaries are supported.
 - If the requested psalm cannot be found, PDF generation stops and displays an error message.
+
+**Announcements and Acknowledgements**
+
+These two boxes are rich-text editors with bold, italic, underline, and color buttons.
+
+- In the PDF, each announcement paragraph is printed as a bullet.
+- Typing `* ` (an asterisk and a space) at the start of a line makes the editor create its own bullet. To remove it, press **Backspace** at the very start of the bullet; the bullet goes away and the text stays.
+- Blank lines between announcements are ignored in the PDF, so they never print as a lone bullet. If the box contains only blank lines, the "Item of Interest" heading is left out too.
 
 **Automatic Saving**
 
@@ -170,11 +198,12 @@ A new Sunday starts as a copy of the nearest earlier saved Sunday. The following
 - Presiding minister
 - Organist
 - Service setting
+- Organ prelude and postlude (titles and composers)
 - Announcements
 - Acknowledgements
 - Other recurring bulletin information
 
-The appointed psalm is not copied. It is automatically populated based on the new Sunday.
+The appointed psalm is not copied. It is automatically populated based on the new Sunday. The special Sunday name tick box (unticked) and the offertory (empty) also start fresh for every new Sunday.
 
 A new Sunday is not saved until something is edited. The application also indicates which earlier Sunday was used as the source.
 
@@ -212,7 +241,7 @@ It contains four sections:
 | Section | Contents |
 |---|---|
 | Front Cover | Church name, town, anniversary wording, synod, and website |
-| Inside Left Page | Welcome text, order-of-service sentence, and Holy Communion text |
+| Inside Left Page | Welcome text, order-of-service sentence, Holy Communion heading, Holy Communion text, and Holy Communion optional addition |
 | Back Cover | Welcome message and section headings |
 | Contact Box | Six lines of church contact information |
 
@@ -223,6 +252,8 @@ Settings behavior:
 - If all contact fields are empty, the contact box disappears.
 - `{page}` and `{setting}` are replaced with the appropriate page number and service setting.
 - `{year}` is replaced with the church's calculated anniversary wording (125th, 131st, etc.), based on the configured founding year.
+- The **Holy Communion text** is a single box holding both standard paragraphs. Press Enter to start a new paragraph. The paragraphs print left-aligned under the centered heading.
+- The **Holy Communion: optional addition** box starts empty. Anything typed there prints after the Holy Communion text on every bulletin; leave it empty to print nothing.
 - **Restore standard wording** restores the original default text.
 - Changes are only saved after pressing **Save**.
 
@@ -461,7 +492,7 @@ st_marks_bulletin_generator/
 │
 ├── Models/
 │   ├── Bulletins.cs
-│   ├── SavedBulletin.cs
+│   ├── SavedBulletins.cs
 │   ├── ChurchSettings.cs
 │   └── ChurchSettingsFields.cs
 │
@@ -504,11 +535,14 @@ st_marks_bulletin_generator/
 | `Views/CalendarWindow.axaml(.cs)` | Calendar navigation, bulletin folder management, and window navigation |
 | `Views/MainWindow.axaml(.cs)` | Bulletin form, input controls, hymn lookup, saving, and PDF generation |
 | `Views/SettingsWindow.axaml(.cs)` | Church settings interface |
+| `Views/RichBox.cs` | Shared set-up for the Announcements and Acknowledgements rich-text boxes (toolbar, theme colors, "Type here..." note, Backspace removing a bullet) |
 | `Pdf/BulletinDocument.cs` | QuestPDF layout and PDF generation |
+| `Pdf/HtmlText.cs` | Helpers for rich-text (HTML) content: empty-box detection, removing blank lines, centering |
 | `Models/Bulletins.cs` | Bulletin data used during PDF generation |
+| `Models/SavedBulletins.cs` | The per-Sunday data written to each saved JSON file |
 | `Data/BulletinStore.cs` | Saves and loads individual Sunday bulletins |
 | `Data/HymnRepository.cs` | SQLite hymn database management |
-| `Liturgical/SundayNames.cs` | Determines the Sunday name |
+| `Liturgical/SundayNames.cs` | Determines the Sunday name (as a sentence for the back-cover welcome, and as a title for the front cover) |
 | `Liturgical/PsalmLookup.cs` | Retrieves appointed psalms and psalm text |
 | `Liturgical/ChurchYear.cs` | Determines church-year seasons and colors |
 
@@ -551,6 +585,19 @@ The document is generated using:
 ```csharp
 new BulletinDocument(bulletin, _repo, church).GeneratePdf(path);
 ```
+
+### PDF Layout Notes
+
+Layout details in `Pdf/BulletinDocument.cs` that are easy to adjust:
+
+- **Front cover:** the whole cover block is centered between the top and bottom of its panel (`AlignMiddle`), so it adjusts automatically when the optional Sunday name line is present.
+- **Music lines:** the `MusicRow` helper prints the bold label, the italic title, and the composer in parentheses for the organ prelude, offertory, and organ postlude.
+- **Space around bullet lists:** `ListVerticalPaddingPoints` (at the top of the class) sets the space above and below the announcements list. QuestPDF.HTML's own default is 12 points, about one blank line; this project sets it to 0 so the first bullet sits directly under "Item of Interest". Raise it (for example, to 6) for a small gap.
+- **Blank announcement lines:** `HtmlText.RemoveEmptyBlocks` removes empty paragraphs and empty bullets before the `* ` bullet markers are added, so a blank line cannot print as a lone bullet.
+
+### Rich-Text Boxes
+
+`Views/RichBox.cs` configures every rich-text box the same way. The editor (AvaloniaRichEditor) turns `* ` at the start of a line into a bullet but, on its own, does not let Backspace remove that bullet. `RichBox` adds a Backspace handler for this, and it checks for an active selection by reading a private property of the editor by name. If a future AvaloniaRichEditor version renames that property, the check safely answers "no selection". The behavior was written against AvaloniaRichEditor 1.3.0, so re-test it after upgrading the package.
 
 ### Lectionary Library
 

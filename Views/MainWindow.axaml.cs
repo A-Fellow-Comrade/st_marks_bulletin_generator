@@ -177,6 +177,13 @@ public partial class MainWindow : Window
         RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
     }
 
+    // Empties the Offertory boxes: every Sunday starts without one, so it is never copied forward.
+    private void ClearOffertory()
+    {
+        OffertoryTitleBox.Text = "";
+        OffertoryComposerBox.Text = "";
+    }
+
     // Empties the Acknowledgements box (used for a brand-new, blank form).
     private void ClearAcknowledgements()
     {
@@ -191,7 +198,8 @@ public partial class MainWindow : Window
         {
             MinisterBox, OrganistBox, PreludeBox, ServiceTimeBox, SundayNameBox,
             OpeningHymnBox, OpeningTitle, DayHymnBox, DayTitle,
-            ClosingHymnBox, ClosingTitle, PostludeBox,
+            ClosingHymnBox, ClosingTitle, PostludeBox, CoverNameBox,
+            PreludeComposerBox, PostludeComposerBox, OffertoryTitleBox, OffertoryComposerBox,
         };
         foreach (var box in boxes)
             box.TextChanged += (_, _) => MarkDirty();
@@ -199,6 +207,7 @@ public partial class MainWindow : Window
         // (the rich-text boxes mark the form dirty through RichBox.Prepare)
 
         SettingBox.SelectionChanged += (_, _) => MarkDirty();
+        CoverNameCheck.IsCheckedChanged += (_, _) => CoverNameCheck_Changed();
         CreedBox.SelectionChanged += (_, _) => MarkDirty();
 
         HookPsalmEvents();
@@ -230,6 +239,38 @@ public partial class MainWindow : Window
         if (problem != null)
             StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
         return name;
+    }
+
+    // The lectionary's own name for a Sunday, as printed on the front cover.
+    private string LookUpCoverName(DateOnly date)
+    {
+        var name = SundayNames.GetTitle(date, CurrentLectionary, out var problem);
+        if (problem != null)
+            StatusText.Text = $"Couldn't work out the Sunday name ({problem}). You can type it in by hand.";
+        return name;
+    }
+
+    // Shows the name box only while the tick box is ticked.
+    private void UpdateCoverNameBox() => CoverNameBox.IsVisible = CoverNameCheck.IsChecked == true;
+
+    // The pastor ticks or unticks "Print this Sunday's name on the front cover". Ticking
+    // fills the box with the Sunday's name when it is empty; the name can then be edited.
+    private void CoverNameCheck_Changed()
+    {
+        UpdateCoverNameBox();
+        if (_loading || _currentDate is not DateOnly date) return;
+
+        if (CoverNameCheck.IsChecked == true && string.IsNullOrWhiteSpace(CoverNameBox.Text))
+            CoverNameBox.Text = LookUpCoverName(date);
+        MarkDirty();
+    }
+
+    // Unticked and blank: how every Sunday that has no saved bulletin starts.
+    private void ClearCoverName()
+    {
+        CoverNameCheck.IsChecked = false;
+        CoverNameBox.Text = "";
+        UpdateCoverNameBox();
     }
 
     // Raised after this form saves a Sunday, so the calendar can mark it.
@@ -407,9 +448,11 @@ public partial class MainWindow : Window
             SundayName = SundayNameBox.Text?.Trim() ?? "",
             Minister = MinisterBox.Text?.Trim() ?? "",
             Organist = OrganistBox.Text?.Trim() ?? "",
+            CoverSundayName = CoverNameCheck.IsChecked == true ? (CoverNameBox.Text?.Trim() ?? "") : "",
             SettingName = setting,
             SettingPage = SettingPages.TryGetValue(setting, out var page) ? (int?)page : null,
             Prelude = PreludeBox.Text?.Trim() ?? "",
+            PreludeComposer = PreludeComposerBox.Text?.Trim() ?? "",
             OpeningHymn = opening,
             OpeningTitle = OpeningTitle.Text?.Trim() ?? "",
             Creed = creed,
@@ -419,6 +462,9 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
+            PostludeComposer = PostludeComposerBox.Text?.Trim() ?? "",
+            OffertoryTitle = OffertoryTitleBox.Text?.Trim() ?? "",
+            OffertoryComposer = OffertoryComposerBox.Text?.Trim() ?? "",
             Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
             Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
             CoverImagePath = _selectedCoverImagePath,
@@ -545,6 +591,8 @@ public partial class MainWindow : Window
 
                 // These belong to the new Sunday, so they are never copied.
                 SundayNameBox.Text = LookUpSundayName(date);
+                ClearCoverName();
+                ClearOffertory();
                 _diskStamp = null;
                 SaveNote.Text = "";
             }
@@ -696,6 +744,14 @@ public partial class MainWindow : Window
 
         if (typed.Length == 0 || typed == oldName)
             SundayNameBox.Text = LookUpSundayName(date);
+
+        if (CoverNameCheck.IsChecked == true)
+        {
+            var typedCover = CoverNameBox.Text?.Trim() ?? "";
+            var oldCover = SundayNames.GetTitle(date, before, out _);
+            if (typedCover.Length == 0 || typedCover == oldCover)
+                CoverNameBox.Text = LookUpCoverName(date);
+        }
 
         bool untouched =
             ((PsalmNumberBox.Text?.Trim() ?? "").Length == 0 &&
@@ -894,6 +950,7 @@ public partial class MainWindow : Window
         Organist = OrganistBox.Text?.Trim() ?? "",
         SettingName = SelectedSetting ?? "",
         Prelude = PreludeBox.Text?.Trim() ?? "",
+        PreludeComposer = PreludeComposerBox.Text?.Trim() ?? "",
         OpeningHymn = OpeningHymnBox.Text?.Trim() ?? "",
         OpeningTitle = OpeningTitle.Text?.Trim() ?? "",
         Creed = (CreedBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
@@ -902,6 +959,9 @@ public partial class MainWindow : Window
         ClosingHymn = ClosingHymnBox.Text?.Trim() ?? "",
         ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
         Postlude = PostludeBox.Text?.Trim() ?? "",
+        PostludeComposer = PostludeComposerBox.Text?.Trim() ?? "",
+        OffertoryTitle = OffertoryTitleBox.Text?.Trim() ?? "",
+        OffertoryComposer = OffertoryComposerBox.Text?.Trim() ?? "",
         Lectionary = LectionaryChoice.ToText(CurrentLectionary),
         PsalmVersion = SelectedVersion ?? "",
         PsalmNumber = PsalmNumberBox.Text?.Trim() ?? "",
@@ -909,6 +969,8 @@ public partial class MainWindow : Window
         PsalmIncludeOptional = PsalmOptionalBox.IsChecked == true,
         Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
         Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
+        PrintCoverSundayName = CoverNameCheck.IsChecked == true,
+        CoverSundayName = CoverNameBox.Text?.Trim() ?? "",
         SavedAt = DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture),
         SavedBy = Environment.MachineName,
     };
@@ -922,13 +984,20 @@ public partial class MainWindow : Window
         OrganistBox.Text = r.Organist ?? "";
         SelectByContent(SettingBox, r.SettingName, 2);
         PreludeBox.Text = r.Prelude ?? "";
+        PreludeComposerBox.Text = r.PreludeComposer ?? "";
         SetHymn(OpeningHymnBox, OpeningTitle, r.OpeningHymn, r.OpeningTitle);
         SelectByContent(CreedBox, r.Creed, 0);
         SetHymn(DayHymnBox, DayTitle, r.DayHymn, r.DayTitle);
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
+        PostludeComposerBox.Text = r.PostludeComposer ?? "";
+        OffertoryTitleBox.Text = r.OffertoryTitle ?? "";
+        OffertoryComposerBox.Text = r.OffertoryComposer ?? "";
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
         AcknowledgementsBox.Editor.LoadHtml(r.Acknowledgements ?? "");
+        CoverNameBox.Text = r.CoverSundayName ?? "";
+        CoverNameCheck.IsChecked = r.PrintCoverSundayName;
+        UpdateCoverNameBox();
         UpdatePlaceholders();
     }
 
@@ -941,13 +1010,17 @@ public partial class MainWindow : Window
         OrganistBox.Text = "";
         SettingBox.SelectedIndex = 2;
         PreludeBox.Text = "";
+        PreludeComposerBox.Text = "";
         SetHymn(OpeningHymnBox, OpeningTitle, "", "");
         CreedBox.SelectedIndex = 0;
         SetHymn(DayHymnBox, DayTitle, "", "");
         SetHymn(ClosingHymnBox, ClosingTitle, "", "");
         PostludeBox.Text = "";
+        PostludeComposerBox.Text = "";
         AnnouncementsBox.Editor.LoadHtml("");
         ClearAcknowledgements();
+        ClearCoverName();
+        ClearOffertory();
         UpdatePlaceholders();
     }
 

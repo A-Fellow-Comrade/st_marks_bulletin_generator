@@ -13,6 +13,7 @@ public class SavedBulletin
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = ""; //"Setting Three"
     public string Prelude { get; set; } = "";
+    public string PreludeComposer { get; set; } = ""; //blank in older files
     public string OpeningHymn { get; set; } = "";
     public string OpeningTitle { get; set; } = "";
     public string Creed { get; set; } = ""; //"Nicene Creed"
@@ -21,6 +22,9 @@ public class SavedBulletin
     public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
+    public string PostludeComposer { get; set; } = ""; //blank in older files
+    public string OffertoryTitle { get; set; } = ""; //optional; never copied to the next Sunday; blank in older files
+    public string OffertoryComposer { get; set; } = ""; //optional; never copied to the next Sunday; blank in older files
     public string Lectionary { get; set; } = ""; //choose lectionary the fields come from
     public string PsalmVersion { get; set; } = "";
     public string PsalmNumber { get; set; } = "";
@@ -28,6 +32,8 @@ public class SavedBulletin
     public bool PsalmIncludeOptional { get; set; }
     public string Announcements { get; set; } = "";
     public string Acknowledgements { get; set; } = ""; //thank-yous; copied to the next Sunday like announcements; blank in older files
+    public bool PrintCoverSundayName { get; set; } //tick box: print the Sunday's name on the front cover; never copied to the next Sunday
+    public string CoverSundayName { get; set; } = ""; //the name shown on the front cover when ticked; never copied to the next Sunday
     public string SavedAt { get; set; } = ""; //"yyyy-MM-dd HH:mm:ss"
     public string SavedBy { get; set; } = ""; //computer name
 }

@@ -1,4 +1,7 @@
+using System.Reflection;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 
@@ -6,8 +9,8 @@ namespace st_mark_bulletin_generator.Views;
 
 // Shared set-up for the rich-text boxes on the bulletin form (Announcements and
 // Acknowledgements), so both look and behave the same: a small toolbar (bold,
-// italic, underline, color), the app's light/dark colors, and a "Type here..."
-// note that shows while the box is empty.
+// italic, underline, color), the app's light/dark colors, a "Type here..." note
+// that shows while the box is empty, and Backspace taking a bullet away.
 internal static class RichBox
 {
     // Call once, right after InitializeComponent().
@@ -32,6 +35,38 @@ internal static class RichBox
             UpdatePlaceholder(box, placeholder);
             onEdited();
         };
+
+        // Tunnel = this runs before the editor's own key handling, so it can take over Backspace.
+        box.Editor.AddHandler(InputElement.KeyDownEvent,
+            (_, e) => RemoveBulletOnBackspace(box.Editor, e), RoutingStrategies.Tunnel);
+    }
+
+    // The editor turns "* " (or "- ") at the start of a line into a bullet, but Backspace at the
+    // start of a bullet only joins it to the line above, so the first bullet could not be removed.
+    // This makes Backspace at the very start of a bullet take the bullet away and keep the text,
+    // as Word does. Anything else (a selection, a caret in the middle of the text, Ctrl+Backspace)
+    // is left to the editor.
+    private static void RemoveBulletOnBackspace(AvaloniaRichEditor.Controls.RichEditor editor, KeyEventArgs e)
+    {
+        if (e.Handled || e.Key != Key.Back || e.KeyModifiers != KeyModifiers.None) return;
+        if (editor.IsReadOnly || HasSelection(editor)) return;
+        if (editor.GetCaretFormat().List == AvaloniaRichEditor.Documents.ListKind.None) return;
+        if (editor.GetStatus().col != 1) return; // not at the very start of the bullet's text
+
+        editor.RemoveList();
+        e.Handled = true;
+    }
+
+    // The editor has no public "is anything selected" question, but it keeps one internally. It is
+    // read once by name; if a later version of the editor renames it, this safely answers "no".
+    private static readonly PropertyInfo? HasSelectionProperty =
+        typeof(AvaloniaRichEditor.Controls.RichEditor).GetProperty(
+            "HasTextOrCellSelection", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    private static bool HasSelection(AvaloniaRichEditor.Controls.RichEditor editor)
+    {
+        try { return HasSelectionProperty?.GetValue(editor) is true; }
+        catch { return false; }
     }
 
     // Colors the editor and its toolbar for the current light or dark theme.
