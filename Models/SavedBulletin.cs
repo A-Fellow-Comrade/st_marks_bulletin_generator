@@ -13,6 +13,7 @@ public class SavedBulletin
     public string Organist { get; set; } = "";
     public string SettingName { get; set; } = ""; //"Setting Three"
     public string Prelude { get; set; } = "";
+    public string PreludeComposer { get; set; } = ""; //blank in older files
     public string OpeningHymn { get; set; } = "";
     public string OpeningTitle { get; set; } = "";
     public string Creed { get; set; } = ""; //"Nicene Creed"
@@ -21,7 +22,9 @@ public class SavedBulletin
     public string ClosingHymn { get; set; } = "";
     public string ClosingTitle { get; set; } = "";
     public string Postlude { get; set; } = "";
-    public string Offertory { get; set; } = ""; //optional rich text (HTML); never copied to the next Sunday; blank in older files
+    public string PostludeComposer { get; set; } = ""; //blank in older files
+    public string OffertoryTitle { get; set; } = ""; //optional; never copied to the next Sunday; blank in older files
+    public string OffertoryComposer { get; set; } = ""; //optional; never copied to the next Sunday; blank in older files
     public string Lectionary { get; set; } = ""; //choose lectionary the fields come from
     public string PsalmVersion { get; set; } = "";
     public string PsalmNumber { get; set; } = "";

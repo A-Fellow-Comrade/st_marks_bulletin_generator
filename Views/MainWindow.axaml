@@ -205,7 +205,10 @@
                     <Grid ColumnDefinitions="130,100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Organ prelude"/>
-                        <TextBox   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PreludeBox"/>
+                        <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="PreludeBox" PlaceholderText="Title"/>
+                            <TextBox Grid.Column="1" x:Name="PreludeComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Opening hymn #"/>
                         <TextBox   Grid.Row="1" Grid.Column="1" x:Name="OpeningHymnBox"
@@ -221,30 +224,12 @@
                                    Margin="8,3,0,3" Tag="DayHymnBox" LostFocus="Title_LostFocus"
                                    PlaceholderText="Hymn title"/>
 
-                        <!-- Optional: leave empty and nothing is printed. Bold, italic, underline and color work here too. -->
-                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Offertory (optional)"
-                                   TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,14,12,0"/>
-                        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,3"
-                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="4">
-                            <Grid>
-                                <rte:RichEditorView x:Name="OffertoryBox" Height="120" ShowStatusBar="False"/>
-                                <Border x:Name="OffertoryPlaceholder"
-                                        Background="{DynamicResource InputBackgroundBrush}"
-                                        BorderBrush="{DynamicResource GoldBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="12,8"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        IsHitTestVisible="False">
-                                    <TextBlock Text="Type here...&#10;Optional: leave empty for no offertory."
-                                               Foreground="{DynamicResource MutedBrush}"
-                                               FontStyle="Italic"
-                                               TextWrapping="Wrap"
-                                               TextAlignment="Center"/>
-                                </Border>
-                            </Grid>
-                        </Border>
+                        <!-- Optional: leave both boxes empty and no Offertory line is printed. -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Offertory"/>
+                        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="OffertoryTitleBox" PlaceholderText="Title (optional)"/>
+                            <TextBox Grid.Column="1" x:Name="OffertoryComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Closing hymn #"/>
                         <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ClosingHymnBox"
@@ -254,7 +239,10 @@
                                    PlaceholderText="Hymn title"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Classes="label" Text="Organ postlude"/>
-                        <TextBox   Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="PostludeBox"/>
+                        <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="3*,2*">
+                            <TextBox Grid.Column="0" x:Name="PostludeBox" PlaceholderText="Title"/>
+                            <TextBox Grid.Column="1" x:Name="PostludeComposerBox" Margin="8,3,0,3" PlaceholderText="Composer"/>
+                        </Grid>
                     </Grid>
                 </StackPanel>
             </Border>

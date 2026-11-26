@@ -11,7 +11,8 @@ public class Bulletin
     public string CoverSundayName { get; set; } = "";
     public string SettingName { get; set; } = "";    // "Setting Three"
     public int? SettingPage { get; set; }            // 184
-    public string Prelude { get; set; } = "";
+    public string Prelude { get; set; } = "";          // the title; printed in italics
+    public string PreludeComposer { get; set; } = "";  // printed in (parentheses) after the title
     public int? OpeningHymn { get; set; }
     public string OpeningTitle { get; set; } = ""; //as shown in the form
     public string Creed { get; set; } = "";          // "Nicene Creed"
@@ -20,8 +21,10 @@ public class Bulletin
     public string DayTitle { get; set; } = "";    
     public int? ClosingHymn { get; set; }
     public string ClosingTitle { get; set; } = "";
-    public string Postlude { get; set; } = "";
-    public string Offertory { get; set; } = "";        // rich text (HTML), optional; nothing is printed when empty
+    public string Postlude { get; set; } = "";         // the title; printed in italics
+    public string PostludeComposer { get; set; } = ""; // printed in (parentheses) after the title
+    public string OffertoryTitle { get; set; } = "";   // optional; the whole Offertory line is left out when title and composer are both empty
+    public string OffertoryComposer { get; set; } = "";
     public string PsalmTitle { get; set; } = "";
     public (string V, string[] Lines)[] Psalm { get; set; } = Array.Empty<(string V, string[] Lines)>();
     public string Announcements { get; set; } = "";  // rich text (HTML), one per paragraph

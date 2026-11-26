@@ -112,7 +112,6 @@ public partial class MainWindow : Window
         // The two rich-text boxes (Announcements, Acknowledgements) share their set-up.
         RichBox.Prepare(AnnouncementsBox, AnnouncementsPlaceholder, MarkDirty);
         RichBox.Prepare(AcknowledgementsBox, AcknowledgementsPlaceholder, MarkDirty);
-        RichBox.Prepare(OffertoryBox, OffertoryPlaceholder, MarkDirty);
 
         // Start on Setting Three (what your current bulletin uses).
         SettingBox.SelectedIndex = 2;
@@ -129,7 +128,6 @@ public partial class MainWindow : Window
             UpdateThemeToggle();
             RichBox.ApplyTheme(AnnouncementsBox);
             RichBox.ApplyTheme(AcknowledgementsBox);
-            RichBox.ApplyTheme(OffertoryBox);
             if (_seasonColor is LiturgicalColor color)
             {
                 SeasonStripe.Background = SeasonBrushes.For(color);
@@ -177,14 +175,13 @@ public partial class MainWindow : Window
     {
         RichBox.UpdatePlaceholder(AnnouncementsBox, AnnouncementsPlaceholder);
         RichBox.UpdatePlaceholder(AcknowledgementsBox, AcknowledgementsPlaceholder);
-        RichBox.UpdatePlaceholder(OffertoryBox, OffertoryPlaceholder);
     }
 
-    // Empties the Offertory box: every Sunday starts without one, so it is never copied forward.
+    // Empties the Offertory boxes: every Sunday starts without one, so it is never copied forward.
     private void ClearOffertory()
     {
-        OffertoryBox.Editor.LoadHtml("");
-        RichBox.UpdatePlaceholder(OffertoryBox, OffertoryPlaceholder);
+        OffertoryTitleBox.Text = "";
+        OffertoryComposerBox.Text = "";
     }
 
     // Empties the Acknowledgements box (used for a brand-new, blank form).
@@ -202,6 +199,7 @@ public partial class MainWindow : Window
             MinisterBox, OrganistBox, PreludeBox, ServiceTimeBox, SundayNameBox,
             OpeningHymnBox, OpeningTitle, DayHymnBox, DayTitle,
             ClosingHymnBox, ClosingTitle, PostludeBox, CoverNameBox,
+            PreludeComposerBox, PostludeComposerBox, OffertoryTitleBox, OffertoryComposerBox,
         };
         foreach (var box in boxes)
             box.TextChanged += (_, _) => MarkDirty();
@@ -454,6 +452,7 @@ public partial class MainWindow : Window
             SettingName = setting,
             SettingPage = SettingPages.TryGetValue(setting, out var page) ? (int?)page : null,
             Prelude = PreludeBox.Text?.Trim() ?? "",
+            PreludeComposer = PreludeComposerBox.Text?.Trim() ?? "",
             OpeningHymn = opening,
             OpeningTitle = OpeningTitle.Text?.Trim() ?? "",
             Creed = creed,
@@ -463,7 +462,9 @@ public partial class MainWindow : Window
             ClosingHymn = closing,
             ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
             Postlude = PostludeBox.Text?.Trim() ?? "",
-            Offertory = OffertoryBox.Editor.ToHtml() ?? "",
+            PostludeComposer = PostludeComposerBox.Text?.Trim() ?? "",
+            OffertoryTitle = OffertoryTitleBox.Text?.Trim() ?? "",
+            OffertoryComposer = OffertoryComposerBox.Text?.Trim() ?? "",
             Announcements = AnnouncementsBox.Editor.ToHtml() ?? "",
             Acknowledgements = AcknowledgementsBox.Editor.ToHtml() ?? "",
             CoverImagePath = _selectedCoverImagePath,
@@ -949,6 +950,7 @@ public partial class MainWindow : Window
         Organist = OrganistBox.Text?.Trim() ?? "",
         SettingName = SelectedSetting ?? "",
         Prelude = PreludeBox.Text?.Trim() ?? "",
+        PreludeComposer = PreludeComposerBox.Text?.Trim() ?? "",
         OpeningHymn = OpeningHymnBox.Text?.Trim() ?? "",
         OpeningTitle = OpeningTitle.Text?.Trim() ?? "",
         Creed = (CreedBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "",
@@ -957,7 +959,9 @@ public partial class MainWindow : Window
         ClosingHymn = ClosingHymnBox.Text?.Trim() ?? "",
         ClosingTitle = ClosingTitle.Text?.Trim() ?? "",
         Postlude = PostludeBox.Text?.Trim() ?? "",
-        Offertory = OffertoryBox.Editor.ToHtml() ?? "",
+        PostludeComposer = PostludeComposerBox.Text?.Trim() ?? "",
+        OffertoryTitle = OffertoryTitleBox.Text?.Trim() ?? "",
+        OffertoryComposer = OffertoryComposerBox.Text?.Trim() ?? "",
         Lectionary = LectionaryChoice.ToText(CurrentLectionary),
         PsalmVersion = SelectedVersion ?? "",
         PsalmNumber = PsalmNumberBox.Text?.Trim() ?? "",
@@ -980,12 +984,15 @@ public partial class MainWindow : Window
         OrganistBox.Text = r.Organist ?? "";
         SelectByContent(SettingBox, r.SettingName, 2);
         PreludeBox.Text = r.Prelude ?? "";
+        PreludeComposerBox.Text = r.PreludeComposer ?? "";
         SetHymn(OpeningHymnBox, OpeningTitle, r.OpeningHymn, r.OpeningTitle);
         SelectByContent(CreedBox, r.Creed, 0);
         SetHymn(DayHymnBox, DayTitle, r.DayHymn, r.DayTitle);
         SetHymn(ClosingHymnBox, ClosingTitle, r.ClosingHymn, r.ClosingTitle);
         PostludeBox.Text = r.Postlude ?? "";
-        OffertoryBox.Editor.LoadHtml(r.Offertory ?? "");
+        PostludeComposerBox.Text = r.PostludeComposer ?? "";
+        OffertoryTitleBox.Text = r.OffertoryTitle ?? "";
+        OffertoryComposerBox.Text = r.OffertoryComposer ?? "";
         AnnouncementsBox.Editor.LoadHtml(r.Announcements ?? "");
         AcknowledgementsBox.Editor.LoadHtml(r.Acknowledgements ?? "");
         CoverNameBox.Text = r.CoverSundayName ?? "";
@@ -1003,11 +1010,13 @@ public partial class MainWindow : Window
         OrganistBox.Text = "";
         SettingBox.SelectedIndex = 2;
         PreludeBox.Text = "";
+        PreludeComposerBox.Text = "";
         SetHymn(OpeningHymnBox, OpeningTitle, "", "");
         CreedBox.SelectedIndex = 0;
         SetHymn(DayHymnBox, DayTitle, "", "");
         SetHymn(ClosingHymnBox, ClosingTitle, "", "");
         PostludeBox.Text = "";
+        PostludeComposerBox.Text = "";
         AnnouncementsBox.Editor.LoadHtml("");
         ClearAcknowledgements();
         ClearCoverName();

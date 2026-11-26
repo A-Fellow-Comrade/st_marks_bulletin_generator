@@ -13,6 +13,11 @@ namespace st_mark_bulletin_generator.Pdf;
 public class BulletinDocument : IDocument
 {
     private const string FontName = "Lato";
+
+    // Space (in points) the PDF library adds above and below a bulleted list. Its own default
+    // is 12, about one blank line; 0 puts the first item right under "Item of Interest".
+    // Raise it (for example to 6) for a little gap back.
+    private const float ListVerticalPaddingPoints = 0f;
     private static string RandomCoverImage =>
         Path.Combine(AppContext.BaseDirectory, "imgs", $"{Random.Shared.Next(1, 7)}.jpg");
 
@@ -67,9 +72,36 @@ public class BulletinDocument : IDocument
         });
     }
 
+    // One music line: the label in bold, then the title in italics, then the composer in
+    // (parentheses). A blank title or composer is simply left out. With printWhenEmpty false
+    // the whole line disappears when both are blank (the optional Offertory).
+    private static void MusicRow(ColumnDescriptor col, string label, string? title, string? composer, bool printWhenEmpty)
+    {
+        var hasTitle = !string.IsNullOrWhiteSpace(title);
+        var hasComposer = !string.IsNullOrWhiteSpace(composer);
+        if (!printWhenEmpty && !hasTitle && !hasComposer) return;
+
+        col.Item().Text(t =>
+        {
+            t.Span(label).Bold();
+            if (hasTitle)
+            {
+                t.Span(" ");
+                t.Span(title!.Trim()).Italic();
+            }
+            if (hasComposer)
+            {
+                t.Span(" ");
+                t.Span($"({composer!.Trim()})");
+            }
+        });
+    }
+
     public void Compose(IDocumentContainer container)
     {
-        var announcementsHtml = _b.Announcements ?? "";
+        // Blank lines are taken out, so they cannot print as a lone "*" or bullet; a box with
+        // nothing but blank lines counts as empty (no heading, no bullets).
+        var announcementsHtml = HtmlText.RemoveEmptyBlocks(_b.Announcements);
         var acknowledgementsHtml = _b.Acknowledgements ?? "";
 
         // "Today is the nineteenth Sunday after Pentecost. " (left out if the name box is empty)
@@ -106,11 +138,7 @@ public class BulletinDocument : IDocument
 
                     col.Item().Height(10);
 
-                    col.Item().Text(t =>
-                    {
-                        t.Span("ORGAN PRELUDE ").Bold();
-                        t.Span(_b.Prelude);
-                    });
+                    MusicRow(col, "ORGAN PRELUDE", _b.Prelude, _b.PreludeComposer, printWhenEmpty: true);
 
                     HymnRow(col, "HYMN", _b.OpeningHymn, _b.OpeningTitle);
 
@@ -122,27 +150,12 @@ public class BulletinDocument : IDocument
 
                     HymnRow(col, "HYMN OF THE DAY", _b.HymnOfTheDay, _b.DayTitle);
 
-                    // The offertory is optional: nothing is printed when its box is empty.
-                    if (HtmlText.HasContent(_b.Offertory))
-                    {
-                        col.Item().Row(r =>
-                        {
-                            r.AutoItem().Text("OFFERTORY ").Bold();
-                            r.RelativeItem().HTML(handler =>
-                            {
-                                handler.SetContainerStyleForHtmlElement("p", c => c.PaddingVertical(0));
-                                handler.SetHtml(_b.Offertory);
-                            });
-                        });
-                    }
+                    // The offertory is optional: nothing is printed when title and composer are both empty.
+                    MusicRow(col, "OFFERTORY", _b.OffertoryTitle, _b.OffertoryComposer, printWhenEmpty: false);
 
                     HymnRow(col, "CLOSING HYMN", _b.ClosingHymn, _b.ClosingTitle);
 
-                    col.Item().Text(t =>
-                    {
-                        t.Span("ORGAN POSTLUDE ").Bold();
-                        t.Span(_b.Postlude);
-                    });
+                    MusicRow(col, "ORGAN POSTLUDE", _b.Postlude, _b.PostludeComposer, printWhenEmpty: true);
 
                     col.Item().Height(10);
 
@@ -243,6 +256,7 @@ row.RelativeItem().Element(Panel).ScaleToFit().Column(col =>
 
                         col.Item().HTML(handler =>
                         {
+                            handler.SetListVerticalPadding(ListVerticalPaddingPoints);
                             handler.SetContainerStyleForHtmlElement(
                                 "p", container => container.PaddingVertical(1)
                             );
